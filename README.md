@@ -1,5 +1,9 @@
 # Silvatide Cottage
 
+[![Deploy to GitHub Pages](https://github.com/Kaustobh/Silvatide-Cottage/actions/workflows/deploy.yml/badge.svg)](https://github.com/Kaustobh/Silvatide-Cottage/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://Kaustobh.github.io/Silvatide-Cottage/)
+
 Silvatide Cottage is a stunning, high-performance landing page for a premium lakeside retreat. Built with Astro, it features a pixel-perfect, highly responsive layout with advanced CSS techniques such as clip-path masking, infinite rotating galleries, and native IntersectionObserver scroll animations.
 
 ## Live Demo
