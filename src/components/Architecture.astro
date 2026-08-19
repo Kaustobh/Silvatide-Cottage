@@ -1,0 +1,89 @@
+---
+// Architecture.astro
+---
+
+<section class="architecture-section">
+  <div class="content-wrapper">
+    <div class="text-content fade-up">
+      <h2 class="title">Modern architecture, grounded in nature</h2>
+      <p class="description">
+        Silvatide Cottage is designed as a refined retreat rather than a rustic cabin. Its identity comes from vertical timber cladding, dark metal roofing, expansive glazing, and a quiet material palette that feels contemporary yet deeply connected to the surrounding forest and lake.
+      </p>
+    </div>
+  </div>
+  <div class="image-wrapper fade-up">
+    <!-- Misty lake and cabin image -->
+    <img src={`${import.meta.env.BASE_URL}images/Gemini_Generated_Image_lv55h8lv55h8lv55.png`} alt="Silvatide Cottage architecture" class="architecture-img" />
+  </div>
+</section>
+
+<style>
+  .architecture-section {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    display: flex;
+    background-color: var(--bg-dark);
+    margin: 4rem 0;
+    overflow: hidden;
+  }
+
+  .content-wrapper {
+    width: 45%;
+    padding: 6rem 5%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+  }
+
+  .text-content {
+    max-width: 400px;
+  }
+
+  .title {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+  }
+
+  .description {
+    font-size: 1.05rem;
+  }
+
+  .image-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 100%;
+    z-index: 1;
+    /* Diagonal cut from left to right */
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .architecture-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 992px) {
+    .architecture-section {
+      flex-direction: column;
+      min-height: auto;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      padding: 4rem 5%;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      clip-path: none;
+    }
+  }
+</style>

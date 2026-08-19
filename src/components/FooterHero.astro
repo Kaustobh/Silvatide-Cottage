@@ -1,0 +1,180 @@
+---
+// Hero.astro
+---
+
+<section class="hero-section">
+  <div class="container hero-container">
+    <div class="hero-content fade-up">
+      <h1 class="hero-title">Your lakeside retreat begins here</h1>
+      <p class="hero-text">
+        Whether you're planning a weekend reset or a longer escape into nature, Silvatide Cottage offers a stay defined by stillness, space, and modern warmth.
+      </p>
+      <button class="btn btn-primary">Book Now</button>
+    </div>
+    
+    <div class="hero-image-wrapper fade-up" style="transition-delay: 0.2s;">
+      <!-- Hero image with fire pit -->
+      <img src={`${import.meta.env.BASE_URL}images/Gemini_Generated_Image_d8w9azd8w9azd8w9.png`} alt="Silvatide Cottage lakeside view with fire pit" class="hero-image" />
+    </div>
+  </div>
+
+  <div class="hero-footer container fade-up" style="transition-delay: 0.4s;">
+    <div class="footer-left">
+      <span class="follow-text">Follow us :</span>
+      <div class="social-icons">
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a href="#" aria-label="X (Twitter)">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 4 20 20"></polyline><polyline points="20 4 4 20"></polyline></svg>
+        </a>
+      </div>
+      <span class="copyright">@Silvatide Cabin 2026</span>
+    </div>
+    <nav class="footer-nav">
+      <a href="#cabin">Our Cabin</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#book">Book</a>
+      <a href="#location">Location</a>
+    </nav>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 0;
+  }
+
+  .hero-container {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    flex-grow: 1;
+    margin-top: 4rem;
+  }
+
+  .hero-content {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+  }
+
+  .hero-text {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-image-wrapper {
+    flex: 1.2;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .hero-image {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 40px;
+    object-fit: cover;
+    aspect-ratio: 16 / 10;
+  }
+
+  .hero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+  }
+
+  .follow-text {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .social-icons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: var(--transition-fast);
+  }
+
+  .social-icons a:hover {
+    background-color: var(--text-light);
+    color: var(--bg-dark);
+  }
+
+  .copyright {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  .footer-nav a {
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+  }
+
+  .footer-nav a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 992px) {
+    .hero-container {
+      flex-direction: column;
+      text-align: center;
+      gap: 3rem;
+    }
+
+    .hero-content {
+      margin: 0 auto;
+    }
+
+    .hero-footer {
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+    
+    .copyright {
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+</style>

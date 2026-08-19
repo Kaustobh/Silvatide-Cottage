@@ -1,0 +1,203 @@
+---
+// MainHero.astro
+const heroBg = `url('${import.meta.env.BASE_URL}images/0df9fb3c-cf88-46f2-acdc-738eac0ff4a0.png')`;
+---
+
+<section class="main-hero" style={`--hero-bg: ${heroBg}`}>
+  <!-- Background Image (Sky + Cabin) -->
+  <div class="hero-background"></div>
+  
+  <!-- Massive Text (Behind the cabin roof, in front of trees) -->
+  <h1 class="bg-text fade-up" style="transition-delay: 0.2s;">SILVA</h1>
+  
+  <!-- Foreground Image (Clipped to only show the cabin and below) -->
+  <div class="hero-foreground"></div>
+  
+  <!-- Gradient Overlay for the bottom text readability -->
+  <div class="gradient-overlay"></div>
+
+  <!-- Header -->
+  <header class="hero-header fade-up">
+    <div class="nav-pill">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Silvatide Cottage</span>
+      </div>
+      <button class="menu-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bottom Content -->
+  <div class="hero-bottom container fade-up" style="transition-delay: 0.6s;">
+    <div class="bottom-left">
+      <h2>Escape into stillness.</h2>
+      <p>A modern wooden cottage between forest and lake,<br/>designed for slow mornings, warm interiors, and quiet<br/>luxury.</p>
+    </div>
+    <div class="bottom-right">
+      <div class="amenity-icons">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="14.01"></line><line x1="12" y1="14" x2="12" y2="14.01"></line><line x1="8" y1="14" x2="8" y2="14.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="16" y1="18" x2="16" y2="18.01"></line><line x1="12" y1="18" x2="12" y2="18.01"></line><line x1="8" y1="18" x2="8" y2="18.01"></line></svg>
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+      </div>
+      <button class="btn btn-primary">Book Now</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .main-hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+  }
+
+  .hero-background, .hero-foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--hero-bg);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero-background {
+    z-index: 0;
+  }
+
+  .bg-text {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 25vw;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(212,184,177,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  .hero-foreground {
+    z-index: 2;
+    /* Rough clip-path tracing the cabin roof */
+    clip-path: polygon(0 100%, 100% 100%, 100% 55%, 60% 43%, 20% 30%, 14% 45%, 0 55%);
+  }
+
+  .gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+    z-index: 3;
+  }
+
+  .hero-header {
+    position: relative;
+    top: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .nav-pill {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 8px 16px 8px 24px;
+    color: var(--text-dark);
+    gap: 2rem;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    opacity: 0.6;
+    transition: var(--transition-fast);
+  }
+
+  .menu-btn:hover {
+    opacity: 1;
+  }
+
+  .hero-bottom {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 3rem;
+  }
+
+  .bottom-left h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+  }
+
+  .bottom-left p {
+    font-size: 1rem;
+    max-width: 400px;
+    opacity: 0.9;
+    color: var(--text-light);
+  }
+
+  .bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .amenity-icons {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .amenity-icons svg {
+    color: var(--text-light);
+  }
+
+  @media (max-width: 992px) {
+    .bg-text {
+      font-size: 35vw;
+      top: 25%;
+    }
+
+    .hero-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2rem;
+    }
+  }
+</style>

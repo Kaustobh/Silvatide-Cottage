@@ -1,0 +1,169 @@
+---
+// Features.astro
+---
+
+<section class="features-section section-padding">
+  <div class="container">
+    <div class="features-header">
+      <div class="header-left fade-up">
+        <h2 class="features-title">Why <strong>stay here ?</strong></h2>
+      </div>
+      
+      <div class="header-right text-dark fade-up" style="transition-delay: 0.2s;">
+        <ul class="features-list">
+          <li>
+            <strong>Lakefront setting</strong> — Wake up to still water, shifting mist, and uninterrupted views from the cottage and deck.
+          </li>
+          <li>
+            <strong>Modern design</strong> — Clean lines, warm timber, black-framed glass, and interiors designed to feel calm and elevated.
+          </li>
+          <li>
+            <strong>Quiet privacy</strong> — A stay that feels secluded, intimate, and immersed in nature without losing comfort.
+          </li>
+        </ul>
+        <button class="btn btn-dark check-availability-btn">Check Availability</button>
+      </div>
+    </div>
+
+    <div class="features-gallery fade-up" style="transition-delay: 0.4s;">
+      <div class="feature-image-card">
+        <img src={`${import.meta.env.BASE_URL}images/Gemini_Generated_Image_uea0e5uea0e5uea0.png`} alt="Lakefront deck view" loading="lazy" />
+        <button class="nav-arrow left-arrow" aria-label="Previous image">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+      </div>
+      
+      <div class="feature-image-card">
+        <img src={`${import.meta.env.BASE_URL}images/Gemini_Generated_Image_sxrulusxrulusxru.png`} alt="Modern kitchen interior" loading="lazy" />
+        <button class="nav-arrow right-arrow" aria-label="Next image">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .features-section {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+  }
+
+  .features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 5rem;
+    gap: 4rem;
+  }
+
+  .header-left {
+    flex: 1;
+  }
+
+  .features-title {
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text-dark);
+  }
+
+  .features-title strong {
+    font-weight: 700;
+    display: block;
+  }
+
+  .header-right {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .features-list {
+    list-style: none;
+    margin-bottom: 2.5rem;
+  }
+
+  .features-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+
+  .features-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-dark);
+  }
+
+  .check-availability-btn {
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+
+  .features-gallery {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .feature-image-card {
+    flex: 1;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .feature-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+    transition: transform var(--transition-slow);
+  }
+
+  .feature-image-card:hover img {
+    transform: scale(1.03);
+  }
+
+  .nav-arrow {
+    position: absolute;
+    bottom: 20px;
+    width: 48px;
+    height: 48px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+  }
+
+  .nav-arrow:hover {
+    background-color: var(--accent);
+    color: #000;
+  }
+
+  .left-arrow {
+    right: 20px;
+  }
+
+  .right-arrow {
+    left: 20px;
+  }
+
+  @media (max-width: 992px) {
+    .features-header {
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    .features-gallery {
+      flex-direction: column;
+    }
+  }
+</style>
