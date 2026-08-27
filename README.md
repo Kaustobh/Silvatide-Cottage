@@ -9,6 +9,10 @@ Silvatide Cottage is a stunning, high-performance landing page for a premium lak
 ## Live Demo
 Check out the live site here: [Silvatide Cottage on GitHub Pages](https://Kaustobh.github.io/Silvatide-Cottage/)
 
+## 📚 UX Engineering Case Study
+For a deep dive into the architectural decisions, CSS token systems, and performance trade-offs, check out the comprehensive documentation:
+👉 **[Read the Full Case Study & Component Specs](./CASE_STUDY.md)**
+
 ## Project Structure
 - `src/components/` - Contains the modular UI sections (`MainHero`, `Gallery`, `Features`, `Architecture`, `FooterHero`).
 - `src/layouts/Layout.astro` - The base HTML structure, global fonts, and scroll animation observers.
