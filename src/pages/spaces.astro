@@ -1,0 +1,230 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FooterHero from '../components/FooterHero.astro';
+
+const spaces = [
+  {
+    title: "The Living Room",
+    description: "Floor-to-ceiling glass erases the boundary between the forest and the hearth. Featuring a floating fireplace, bespoke mid-century furnishings, and unobstructed views of the lake.",
+    amenities: ["Wood-burning fireplace", "Curated vinyl library", "Radiant floor heating"],
+    image: "Gemini_Generated_Image_3cpd8v3cpd8v3cpd.png",
+    alignment: "left"
+  },
+  {
+    title: "The Kitchen",
+    description: "A minimalist culinary space designed for slow mornings. Outfitted with matte-black fixtures, integrated hidden appliances, and a monolithic stone island.",
+    amenities: ["Espresso machine", "Local organic coffee", "Chef-grade induction"],
+    image: "Gemini_Generated_Image_sxrulusxrulusxru.png",
+    alignment: "right"
+  },
+  {
+    title: "The Spa Bath",
+    description: "A sanctuary of stone and steam. Soak in the freestanding tub while looking out into the dense pine canopy.",
+    amenities: ["Rainfall shower", "Freestanding soaking tub", "Organic Aesop amenities"],
+    image: "Gemini_Generated_Image_7yfyyl7yfyyl7yfy.png",
+    alignment: "left"
+  },
+  {
+    title: "The Lakeside Deck",
+    description: "Hovering just above the water's edge, the wraparound deck is your private observatory for morning mist and evening constellations.",
+    amenities: ["Sunken fire pit", "Outdoor dining area", "Private dock access"],
+    image: "Gemini_Generated_Image_uea0e5uea0e5uea0.png",
+    alignment: "right"
+  }
+];
+---
+
+<Layout title="Spaces | Silvatide Cottage">
+  <main class="spaces-page">
+    
+    <!-- Minimal Header -->
+    <header class="spaces-header container fade-up">
+      <div class="nav-wrapper">
+        <a href={`${import.meta.env.BASE_URL}/`} class="back-link">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Retreat
+        </a>
+        <a href={`${import.meta.env.BASE_URL}/book`} class="btn btn-primary nav-btn">Book Now</a>
+      </div>
+    </header>
+
+    <!-- Page Intro -->
+    <section class="intro-section container fade-up" style="transition-delay: 0.2s;">
+      <h1 class="page-title">The Architecture of Stillness.</h1>
+      <p class="page-subtitle">Every square foot of Silvatide is intentionally designed to ground you in nature while surrounding you in quiet, uncompromised luxury.</p>
+    </section>
+
+    <!-- Alternating Spaces Grid -->
+    <section class="spaces-gallery container">
+      {spaces.map((space, index) => (
+        <div class={`space-row fade-up ${space.alignment === 'right' ? 'row-reverse' : ''}`} style={`transition-delay: 0.2s;`}>
+          <div class="space-image">
+            <img src={`${import.meta.env.BASE_URL}/images/${space.image}`} alt={space.title} loading="lazy" />
+          </div>
+          <div class="space-content">
+            <h2>{space.title}</h2>
+            <p class="space-desc">{space.description}</p>
+            <ul class="amenities-list">
+              {space.amenities.map(item => (
+                <li>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <!-- Reuse the beautiful Footer from the home page -->
+    <div class="footer-wrapper fade-up">
+      <FooterHero />
+    </div>
+
+  </main>
+
+  <style>
+    .spaces-page {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      padding-top: 48px;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 96px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+    
+    .back-link:hover {
+      color: var(--text-light);
+    }
+
+    .nav-btn {
+      padding: 8px 24px;
+      font-size: 0.9rem;
+    }
+
+    /* Intro */
+    .intro-section {
+      margin-bottom: 120px;
+    }
+
+    .page-title {
+      font-size: clamp(3rem, 6vw, 5rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      max-width: 800px;
+    }
+
+    .page-subtitle {
+      max-width: 400px; /* Strict editorial constraint */
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    /* Alternating Grid */
+    .spaces-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 160px; /* Massive breathing room between sections */
+      margin-bottom: 160px;
+    }
+
+    .space-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .space-row {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 96px;
+      }
+      .space-row.row-reverse {
+        grid-template-columns: 1fr 1.5fr;
+      }
+      .space-row.row-reverse .space-image {
+        order: 2;
+      }
+      .space-row.row-reverse .space-content {
+        order: 1;
+        padding-left: 0;
+        padding-right: 48px;
+      }
+    }
+
+    .space-image {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .space-image img {
+      width: 100%;
+      height: 600px;
+      object-fit: cover;
+      transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .space-row:hover .space-image img {
+      transform: scale(1.03); /* Subtle luxury zoom */
+    }
+
+    .space-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .space-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 24px;
+    }
+
+    .space-desc {
+      max-width: 400px;
+      margin-bottom: 40px;
+      color: var(--text-muted);
+    }
+
+    .amenities-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .amenities-list li {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.95rem;
+      color: var(--text-light);
+      opacity: 0.9;
+    }
+
+    .amenities-list svg {
+      color: var(--accent);
+    }
+
+    .footer-wrapper {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+</Layout>
