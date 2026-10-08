@@ -1,0 +1,310 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FooterHero from '../components/FooterHero.astro';
+---
+
+<Layout title="Availability | Silvatide Cottage">
+  <main class="availability-page">
+    
+    <!-- Minimal Header -->
+    <header class="availability-header container fade-up">
+      <div class="nav-wrapper">
+        <a href={`${import.meta.env.BASE_URL}/`} class="back-link">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Retreat
+        </a>
+        <a href={`${import.meta.env.BASE_URL}/book`} class="btn btn-primary nav-btn">Reserve Dates</a>
+      </div>
+    </header>
+
+    <section class="intro-section container fade-up" style="transition-delay: 0.2s;">
+      <h1 class="page-title">Availability.</h1>
+      <p class="page-subtitle">Silvatide is an intimate, single-property retreat. Our calendar opens three months in advance. Select available dates to begin your reservation.</p>
+      
+      <div class="calendar-legend">
+        <span class="legend-item"><span class="swatch available"></span> Available</span>
+        <span class="legend-item"><span class="swatch booked"></span> Reserved</span>
+      </div>
+    </section>
+
+    <!-- Calendar Wrapper -->
+    <section class="calendar-section container fade-up" style="transition-delay: 0.4s;">
+      <div class="calendars-wrapper" id="calendars-container">
+        <!-- JS will inject 2 months of calendars here -->
+      </div>
+    </section>
+
+    <!-- Proceed to booking -->
+    <section class="action-section container fade-up">
+       <div class="action-card">
+         <h3>Ready to escape?</h3>
+         <p>Secure your dates and finalize your reservation.</p>
+         <a href={`${import.meta.env.BASE_URL}/book`} class="btn btn-primary">Proceed to Booking</a>
+       </div>
+    </section>
+
+    <div class="footer-wrapper fade-up">
+      <FooterHero />
+    </div>
+
+  </main>
+
+  <style>
+    .availability-page {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      padding-top: 48px;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 64px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+    
+    .back-link:hover {
+      color: var(--text-light);
+    }
+
+    .intro-section {
+      margin-bottom: 64px;
+    }
+
+    .page-title {
+      font-size: clamp(3rem, 5vw, 4.5rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .page-subtitle {
+      max-width: 400px;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .calendar-legend {
+      display: flex;
+      gap: 24px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .swatch.available { background-color: var(--text-light); }
+    .swatch.booked { background-color: rgba(255,255,255,0.1); }
+
+    /* Calendar Grid Layout */
+    .calendars-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 64px;
+      margin-bottom: 96px;
+    }
+
+    @media (min-width: 900px) {
+      .calendars-wrapper {
+        grid-template-columns: 1fr 1fr;
+        gap: 96px;
+      }
+    }
+
+    /* Action Card */
+    .action-section {
+      margin-bottom: 120px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .action-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 48px;
+      border-radius: 16px;
+      text-align: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .action-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+
+    .action-card p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .footer-wrapper {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+
+  <!-- Global styles for the JS injected calendar -->
+  <style is:global>
+    .month-container {
+      width: 100%;
+    }
+    .month-title {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .days-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .day-cell.empty {
+      pointer-events: none;
+    }
+    .day-cell.available {
+      color: var(--text-light);
+      cursor: pointer;
+    }
+    .day-cell.available:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    .day-cell.booked {
+      color: rgba(255,255,255,0.2);
+      text-decoration: line-through;
+      pointer-events: none;
+    }
+    .day-cell.past {
+      color: rgba(255,255,255,0.1);
+      pointer-events: none;
+    }
+  </style>
+
+  <script>
+    // Vanilla JS Calendar Generator
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('calendars-container');
+      if (!container) return;
+
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+
+      // Generate current month and next month
+      container.appendChild(createMonthCalendar(currentYear, currentMonth));
+      container.appendChild(createMonthCalendar(currentYear, currentMonth + 1));
+
+      function createMonthCalendar(year: number, month: number) {
+        // Handle year wrap-around
+        if (month > 11) {
+          month = 0;
+          year++;
+        }
+
+        const date = new Date(year, month, 1);
+        const monthName = date.toLocaleString('default', { month: 'long' });
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayIndex = date.getDay(); // 0 = Sunday
+
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'month-container';
+
+        // Title
+        const title = document.createElement('h2');
+        title.className = 'month-title';
+        title.innerText = `${monthName} ${year}`;
+        monthDiv.appendChild(title);
+
+        // Days Header (Sun - Sat)
+        const daysHeader = document.createElement('div');
+        daysHeader.className = 'days-header';
+        const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        dayNames.forEach(name => {
+          const el = document.createElement('div');
+          el.innerText = name;
+          daysHeader.appendChild(el);
+        });
+        monthDiv.appendChild(daysHeader);
+
+        // Days Grid
+        const grid = document.createElement('div');
+        grid.className = 'days-grid';
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDayIndex; i++) {
+          const empty = document.createElement('div');
+          empty.className = 'day-cell empty';
+          grid.appendChild(empty);
+        }
+
+        // Actual days
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dayCell = document.createElement('div');
+          dayCell.innerText = i.toString();
+
+          const cellDate = new Date(year, month, i);
+          
+          if (cellDate < today && cellDate.toDateString() !== today.toDateString()) {
+            dayCell.className = 'day-cell past';
+          } else {
+            // Mocking availability: Randomly block some dates to look realistic
+            // We use a seeded pseudo-random approach based on the date so it doesn't flicker on refresh
+            const seed = year * 10000 + month * 100 + i;
+            const isBooked = (seed % 7 === 0) || (seed % 13 === 0) || (seed % 5 === 0 && seed % 2 !== 0);
+            
+            dayCell.className = isBooked ? 'day-cell booked' : 'day-cell available';
+          }
+
+          grid.appendChild(dayCell);
+        }
+
+        monthDiv.appendChild(grid);
+        return monthDiv;
+      }
+    });
+  </script>
+</Layout>
