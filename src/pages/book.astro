@@ -1,0 +1,400 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Reserve Silvatide Cottage">
+  <main class="booking-page">
+    
+    <!-- Minimal Header -->
+    <header class="booking-header fade-up">
+      <div class="container">
+        <a href={`${import.meta.env.BASE_URL}/`} class="back-link">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Retreat
+        </a>
+      </div>
+    </header>
+
+    <section class="booking-content container">
+      <!-- Left Column: Form -->
+      <div class="booking-form-wrapper fade-up" style="transition-delay: 0.2s;">
+        <h1 class="booking-title">Reserve your stay.</h1>
+        <p class="booking-subtitle">Select your dates to escape into stillness. Minimum stay of 2 nights required.</p>
+
+        <form class="reservation-form" id="bookingForm">
+          
+          <div class="form-section">
+            <h3>1. Select Dates</h3>
+            <div class="date-inputs">
+              <div class="input-group">
+                <label for="checkin">Check-in</label>
+                <!-- Using native date picker for accessibility, styled minimally -->
+                <input type="date" id="checkin" name="checkin" required min={new Date().toISOString().split('T')[0]} />
+              </div>
+              <div class="input-group">
+                <label for="checkout">Check-out</label>
+                <input type="date" id="checkout" name="checkout" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>2. Guests</h3>
+            <div class="guest-counter">
+              <div class="guest-info">
+                <span class="guest-label">Adults</span>
+                <span class="guest-desc">Age 13+</span>
+              </div>
+              <div class="counter-controls">
+                <button type="button" class="counter-btn" id="btn-minus" aria-label="Decrease guests">-</button>
+                <span id="guest-count" class="guest-count">2</span>
+                <button type="button" class="counter-btn" id="btn-plus" aria-label="Increase guests">+</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary submit-btn">Request to Book</button>
+        </form>
+      </div>
+
+      <!-- Right Column: Summary -->
+      <aside class="booking-summary fade-up" style="transition-delay: 0.4s;">
+        <div class="summary-card">
+          <div class="summary-image">
+             <img src={`${import.meta.env.BASE_URL}/images/0df9fb3c-cf88-46f2-acdc-738eac0ff4a0.png`} alt="Silvatide Cottage" />
+          </div>
+          <div class="summary-details">
+            <h2>Silvatide Cottage</h2>
+            <p>Entire cabin • Lakeside View</p>
+
+            <div class="price-breakdown">
+              <div class="price-row">
+                <span id="rate-calc">$450 x <span id="nights-count">0</span> nights</span>
+                <span id="base-price">$0</span>
+              </div>
+              <div class="price-row">
+                <span>Cleaning fee</span>
+                <span>$120</span>
+              </div>
+              <div class="price-row">
+                <span>Service fee</span>
+                <span id="service-fee">$0</span>
+              </div>
+              <hr />
+              <div class="price-row total">
+                <span>Total (USD)</span>
+                <span id="total-price">$0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <style>
+    /* Strictly adhering to the 8px grid and 400px text wrap limits */
+    .booking-page {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      padding-top: 48px; /* 8px * 6 */
+      padding-bottom: 96px; /* 8px * 12 */
+    }
+
+    .booking-header {
+      padding-bottom: 48px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+    
+    .back-link:hover {
+      color: var(--text-light);
+    }
+
+    .booking-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 64px; /* 8px * 8 */
+    }
+
+    @media (min-width: 900px) {
+      .booking-content {
+        grid-template-columns: 1.2fr 1fr;
+        align-items: start;
+      }
+    }
+
+    .booking-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      margin-bottom: 16px;
+    }
+
+    .booking-subtitle {
+      max-width: 400px; /* Editorial constraint */
+      color: var(--text-muted);
+      margin-bottom: 48px;
+    }
+
+    .form-section {
+      margin-bottom: 48px;
+    }
+
+    .form-section h3 {
+      font-size: 1.25rem;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-group label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    input[type="date"] {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-light);
+      padding: 16px;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      color-scheme: dark; /* Ensures calendar popup is dark mode */
+      transition: border-color var(--transition-fast);
+    }
+
+    input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .guest-counter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .guest-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .guest-label {
+      font-weight: 500;
+    }
+
+    .guest-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .counter-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .counter-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: transparent;
+      color: var(--text-light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+
+    .counter-btn:hover {
+      border-color: var(--text-light);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .guest-count {
+      min-width: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      margin-top: 16px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      position: sticky;
+      top: 32px;
+    }
+
+    .summary-image img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .summary-details {
+      padding: 32px;
+    }
+
+    .summary-details h2 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .summary-details > p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .price-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.95rem;
+    }
+
+    .price-breakdown hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 8px 0;
+    }
+
+    .price-row.total {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+  </style>
+
+  <script>
+    // Pure Vanilla JS for State & Calculations
+    document.addEventListener('DOMContentLoaded', () => {
+      const ratePerNight = 450;
+      const cleaningFee = 120;
+      const serviceFeePercentage = 0.10; // 10%
+
+      const checkinInput = document.getElementById('checkin') as HTMLInputElement;
+      const checkoutInput = document.getElementById('checkout') as HTMLInputElement;
+      
+      const nightsCountEl = document.getElementById('nights-count');
+      const basePriceEl = document.getElementById('base-price');
+      const serviceFeeEl = document.getElementById('service-fee');
+      const totalPriceEl = document.getElementById('total-price');
+
+      let guests = 2;
+      const guestCountEl = document.getElementById('guest-count');
+      const btnMinus = document.getElementById('btn-minus');
+      const btnPlus = document.getElementById('btn-plus');
+
+      // Setup initial minimum checkout date
+      checkinInput.addEventListener('change', (e) => {
+        const checkinDate = new Date((e.target as HTMLInputElement).value);
+        // Minimum 2 nights stay constraint
+        const minCheckout = new Date(checkinDate);
+        minCheckout.setDate(minCheckout.getDate() + 2);
+        checkoutInput.min = minCheckout.toISOString().split('T')[0];
+        
+        // Reset checkout if invalid
+        if (checkoutInput.value && new Date(checkoutInput.value) < minCheckout) {
+          checkoutInput.value = '';
+        }
+        calculatePrice();
+      });
+
+      checkoutInput.addEventListener('change', calculatePrice);
+
+      function calculatePrice() {
+        if (!checkinInput.value || !checkoutInput.value) return;
+
+        const start = new Date(checkinInput.value);
+        const end = new Date(checkoutInput.value);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays >= 2) {
+          const basePrice = diffDays * ratePerNight;
+          const serviceFee = basePrice * serviceFeePercentage;
+          const total = basePrice + cleaningFee + serviceFee;
+
+          nightsCountEl!.innerText = diffDays.toString();
+          basePriceEl!.innerText = `$${basePrice}`;
+          serviceFeeEl!.innerText = `$${serviceFee.toFixed(0)}`;
+          totalPriceEl!.innerText = `$${total.toFixed(0)}`;
+        }
+      }
+
+      // Guest Counter Logic
+      btnMinus?.addEventListener('click', () => {
+        if (guests > 1) {
+          guests--;
+          guestCountEl!.innerText = guests.toString();
+        }
+      });
+
+      btnPlus?.addEventListener('click', () => {
+        if (guests < 6) { // Max 6 guests constraint
+          guests++;
+          guestCountEl!.innerText = guests.toString();
+        }
+      });
+      
+      // Form Submit intercept
+      document.getElementById('bookingForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const btn = document.querySelector('.submit-btn') as HTMLButtonElement;
+        btn.innerText = "Processing...";
+        setTimeout(() => {
+          btn.innerText = "Request Sent!";
+          btn.style.backgroundColor = "white";
+        }, 1500);
+      });
+    });
+  </script>
+</Layout>
