@@ -1,0 +1,281 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FooterHero from '../components/FooterHero.astro';
+---
+
+<Layout title="The Cabin | Silvatide Cottage">
+  <main class="cabin-page">
+    
+    <!-- Minimal Header -->
+    <header class="cabin-header container fade-up">
+      <div class="nav-wrapper">
+        <a href={`${import.meta.env.BASE_URL}/`} class="back-link">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Retreat
+        </a>
+        <a href={`${import.meta.env.BASE_URL}/spaces`} class="btn btn-dark nav-btn">View Spaces</a>
+      </div>
+    </header>
+
+    <!-- Page Intro (Storytelling) -->
+    <section class="story-hero container fade-up" style="transition-delay: 0.2s;">
+      <h1 class="page-title">A return to stillness.</h1>
+      <div class="story-content">
+        <p class="story-lead">Silvatide wasn't built to dominate the landscape. It was designed to listen to it.</p>
+        <p class="story-body">
+          Nestled within an old-growth pine forest, right at the water's edge, Silvatide Cottage is an architectural exercise in quiet luxury. We believe that true rest requires the removal of friction—leaving only raw materials, natural light, and space to breathe.
+        </p>
+      </div>
+    </section>
+
+    <!-- Large Atmosphere Image -->
+    <section class="atmosphere-section container fade-up" style="transition-delay: 0.4s;">
+      <img src={`${import.meta.env.BASE_URL}/images/lv55h8lv55h8lv55.png`} alt="Misty lake surrounding Silvatide Cottage" class="full-bleed-image" />
+    </section>
+
+    <!-- Details Grid -->
+    <section class="cabin-details container">
+      
+      <!-- Detail 1 -->
+      <div class="detail-row fade-up">
+        <div class="detail-text">
+          <h2>Materials & Craft</h2>
+          <p>The structure is wrapped in charred cedar, a traditional technique that preserves the wood while allowing it to vanish into the shadows of the forest. Inside, polished concrete floors offer thermal mass, absorbing the sun's heat during the day and radiating it slowly through the cool lakeside nights.</p>
+        </div>
+        <div class="detail-image">
+          <img src={`${import.meta.env.BASE_URL}/images/Gemini_Generated_Image_3cpd8v3cpd8v3cpd.png`} alt="Living room interior" />
+        </div>
+      </div>
+
+      <!-- Detail 2 -->
+      <div class="detail-row row-reverse fade-up">
+        <div class="detail-text">
+          <h2>Rhythm of the Sun</h2>
+          <p>Every window was placed with intention. The primary bedroom faces East to catch the soft morning light over the water, while the sunken living room looks West, capturing the dramatic hues of dusk as they reflect off the lake.</p>
+        </div>
+        <div class="detail-image">
+           <img src={`${import.meta.env.BASE_URL}/images/uea0e5uea0e5uea0.png`} alt="Lakeside deck at dusk" />
+        </div>
+      </div>
+
+      <!-- Detail 3 -->
+      <div class="detail-row fade-up">
+        <div class="detail-text">
+          <h2>Unplugged Intent</h2>
+          <p>While we provide high-speed fiber internet for those who need it, the cabin's true amenity is disconnection. A curated library of vinyl records, a wood-burning stove, and absolute silence replace the noise of the city.</p>
+        </div>
+        <div class="detail-image">
+          <img src={`${import.meta.env.BASE_URL}/images/sxrulusxrulusxru.png`} alt="Minimalist kitchen" />
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Stats / Specs -->
+    <section class="specs-section container fade-up">
+      <div class="specs-grid">
+        <div class="spec-item">
+          <span class="spec-number">1,200</span>
+          <span class="spec-label">Square Feet</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-number">2</span>
+          <span class="spec-label">Bedrooms</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-number">1.5</span>
+          <span class="spec-label">Bathrooms</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-number">20</span>
+          <span class="spec-label">Feet to Water</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-wrapper fade-up">
+      <FooterHero />
+    </div>
+
+  </main>
+
+  <style>
+    .cabin-page {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      padding-top: 48px;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 96px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+    
+    .back-link:hover {
+      color: var(--text-light);
+    }
+
+    .nav-btn {
+      padding: 8px 24px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .nav-btn:hover {
+      border-color: var(--text-light);
+    }
+
+    /* Story Hero */
+    .story-hero {
+      margin-bottom: 64px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    @media (min-width: 900px) {
+      .story-hero {
+        grid-template-columns: 1fr 1fr;
+        align-items: end;
+      }
+    }
+
+    .page-title {
+      font-size: clamp(3rem, 6vw, 5rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .story-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .story-lead {
+      font-size: 1.5rem;
+      color: var(--text-light);
+      max-width: 400px;
+    }
+
+    .story-body {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 400px;
+    }
+
+    /* Large Atmosphere Image */
+    .atmosphere-section {
+      margin-bottom: 160px;
+    }
+
+    .full-bleed-image {
+      width: 100%;
+      height: 70vh;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    /* Cabin Details */
+    .cabin-details {
+      display: flex;
+      flex-direction: column;
+      gap: 160px;
+      margin-bottom: 160px;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .detail-row {
+        grid-template-columns: 1fr 1.5fr;
+        gap: 96px;
+      }
+      .detail-row.row-reverse {
+        grid-template-columns: 1.5fr 1fr;
+      }
+      .detail-row.row-reverse .detail-image {
+        order: -1;
+      }
+    }
+
+    .detail-text h2 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+    }
+
+    .detail-text p {
+      max-width: 400px;
+      color: var(--text-muted);
+    }
+
+    .detail-image img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    /* Specs */
+    .specs-section {
+      margin-bottom: 160px;
+      padding-top: 64px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px;
+    }
+
+    @media (min-width: 768px) {
+      .specs-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .spec-number {
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent);
+      letter-spacing: -0.05em;
+    }
+
+    .spec-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .footer-wrapper {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+</Layout>

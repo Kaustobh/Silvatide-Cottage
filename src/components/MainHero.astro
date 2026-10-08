@@ -18,14 +18,22 @@ const heroBg = `url('${import.meta.env.BASE_URL}/images/0df9fb3c-cf88-46f2-acdc-
 
   <!-- Header -->
   <header class="hero-header fade-up">
-    <div class="nav-pill">
+    <div class="nav-pill" id="navPill">
       <div class="logo">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         <span>Silvatide Cottage</span>
       </div>
-      <button class="menu-btn" aria-label="Menu">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
+
+      <!-- Dropdown Menu -->
+      <div class="nav-dropdown" id="navDropdown">
+        <a href={`${import.meta.env.BASE_URL}/cabin`}>The Cabin</a>
+        <a href={`${import.meta.env.BASE_URL}/spaces`}>Spaces</a>
+        <a href={`${import.meta.env.BASE_URL}/availability`}>Availability</a>
+        <a href={`${import.meta.env.BASE_URL}/book`}>Book Now</a>
+      </div>
     </div>
   </header>
 
@@ -116,6 +124,7 @@ const heroBg = `url('${import.meta.env.BASE_URL}/images/0df9fb3c-cf88-46f2-acdc-
   }
 
   .nav-pill {
+    position: relative;
     display: flex;
     align-items: center;
     background: rgba(255, 255, 255, 0.8);
@@ -124,6 +133,45 @@ const heroBg = `url('${import.meta.env.BASE_URL}/images/0df9fb3c-cf88-46f2-acdc-
     padding: 8px 16px 8px 24px;
     color: var(--text-dark);
     gap: 2rem;
+  }
+
+  .nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 12px;
+    background: rgba(25, 25, 25, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 16px 24px;
+    min-width: 200px;
+    flex-direction: column;
+    gap: 16px;
+    text-align: right;
+  }
+
+  .nav-dropdown.active {
+    display: flex;
+    animation: dropIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-dropdown a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+  }
+
+  .nav-dropdown a:hover {
+    color: var(--accent);
   }
 
   .logo {
@@ -201,3 +249,25 @@ const heroBg = `url('${import.meta.env.BASE_URL}/images/0df9fb3c-cf88-46f2-acdc-
     }
   }
 </style>
+
+<script>
+  // Handle dropdown toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdown = document.getElementById('navDropdown');
+
+    if (menuBtn && dropdown) {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target as Node) && !menuBtn.contains(e.target as Node)) {
+          dropdown.classList.remove('active');
+        }
+      });
+    }
+  });
+</script>
