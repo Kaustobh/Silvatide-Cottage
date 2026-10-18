@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Model Inspection</title>
+  <style>
+    body { margin: 0; background: #1a1c20; overflow: hidden; font-family: sans-serif; }
+    #canvas { width: 100vw; height: 100vh; display: block; }
+    #title { position: absolute; top: 16px; left: 16px; color: white; background: rgba(0,0,0,0.7); padding: 10px 16px; border-radius: 6px; font-size: 14px; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/addons/": "/node_modules/three/examples/jsm/",
+        "meshoptimizer": "/node_modules/meshoptimizer/meshopt_decoder.mjs"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="title">Loading model...</div>
+  <canvas id="canvas"></canvas>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { MeshoptDecoder } from 'meshoptimizer';
+
+    window.isReady = false;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const modelUrl = urlParams.get('model') || '/3d assets/cottage-whole-and-individual rooms.glb';
+    document.getElementById('title').textContent = 'INSPECTING: ' + modelUrl.split('/').pop();
+
+    const canvas = document.getElementById('canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1c20);
+
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.01, 100);
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+
+    // Lighting
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 1.5);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfff0dd, 2.5);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    const backLight = new THREE.DirectionalLight(0x88bbff, 1.2);
+    backLight.position.set(-5, 4, -6);
+    scene.add(backLight);
+
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
+    try {
+      const gltf = await loader.loadAsync(modelUrl);
+      const root = gltf.scene;
+      scene.add(root);
+
+      const box = new THREE.Box3().setFromObject(root);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+
+      root.position.sub(center);
+
+      const maxDim = Math.max(size.x, size.y, size.z);
+      camera.position.set(maxDim * 0.9, maxDim * 0.6, maxDim * 1.2);
+      camera.lookAt(0, 0, 0);
+      controls.target.set(0, 0, 0);
+
+      window.setTopView = () => {
+        camera.position.set(0, maxDim * 1.8, 0.001);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+        renderer.render(scene, camera);
+      };
+
+      window.setSideView = () => {
+        camera.position.set(maxDim * 1.8, 0, 0);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+        renderer.render(scene, camera);
+      };
+
+      renderer.render(scene, camera);
+      window.isReady = true;
+      console.log('Model loaded and framed successfully:', modelUrl);
+    } catch (e) {
+      console.error('Failed to load model:', e);
+      document.getElementById('title').textContent = 'ERROR: ' + e.message;
+    }
+  </script>
+</body>
+</html>
