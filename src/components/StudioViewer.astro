@@ -8,15 +8,15 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 const storyModes = [
   { id: 'overview', key: '1', label: 'Overview', desc: 'Front 3/4 perspective of the complete timber & zinc retreat.' },
   { id: 'dollhouse', key: '2', label: 'Dollhouse Interior', desc: 'High-angle view down into the furnished quarters & slate hearth.' },
-  { id: 'terrace', key: '3', label: 'Terrace & Hearth', desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.' },
+  { id: 'terrace', key: '3', label: 'Lakeside Terrace', desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.' },
   { id: 'elevation', key: '4', label: 'Front Elevation', desc: 'Symmetrical front elevation view matching architectural drawings.' }
 ];
 
 const hotspots = [
-  { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.18, 0.05, 0.15], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
-  { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [0.15, 0.05, 0.18], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
-  { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, 0.05, -0.22], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
-  { id: 'firepit', name: 'Lakeside Firepit', slug: 'firepit-night-close', pos: [0.38, -0.15, -0.18], desc: 'Monolithic concrete firepit perched on the edge of the granite shoreline.' }
+  { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.05, -0.02, 0.05], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
+  { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [-0.05, -0.02, -0.05], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
+  { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, -0.02, -0.10], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
+  { id: 'terrace', name: 'Lakeside Deck', slug: 'deck-morning-gold', pos: [0.22, -0.12, 0.0], desc: 'Expansive lakeside cedar deck connecting indoor living with tranquil water.' }
 ];
 ---
 
@@ -98,8 +98,16 @@ const hotspots = [
           ))}
         </div>
 
-        <!-- Turntable Toggle & Reset -->
+        <!-- Roof Cutaway, Turntable & Reset -->
         <div class="dock-actions-group">
+          <button id="btnToggleRoof" class="dock-action-btn" title="Toggle Roof Cutaway Lift">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="action-label" id="lblRoofAction">ROOF LIFT</span>
+          </button>
+
           <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -501,6 +509,8 @@ const hotspots = [
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: all 0.2s ease;
   }
 
@@ -615,6 +625,8 @@ const hotspots = [
     const btnTouch = document.getElementById('btnTouchInteract');
     const btnAutoRotate = document.getElementById('btnAutoRotate');
     const btnResetCamera = document.getElementById('btnResetCamera');
+    const btnToggleRoof = document.getElementById('btnToggleRoof');
+    const lblRoofAction = document.getElementById('lblRoofAction');
     const dockButtons = document.querySelectorAll<HTMLButtonElement>('.dock-btn');
     const modeTitle = document.getElementById('modeBadgeTitle');
     const modeDesc = document.getElementById('modeBadgeDesc');
@@ -638,14 +650,14 @@ const hotspots = [
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.25;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
 
     // Camera & Constrained Orbit Controls (Zero underbelly viewing!)
     const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
-    camera.position.set(1.15, 0.6, 1.25);
+    camera.position.set(1.15, 0.65, 1.25);
 
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
@@ -656,16 +668,17 @@ const hotspots = [
     controls.maxDistance = 2.8;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
+    controls.target.set(0, -0.05, 0);
 
-    // Nordic Studio Key & Rim Lighting
-    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x1e1814, 1.5);
+    // Nordic Studio Key & Rim Lighting (Bright, Crisp Daylight)
+    const hemiLight = new THREE.HemisphereLight(0xfffdfa, 0x2a3038, 1.8);
     scene.add(hemiLight);
 
-    const keySun = new THREE.DirectionalLight(0xffeedd, 2.6);
+    const keySun = new THREE.DirectionalLight(0xffeedd, 2.8);
     keySun.position.set(5, 7, 4);
     scene.add(keySun);
 
-    const coolRim = new THREE.DirectionalLight(0x78a0d0, 1.6);
+    const coolRim = new THREE.DirectionalLight(0x78a0d0, 1.4);
     coolRim.position.set(-5, 4, -4);
     scene.add(coolRim);
 
@@ -710,13 +723,19 @@ const hotspots = [
     shadow.position.y = -0.298;
     scene.add(shadow);
 
-    // Load Clean Assembled Model (Model B: cottage-assembled.glb)
+    // Load Clean Assembled Model with Full Colors & Textures
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: any = null;
+    let truss: any = null;
+    let roof: any = null;
+    let isRoofLifted = false;
     let isRenderDemandActive = true;
     let renderDemandTimer = 0;
+
+    const trussRestY = -0.052;
+    const roofRestY = -0.108;
 
     function requestRender(durationMs = 1500) {
       isRenderDemandActive = true;
@@ -726,9 +745,74 @@ const hotspots = [
       }, durationMs);
     }
 
+    function setRoofLift(lifted: boolean) {
+      isRoofLifted = lifted;
+      btnToggleRoof?.classList.toggle('active', lifted);
+      if (lblRoofAction) {
+        lblRoofAction.textContent = lifted ? 'ROOF LOWER' : 'ROOF LIFT';
+      }
+
+      if (roof) {
+        gsap.to(roof.position, {
+          y: lifted ? roofRestY + 0.35 : roofRestY,
+          duration: 1.1,
+          ease: 'power2.inOut',
+          onUpdate: () => requestRender(200)
+        });
+        roof.traverse((c: any) => {
+          if (c.isMesh && c.material) {
+            c.material.transparent = true;
+            gsap.to(c.material, {
+              opacity: lifted ? 0.0 : 1.0,
+              duration: 0.85,
+              ease: 'power2.inOut'
+            });
+          }
+        });
+      }
+      if (truss) {
+        gsap.to(truss.position, {
+          y: lifted ? trussRestY + 0.22 : trussRestY,
+          duration: 1.1,
+          ease: 'power2.inOut',
+          onUpdate: () => requestRender(200)
+        });
+        truss.traverse((c: any) => {
+          if (c.isMesh && c.material) {
+            c.material.transparent = true;
+            gsap.to(c.material, {
+              opacity: lifted ? 0.0 : 1.0,
+              duration: 0.85,
+              ease: 'power2.inOut'
+            });
+          }
+        });
+      }
+    }
+
     try {
       const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
       model = gltf.scene;
+
+      truss = model.getObjectByName('cottage_truss');
+      roof = model.getObjectByName('cottage_roof');
+
+      if (truss) {
+        truss.position.y += trussRestY;
+        truss.traverse((c: any) => {
+          if (c.isMesh && c.material) {
+            c.material = c.material.clone();
+          }
+        });
+      }
+      if (roof) {
+        roof.position.y += roofRestY;
+        roof.traverse((c: any) => {
+          if (c.isMesh && c.material) {
+            c.material = c.material.clone();
+          }
+        });
+      }
 
       // Center model
       const box = new THREE.Box3().setFromObject(model);
@@ -740,17 +824,24 @@ const hotspots = [
       model.scale.setScalar(targetScale);
       model.position.sub(center.multiplyScalar(targetScale));
       // Ground exactly on top of pedestal
-      model.position.y += (size.y * targetScale) / 2 - 0.18;
+      model.position.y += (size.y * targetScale) / 2 - 0.28;
 
-      // Luxury Architectural Museum Model Materials (Yakisugi + Zinc + Oiled Cedar)
+      // Preserve authentic full-color PBR materials (Blonde Pine, Zinc, Glass, Oiled Cedar)
       model.traverse((child: any) => {
-        if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x181a1f,   // Deep charred Yakisugi timber
-            roughness: 0.58,    // Satin finish
-            metalness: 0.22,    // Subtle crisp sheen
-            side: THREE.DoubleSide
-          });
+        if (child.isMesh && child.material) {
+          child.material.side = THREE.DoubleSide;
+          child.material.toneMapped = true;
+          // Ensure base color is pure white so diffuse texture maps display with 100% color accuracy
+          if (child.material.color) {
+            child.material.color.setHex(0xffffff);
+          }
+          if (child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace;
+            child.material.map.needsUpdate = true;
+          }
+          child.material.roughness = 0.65;
+          child.material.metalness = 0.12;
+          child.material.needsUpdate = true;
         }
       });
 
@@ -762,30 +853,34 @@ const hotspots = [
     }
 
     // Storytelling Camera Presets
-    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string } } = {
+    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string; liftRoof?: boolean } } = {
       overview: {
-        pos: [1.15, 0.6, 1.25],
+        pos: [1.15, 0.65, 1.25],
         target: [0, -0.05, 0],
         title: 'Overview',
-        desc: 'Front 3/4 perspective of the complete timber & zinc retreat.'
+        desc: 'Front 3/4 perspective of the complete timber & zinc retreat.',
+        liftRoof: false
       },
       dollhouse: {
-        pos: [0.0, 1.35, 0.75],
-        target: [0, -0.05, 0],
+        pos: [-0.10, 1.45, 0.55],
+        target: [-0.05, -0.1, 0.0],
         title: 'Dollhouse Interior',
-        desc: 'High-angle view down into the furnished quarters & slate hearth.'
+        desc: 'Elevated view down into the furnished quarters & slate hearth.',
+        liftRoof: true
       },
       terrace: {
-        pos: [0.75, 0.15, -0.65],
-        target: [0.15, -0.1, 0.0],
-        title: 'Terrace & Hearth',
-        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.'
+        pos: [1.15, 0.28, -0.25],
+        target: [0.25, -0.1, 0.0],
+        title: 'Lakeside Terrace',
+        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.',
+        liftRoof: false
       },
       elevation: {
-        pos: [0.0, 0.15, 1.55],
-        target: [0, 0, 0],
+        pos: [0.0, 0.2, 1.6],
+        target: [0, -0.05, 0],
         title: 'Front Elevation',
-        desc: 'Symmetrical front elevation view matching architectural drawings.'
+        desc: 'Symmetrical front elevation view matching architectural drawings.',
+        liftRoof: false
       }
     };
 
@@ -827,8 +922,14 @@ const hotspots = [
         if (modeTitle) modeTitle.textContent = p.title;
         if (modeDesc) modeDesc.textContent = p.desc;
 
+        setRoofLift(!!p.liftRoof);
         tweenCamera(p.pos, p.target);
       });
+    });
+
+    // Roof Lift Toggle Button
+    btnToggleRoof?.addEventListener('click', () => {
+      setRoofLift(!isRoofLifted);
     });
 
     // Auto-Rotate Turntable Toggle
@@ -844,6 +945,7 @@ const hotspots = [
       const p = presets.overview;
       if (modeTitle) modeTitle.textContent = p.title;
       if (modeDesc) modeDesc.textContent = p.desc;
+      setRoofLift(false);
       tweenCamera(p.pos, p.target);
       controls.autoRotate = true;
       btnAutoRotate?.classList.add('active');
@@ -868,10 +970,10 @@ const hotspots = [
       pin.addEventListener('click', () => {
         const id = pin.dataset.id;
         const hotspot = [
-          { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.18, 0.05, 0.15], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
-          { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [0.15, 0.05, 0.18], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
-          { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, 0.05, -0.22], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
-          { id: 'firepit', name: 'Lakeside Firepit', slug: 'firepit-night-close', pos: [0.38, -0.15, -0.18], desc: 'Monolithic concrete firepit perched on the edge of the granite shoreline.' }
+          { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.05, -0.02, 0.05], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
+          { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [-0.05, -0.02, -0.05], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
+          { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, -0.02, -0.10], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
+          { id: 'terrace', name: 'Lakeside Deck', slug: 'deck-morning-gold', pos: [0.22, -0.12, 0.0], desc: 'Expansive lakeside cedar deck connecting indoor living with tranquil water.' }
         ].find((h) => h.id === id);
 
         if (!hotspot || !hotspotModal) return;
@@ -903,10 +1005,10 @@ const hotspots = [
     // Project Hotspot Pins
     const tempVec = new THREE.Vector3();
     const hotspotCoords: { [key: string]: [number, number, number] } = {
-      living: [-0.18, 0.05, 0.15],
-      kitchen: [0.15, 0.05, 0.18],
-      bedroom: [-0.15, 0.05, -0.22],
-      firepit: [0.38, -0.15, -0.18]
+      living: [-0.05, -0.02, 0.05],
+      kitchen: [-0.05, -0.02, -0.05],
+      bedroom: [-0.15, -0.02, -0.10],
+      terrace: [0.22, -0.12, 0.0]
     };
 
     function updateHotspots() {
