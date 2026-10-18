@@ -1,0 +1,766 @@
+{
+  "lake-dusk-dock": {
+    "slug": "lake-dusk-dock",
+    "alt": "Silvatide Cottage at dusk with dock, canoe and still water reflections",
+    "width": 1433,
+    "height": 1024,
+    "aspectRatio": "1.399",
+    "dominant": {
+      "r": 88,
+      "g": 88,
+      "b": 80,
+      "hex": "#585850"
+    },
+    "placeholder": "data:image/webp;base64,UklGRsAAAABXRUJQVlA4ILQAAACQBQCdASogABcAPzmGuFOvKSUisAgB4CcJQBmDwAoSG0ujZMz5PPSMkKn8phxtY/h1VjqyAAD+v3gaGnXY5/0TZZSrDz/nv20kOzHnitEAX6/nJ2PvEqqEWgHgZ1YjGf5yx2QV+6gyRqAzUPfXoQz2asIVUAdDyvUXq74/2Cb4ejMxbHgADULvK3xHt5en50jLO3BDaEmBtIUEryt8TmfYvzxeCjuSQLoclsGmrcJEHX6lAAA=",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "lake-dusk-dock-640.avif",
+          "sizeKB": 71
+        },
+        "960": {
+          "file": "lake-dusk-dock-960.avif",
+          "sizeKB": 129
+        },
+        "1440": {
+          "file": "lake-dusk-dock-1440.avif",
+          "sizeKB": 224
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "lake-dusk-dock-640.webp",
+          "sizeKB": 68
+        },
+        "960": {
+          "file": "lake-dusk-dock-960.webp",
+          "sizeKB": 120
+        },
+        "1440": {
+          "file": "lake-dusk-dock-1440.webp",
+          "sizeKB": 207
+        }
+      }
+    }
+  },
+  "firepit-night-close": {
+    "slug": "firepit-night-close",
+    "alt": "Lakeside concrete firepit with glowing flame under twilight and starry night",
+    "width": 2675,
+    "height": 1459,
+    "aspectRatio": "1.833",
+    "dominant": {
+      "r": 78,
+      "g": 80,
+      "b": 84,
+      "hex": "#4e5054"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAAAQBACdASogABEAPzmQv1evKaajqAqp4CcJZAAAgqB/BW1gx9gzmABJAAD+eKLgkspphE1KugjsELjF8zghxHru2uG3t9nX0Jl//J4Eieu2oO9CBZs1iz3mw44ulk0S+JsUmmaXBNRYnELuNURl+8M9jP6Mn9sz14p0qmHrxTSPHDX2gAsKrRAA",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "firepit-night-close-640.avif",
+          "sizeKB": 51
+        },
+        "960": {
+          "file": "firepit-night-close-960.avif",
+          "sizeKB": 103
+        },
+        "1440": {
+          "file": "firepit-night-close-1440.avif",
+          "sizeKB": 212
+        },
+        "2200": {
+          "file": "firepit-night-close-2200.avif",
+          "sizeKB": 452
+        },
+        "2675": {
+          "file": "firepit-night-close-2675.avif",
+          "sizeKB": 666
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "firepit-night-close-640.webp",
+          "sizeKB": 46
+        },
+        "960": {
+          "file": "firepit-night-close-960.webp",
+          "sizeKB": 94
+        },
+        "1440": {
+          "file": "firepit-night-close-1440.webp",
+          "sizeKB": 192
+        },
+        "2200": {
+          "file": "firepit-night-close-2200.webp",
+          "sizeKB": 397
+        },
+        "2675": {
+          "file": "firepit-night-close-2675.webp",
+          "sizeKB": 586
+        }
+      }
+    }
+  },
+  "dawn-mist-lake": {
+    "slug": "dawn-mist-lake",
+    "alt": "Misty dawn over the tranquil Finnish lake with Silvatide Cottage in the distance",
+    "width": 2675,
+    "height": 1459,
+    "aspectRatio": "1.833",
+    "dominant": {
+      "r": 124,
+      "g": 115,
+      "b": 108,
+      "hex": "#7c736c"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAACQBACdASogABEAPzmOwFcvKacjqAqp4CcJZQCw7DLjxvy3eSD7fNt3mKwRCgAA/mp5J/6g3idzF/SQtA2fnN2lDTLTPMszclz5ISWDvWrel8x7KaYuPtaUTLnbHfjrvV92xL094W7Zwm55MvrsdtnsSmom1helbq20dPRCYEQ5bChlSCsDEgAA",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "dawn-mist-lake-640.avif",
+          "sizeKB": 46
+        },
+        "960": {
+          "file": "dawn-mist-lake-960.avif",
+          "sizeKB": 95
+        },
+        "1440": {
+          "file": "dawn-mist-lake-1440.avif",
+          "sizeKB": 198
+        },
+        "2200": {
+          "file": "dawn-mist-lake-2200.avif",
+          "sizeKB": 427
+        },
+        "2675": {
+          "file": "dawn-mist-lake-2675.avif",
+          "sizeKB": 626
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "dawn-mist-lake-640.webp",
+          "sizeKB": 42
+        },
+        "960": {
+          "file": "dawn-mist-lake-960.webp",
+          "sizeKB": 87
+        },
+        "1440": {
+          "file": "dawn-mist-lake-1440.webp",
+          "sizeKB": 180
+        },
+        "2200": {
+          "file": "dawn-mist-lake-2200.webp",
+          "sizeKB": 389
+        },
+        "2675": {
+          "file": "dawn-mist-lake-2675.webp",
+          "sizeKB": 570
+        }
+      }
+    }
+  },
+  "forest-entrance-night": {
+    "slug": "forest-entrance-night",
+    "alt": "Cottage entrance path and pine forest illuminated by warm exterior sconces at night",
+    "width": 2675,
+    "height": 1459,
+    "aspectRatio": "1.833",
+    "dominant": {
+      "r": 52,
+      "g": 53,
+      "b": 55,
+      "hex": "#343537"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAABQBQCdASogABEAPzmGtVSvKKSjMBgMAeAnCWIAnRtY4oAA8Qd8yuWTYBr0ZZXdb9ReiQAA/uv+PwRIGKu8oRX5o4Js5FVuAh/tRvOgn0stgVG3IL9o2H83v61EA9xwoShOiWIvZ4bNkKVfcXkmitS+cNLylsMoSWRNQK5GQ39cjc5HWGuhJIUW4IdSAS0AAAA=",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "forest-entrance-night-640.avif",
+          "sizeKB": 50
+        },
+        "960": {
+          "file": "forest-entrance-night-960.avif",
+          "sizeKB": 107
+        },
+        "1440": {
+          "file": "forest-entrance-night-1440.avif",
+          "sizeKB": 240
+        },
+        "2200": {
+          "file": "forest-entrance-night-2200.avif",
+          "sizeKB": 530
+        },
+        "2675": {
+          "file": "forest-entrance-night-2675.avif",
+          "sizeKB": 777
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "forest-entrance-night-640.webp",
+          "sizeKB": 44
+        },
+        "960": {
+          "file": "forest-entrance-night-960.webp",
+          "sizeKB": 92
+        },
+        "1440": {
+          "file": "forest-entrance-night-1440.webp",
+          "sizeKB": 209
+        },
+        "2200": {
+          "file": "forest-entrance-night-2200.webp",
+          "sizeKB": 471
+        },
+        "2675": {
+          "file": "forest-entrance-night-2675.webp",
+          "sizeKB": 687
+        }
+      }
+    }
+  },
+  "forest-entrance-day": {
+    "slug": "forest-entrance-day",
+    "alt": "Stone walkway leading through Nordic pine forest to the cottage entrance in crisp daylight",
+    "width": 2675,
+    "height": 1459,
+    "aspectRatio": "1.833",
+    "dominant": {
+      "r": 100,
+      "g": 95,
+      "b": 84,
+      "hex": "#645f54"
+    },
+    "placeholder": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAACQBACdASogABEAPzmKu1OvKiYisAgB4CcJYwDHMBjNxKolgZIO1GATDuUK9gAA/p6xrI7sixkcNpZV1YBZxcimyHEeNw3FeEfHUQ8hvCxhr73cNxykUBPd+y03oDqOOanlDuZqzVXBMOSSB9EdxOqddg5PLkXsW91/moy8gAA=",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "forest-entrance-day-640.avif",
+          "sizeKB": 69
+        },
+        "960": {
+          "file": "forest-entrance-day-960.avif",
+          "sizeKB": 152
+        },
+        "1440": {
+          "file": "forest-entrance-day-1440.avif",
+          "sizeKB": 353
+        },
+        "2200": {
+          "file": "forest-entrance-day-2200.avif",
+          "sizeKB": 790
+        },
+        "2675": {
+          "file": "forest-entrance-day-2675.avif",
+          "sizeKB": 1162
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "forest-entrance-day-640.webp",
+          "sizeKB": 65
+        },
+        "960": {
+          "file": "forest-entrance-day-960.webp",
+          "sizeKB": 147
+        },
+        "1440": {
+          "file": "forest-entrance-day-1440.webp",
+          "sizeKB": 337
+        },
+        "2200": {
+          "file": "forest-entrance-day-2200.webp",
+          "sizeKB": 787
+        },
+        "2675": {
+          "file": "forest-entrance-day-2675.webp",
+          "sizeKB": 1165
+        }
+      }
+    }
+  },
+  "fog-shore-corner": {
+    "slug": "fog-shore-corner",
+    "alt": "Misty lakeside shoreline with water reeds and the gabled timber facade of the retreat",
+    "width": 2675,
+    "height": 1459,
+    "aspectRatio": "1.833",
+    "dominant": {
+      "r": 125,
+      "g": 127,
+      "b": 129,
+      "hex": "#7d7f81"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACQBACdASogABEAPzmMvFYvKSYjsBgIAeAnCWcAABFePxRrrsVDpl+B4clx44AA/qNJAfZ8h4BM4VjaAd83NZ1bTa7klR3ZdQ1sX1ZIHD3NeAWoq4cPw9l62q4NfI3iFYvcfGK72wS9pGfGbGd74NcYvox0StPURxiThk5uapUKueH4pyAAAA==",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "fog-shore-corner-640.avif",
+          "sizeKB": 48
+        },
+        "960": {
+          "file": "fog-shore-corner-960.avif",
+          "sizeKB": 103
+        },
+        "1440": {
+          "file": "fog-shore-corner-1440.avif",
+          "sizeKB": 234
+        },
+        "2200": {
+          "file": "fog-shore-corner-2200.avif",
+          "sizeKB": 531
+        },
+        "2675": {
+          "file": "fog-shore-corner-2675.avif",
+          "sizeKB": 786
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "fog-shore-corner-640.webp",
+          "sizeKB": 45
+        },
+        "960": {
+          "file": "fog-shore-corner-960.webp",
+          "sizeKB": 95
+        },
+        "1440": {
+          "file": "fog-shore-corner-1440.webp",
+          "sizeKB": 216
+        },
+        "2200": {
+          "file": "fog-shore-corner-2200.webp",
+          "sizeKB": 508
+        },
+        "2675": {
+          "file": "fog-shore-corner-2675.webp",
+          "sizeKB": 757
+        }
+      }
+    }
+  },
+  "front-elevation-day": {
+    "slug": "front-elevation-day",
+    "alt": "Architectural front elevation of Silvatide Cottage showing charred wood cladding, clerestory dormer and chimney",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 144,
+      "g": 139,
+      "b": 131,
+      "hex": "#908b83"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAAAwBQCdASogABUAPzmQvFWvKiYjMBgIAeAnCWUAwNwQ8FjoCDgrshGzobleZVTFUqLLQAD+tZz7K8+gk0n2NE2gFPkozgqfD+AC0MLo0lSv4qqNtRqT5FipQk1maqPBVZ4Ug5iOOFbsf34VF96fq8zPf1zqJ4PmFsGxlpLHJz9CXGXFZS0ybklrxwAAAA==",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "front-elevation-day-640.avif",
+          "sizeKB": 60
+        },
+        "960": {
+          "file": "front-elevation-day-960.avif",
+          "sizeKB": 126
+        },
+        "1440": {
+          "file": "front-elevation-day-1440.avif",
+          "sizeKB": 277
+        },
+        "2200": {
+          "file": "front-elevation-day-2200.avif",
+          "sizeKB": 610
+        },
+        "2401": {
+          "file": "front-elevation-day-2401.avif",
+          "sizeKB": 751
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "front-elevation-day-640.webp",
+          "sizeKB": 56
+        },
+        "960": {
+          "file": "front-elevation-day-960.webp",
+          "sizeKB": 118
+        },
+        "1440": {
+          "file": "front-elevation-day-1440.webp",
+          "sizeKB": 259
+        },
+        "2200": {
+          "file": "front-elevation-day-2200.webp",
+          "sizeKB": 586
+        },
+        "2401": {
+          "file": "front-elevation-day-2401.webp",
+          "sizeKB": 719
+        }
+      }
+    }
+  },
+  "bedroom": {
+    "slug": "bedroom",
+    "alt": "Minimalist pine wood-panelled bedroom with floor-to-ceiling forest view and warm sconce",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 165,
+      "g": 152,
+      "b": 142,
+      "hex": "#a5988e"
+    },
+    "placeholder": "data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAAAwBQCdASogABUAPzmEt1OvKKUisAgB4CcJYwDKACLUJ+20d3ETaDwudxhV6phoe/cccAD+50APYTGVBaBZHHV+niALlDcXqt0Dor5DdOhpqWqaGmbsWJNFW8aHH1+GMYVPklk3//40OTPNRyHLfkpQuv+aKne2saJVURZbJzhp+Xhyjn3iuInoq6nOr2Bwe0XSsIXZdqtToA2/V+FpVjxlAAA=",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "bedroom-640.avif",
+          "sizeKB": 33
+        },
+        "960": {
+          "file": "bedroom-960.avif",
+          "sizeKB": 64
+        },
+        "1440": {
+          "file": "bedroom-1440.avif",
+          "sizeKB": 130
+        },
+        "2200": {
+          "file": "bedroom-2200.avif",
+          "sizeKB": 280
+        },
+        "2401": {
+          "file": "bedroom-2401.avif",
+          "sizeKB": 339
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "bedroom-640.webp",
+          "sizeKB": 28
+        },
+        "960": {
+          "file": "bedroom-960.webp",
+          "sizeKB": 54
+        },
+        "1440": {
+          "file": "bedroom-1440.webp",
+          "sizeKB": 110
+        },
+        "2200": {
+          "file": "bedroom-2200.webp",
+          "sizeKB": 229
+        },
+        "2401": {
+          "file": "bedroom-2401.webp",
+          "sizeKB": 276
+        }
+      }
+    }
+  },
+  "bathroom": {
+    "slug": "bathroom",
+    "alt": "Nordic stone and timber bathroom with illuminated circular mirror and glass walk-in shower",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 160,
+      "g": 143,
+      "b": 128,
+      "hex": "#a08f80"
+    },
+    "placeholder": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAAAwBQCdASogABUAPzmUwVmvKicjqAgB4CcJQBOmYAgnmmB7FgByKrPVAaQSApLbKWV/wADOIusnU0qCdKd9sTv3tXcS9xFrdEr+8fyl+P78QfqIbzNabWNe76BgmnG3qrJ28cQvL2Wd1fmDiy9hZ0bDWeNxCHkIbdVZrxDC6vbjgQ00eXzXjSTwIavNH7CGCIO8wJYT2gZyjxvCpo0YChYA",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "bathroom-640.avif",
+          "sizeKB": 30
+        },
+        "960": {
+          "file": "bathroom-960.avif",
+          "sizeKB": 59
+        },
+        "1440": {
+          "file": "bathroom-1440.avif",
+          "sizeKB": 122
+        },
+        "2200": {
+          "file": "bathroom-2200.avif",
+          "sizeKB": 279
+        },
+        "2401": {
+          "file": "bathroom-2401.avif",
+          "sizeKB": 341
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "bathroom-640.webp",
+          "sizeKB": 26
+        },
+        "960": {
+          "file": "bathroom-960.webp",
+          "sizeKB": 50
+        },
+        "1440": {
+          "file": "bathroom-1440.webp",
+          "sizeKB": 100
+        },
+        "2200": {
+          "file": "bathroom-2200.webp",
+          "sizeKB": 216
+        },
+        "2401": {
+          "file": "bathroom-2401.webp",
+          "sizeKB": 266
+        }
+      }
+    }
+  },
+  "deck-morning-gold": {
+    "slug": "deck-morning-gold",
+    "alt": "Cantilevered cedar deck with morning coffee and glass balustrade looking over golden sunrise mist",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 157,
+      "g": 146,
+      "b": 135,
+      "hex": "#9d9287"
+    },
+    "placeholder": "data:image/webp;base64,UklGRsIAAABXRUJQVlA4ILYAAACwBQCdASogABUAPzmQvFgvKaWjqAqp4CcJYwDA3y6onvYHYmZS/jg2V0kwOHeQ4oAQuA4TDgAA4m2itbFB5dTz5s19X4MYAxD0cADK3tqRjG7CzYcLipfzmA2P5NMJfz1Zov7gJ4teOZjhNLUvVH1bKsq8NIe+9/JyWZf0s8j05v5A4+kJ8rM3WQ71wo44KEHLZ93O9aPWW4s+tflJvnK5SgPOK5NYNEl2M7uD2lglWMKEuYAAAA==",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "deck-morning-gold-640.avif",
+          "sizeKB": 48
+        },
+        "960": {
+          "file": "deck-morning-gold-960.avif",
+          "sizeKB": 94
+        },
+        "1440": {
+          "file": "deck-morning-gold-1440.avif",
+          "sizeKB": 197
+        },
+        "2200": {
+          "file": "deck-morning-gold-2200.avif",
+          "sizeKB": 426
+        },
+        "2401": {
+          "file": "deck-morning-gold-2401.avif",
+          "sizeKB": 517
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "deck-morning-gold-640.webp",
+          "sizeKB": 45
+        },
+        "960": {
+          "file": "deck-morning-gold-960.webp",
+          "sizeKB": 87
+        },
+        "1440": {
+          "file": "deck-morning-gold-1440.webp",
+          "sizeKB": 178
+        },
+        "2200": {
+          "file": "deck-morning-gold-2200.webp",
+          "sizeKB": 378
+        },
+        "2401": {
+          "file": "deck-morning-gold-2401.webp",
+          "sizeKB": 460
+        }
+      }
+    }
+  },
+  "deck-night-firepit": {
+    "slug": "deck-night-firepit",
+    "alt": "Night on the timber deck with roaring firepit, glass balustrade and starlit sky",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 66,
+      "g": 55,
+      "b": 54,
+      "hex": "#423736"
+    },
+    "placeholder": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAADwBACdASogABUAPzmUwlmvKicjqAgB4CcJbACsAA9awn3waBo6Ny1sJ9v1UfI3RgAA/s2DAsf7z6jmQoFcQKwZPQ7zFEJ9lIskRlNQaIff76FUCzLGenKBXwkOhlWvu89Qyl4CIpcZ4xD95YXHCTjyln6UD2hcu/I3LhjwxSdTG2YJ1kRXq3AVor2AAA==",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "deck-night-firepit-640.avif",
+          "sizeKB": 51
+        },
+        "960": {
+          "file": "deck-night-firepit-960.avif",
+          "sizeKB": 102
+        },
+        "1440": {
+          "file": "deck-night-firepit-1440.avif",
+          "sizeKB": 212
+        },
+        "2200": {
+          "file": "deck-night-firepit-2200.avif",
+          "sizeKB": 464
+        },
+        "2401": {
+          "file": "deck-night-firepit-2401.avif",
+          "sizeKB": 564
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "deck-night-firepit-640.webp",
+          "sizeKB": 45
+        },
+        "960": {
+          "file": "deck-night-firepit-960.webp",
+          "sizeKB": 89
+        },
+        "1440": {
+          "file": "deck-night-firepit-1440.webp",
+          "sizeKB": 180
+        },
+        "2200": {
+          "file": "deck-night-firepit-2200.webp",
+          "sizeKB": 379
+        },
+        "2401": {
+          "file": "deck-night-firepit-2401.webp",
+          "sizeKB": 464
+        }
+      }
+    }
+  },
+  "kitchen": {
+    "slug": "kitchen",
+    "alt": "Minimalist Scandinavian kitchen featuring oak cabinetry, solid island and panoramic water window",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 164,
+      "g": 148,
+      "b": 135,
+      "hex": "#a49487"
+    },
+    "placeholder": "data:image/webp;base64,UklGRrAAAABXRUJQVlA4IKQAAADwBACdASogABUAPzmOwFcvKacjqAqp4CcJYwDKIIjER/hquvPuJd4rW9qUmkd7ksAA/u/X0EPPi5wIPr/mMfeBxk3F75ZUDPl3dkNPKxB3S1U+o87z+LLt8ilfOn+GSkWNVCmtokSMU1hsvWX8th0W4gHFgURUShuuno+In0EG1LwnOo680Z1aCy7brUkz7FCLzyoTrmbHM/qNFDrdWRO1AAAAAA==",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "kitchen-640.avif",
+          "sizeKB": 38
+        },
+        "960": {
+          "file": "kitchen-960.avif",
+          "sizeKB": 73
+        },
+        "1440": {
+          "file": "kitchen-1440.avif",
+          "sizeKB": 148
+        },
+        "2200": {
+          "file": "kitchen-2200.avif",
+          "sizeKB": 328
+        },
+        "2401": {
+          "file": "kitchen-2401.avif",
+          "sizeKB": 396
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "kitchen-640.webp",
+          "sizeKB": 33
+        },
+        "960": {
+          "file": "kitchen-960.webp",
+          "sizeKB": 63
+        },
+        "1440": {
+          "file": "kitchen-1440.webp",
+          "sizeKB": 127
+        },
+        "2200": {
+          "file": "kitchen-2200.webp",
+          "sizeKB": 269
+        },
+        "2401": {
+          "file": "kitchen-2401.webp",
+          "sizeKB": 326
+        }
+      }
+    }
+  },
+  "living-fireplace": {
+    "slug": "living-fireplace",
+    "alt": "Living pavilion with built-in stone fireplace, linen sofa and uninterrupted lake views",
+    "width": 2401,
+    "height": 1611,
+    "aspectRatio": "1.490",
+    "dominant": {
+      "r": 154,
+      "g": 141,
+      "b": 128,
+      "hex": "#9a8d80"
+    },
+    "placeholder": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAADQBACdASogABUAPzmIulQvKSWjMAgB4CcJQBgbglJCL97N8UXmH7zXR0wTVjxzfADAbeWOnGnR8kE0hayR9iGFsZFweNtvBFS1TKYTl+vYIN/7GygRuQDUEy/Yh+OBpiwIo8wyPkJQ1D7Zbea+ijn3d6XXXw/ZNFpMMUXmfXojJhiVJbyCBPXiDLShTIajGtyzqUNdwGDYv5gsSXfJAAAA",
+    "formats": {
+      "avif": {
+        "640": {
+          "file": "living-fireplace-640.avif",
+          "sizeKB": 44
+        },
+        "960": {
+          "file": "living-fireplace-960.avif",
+          "sizeKB": 91
+        },
+        "1440": {
+          "file": "living-fireplace-1440.avif",
+          "sizeKB": 194
+        },
+        "2200": {
+          "file": "living-fireplace-2200.avif",
+          "sizeKB": 437
+        },
+        "2401": {
+          "file": "living-fireplace-2401.avif",
+          "sizeKB": 535
+        }
+      },
+      "webp": {
+        "640": {
+          "file": "living-fireplace-640.webp",
+          "sizeKB": 40
+        },
+        "960": {
+          "file": "living-fireplace-960.webp",
+          "sizeKB": 83
+        },
+        "1440": {
+          "file": "living-fireplace-1440.webp",
+          "sizeKB": 179
+        },
+        "2200": {
+          "file": "living-fireplace-2200.webp",
+          "sizeKB": 393
+        },
+        "2401": {
+          "file": "living-fireplace-2401.webp",
+          "sizeKB": 483
+        }
+      }
+    }
+  }
+}
