@@ -1,0 +1,233 @@
+---
+const chapters = [
+  { id: 'chapter-drawing', num: 'I', label: 'Drawing' },
+  { id: 'chapter-studio', num: 'II', label: '3D Studio' },
+  { id: 'chapter-interlude', num: '·', label: 'Interlude' },
+  { id: 'chapter-inside', num: 'III', label: 'Inside' },
+  { id: 'chapter-dawntodusk', num: 'IV', label: 'Dawn to Dusk' }
+];
+---
+
+<!-- Hairline Scroll Progress Bar -->
+<div class="scroll-progress-bar" id="scrollProgressBar" aria-hidden="true">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<!-- Desktop Chapter Navigation Rail -->
+<nav class="chapter-rail" id="chapterRail" aria-label="Chapter Navigation">
+  <div class="rail-track">
+    {chapters.map((ch) => (
+      <button
+        class="rail-dot"
+        data-target={ch.id}
+        aria-label={`Jump to Chapter ${ch.label}`}
+      >
+        <span class="dot-indicator"></span>
+        <span class="dot-tooltip">
+          <span class="tooltip-num">{ch.num}</span>
+          <span class="tooltip-label">{ch.label}</span>
+        </span>
+      </button>
+    ))}
+  </div>
+</nav>
+
+<style>
+  /* ============================================================
+     TOP HAIRLINE SCROLL PROGRESS
+     ============================================================ */
+  .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    z-index: 10000;
+    pointer-events: none;
+  }
+
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent, #e5a970);
+    box-shadow: 0 0 10px rgba(229, 169, 112, 0.7);
+    transition: width 0.1s linear;
+  }
+
+  /* ============================================================
+     RIGHT-EDGE CHAPTER RAIL
+     ============================================================ */
+  .chapter-rail {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rail-track {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1rem 0.6rem;
+    background: rgba(16, 18, 22, 0.5);
+    backdrop-filter: blur(12px);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .rail-dot {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+  }
+
+  .dot-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .rail-dot:hover .dot-indicator {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.3);
+  }
+
+  .rail-dot.active .dot-indicator {
+    background: var(--accent, #e5a970);
+    transform: scale(1.5);
+    box-shadow: 0 0 10px rgba(229, 169, 112, 0.8);
+  }
+
+  /* Tooltip on left of dot */
+  .dot-tooltip {
+    position: absolute;
+    right: calc(100% + 14px);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    background: rgba(12, 14, 18, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .tooltip-num {
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--accent, #e5a970);
+  }
+
+  .tooltip-label {
+    letter-spacing: 0.05em;
+  }
+
+  .rail-dot:hover .dot-tooltip,
+  .rail-dot:focus-visible .dot-tooltip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 992px), (pointer: coarse) {
+    .chapter-rail {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  function initChapterRail() {
+    const progressFill = document.getElementById('progressFill');
+    const dots = Array.from(document.querySelectorAll<HTMLElement>('.rail-dot'));
+
+    // 1. Update Scroll Progress Bar
+    const updateProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      if (progressFill) {
+        progressFill.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+      }
+    };
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // 2. Active Dot Highlighting via IntersectionObserver
+    const targets = dots.map((dot) => {
+      const targetId = dot.dataset.target;
+      return targetId ? document.getElementById(targetId) : null;
+    }).filter(Boolean) as HTMLElement[];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            dots.forEach((dot) => {
+              dot.classList.toggle('active', dot.dataset.target === id);
+            });
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '-30% 0px -40% 0px',
+        threshold: 0
+      }
+    );
+
+    targets.forEach((target) => observer.observe(target));
+
+    // 3. Click-to-scroll via Lenis
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const targetId = dot.dataset.target;
+        if (!targetId) return;
+        const targetEl = document.getElementById(targetId);
+        if (!targetEl) return;
+
+        const lenis = (window as any).__lenis;
+        if (lenis) {
+          lenis.scrollTo(targetEl, { offset: 0, duration: 1.4 });
+        } else {
+          targetEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChapterRail);
+  } else {
+    initChapterRail();
+  }
+
+  document.addEventListener('astro:page-load', initChapterRail);
+</script>

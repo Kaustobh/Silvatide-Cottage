@@ -1,0 +1,184 @@
+---
+---
+
+<div class="custom-cursor" id="customCursor" aria-hidden="true">
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing">
+    <span class="cursor-label" id="cursorLabel"></span>
+  </div>
+</div>
+
+<style>
+  /* ============================================================
+     CUSTOM CURSOR (FINE POINTERS ONLY)
+     ============================================================ */
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .cursor-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, background-color 0.2s ease;
+  }
+
+  .cursor-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.25s ease, height 0.25s ease, border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .cursor-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #ffffff;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  /* States */
+  .custom-cursor.is-active .cursor-ring {
+    width: 68px;
+    height: 68px;
+    background: rgba(16, 18, 22, 0.75);
+    border-color: var(--accent, #e5a970);
+    backdrop-filter: blur(4px);
+  }
+
+  .custom-cursor.is-active .cursor-dot {
+    background: var(--accent, #e5a970);
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+
+  .custom-cursor.is-active .cursor-label {
+    opacity: 1;
+  }
+
+  .custom-cursor.is-hover .cursor-ring {
+    width: 48px;
+    height: 48px;
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* DISABLE COMPLETELY ON TOUCH */
+  @media (pointer: coarse), (max-width: 992px) {
+    .custom-cursor {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  function initCustomCursor() {
+    const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+    if (!isFinePointer) return;
+
+    const cursor = document.getElementById('customCursor');
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    const label = document.getElementById('cursorLabel');
+
+    if (!cursor || !dot || !ring || !label) return;
+
+    let mouseX = -100;
+    let mouseY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible) {
+        isVisible = true;
+        cursor.style.opacity = '1';
+      }
+
+      dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      cursor.style.opacity = '0';
+    });
+
+    // Smooth trailing ring
+    const render = () => {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(render);
+    };
+    render();
+
+    // Contextual Hover Detection
+    const updateCursorState = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest(
+        'canvas, .compare-handle, .btn-inspect-3d, .hotspot-pin, .rail-dot, .btn, a, button'
+      );
+
+      if (!target) {
+        cursor.classList.remove('is-active', 'is-hover');
+        label.textContent = '';
+        return;
+      }
+
+      if (target.matches('canvas')) {
+        cursor.classList.add('is-active');
+        cursor.classList.remove('is-hover');
+        label.textContent = 'EXPLORE';
+      } else if (target.matches('.compare-handle, #compareSlider')) {
+        cursor.classList.add('is-active');
+        cursor.classList.remove('is-hover');
+        label.textContent = 'DRAG';
+      } else if (target.matches('.btn-inspect-3d')) {
+        cursor.classList.add('is-active');
+        cursor.classList.remove('is-hover');
+        label.textContent = '3D ROOM';
+      } else if (target.matches('.hotspot-pin')) {
+        cursor.classList.add('is-active');
+        cursor.classList.remove('is-hover');
+        label.textContent = 'INSPECT';
+      } else if (target.matches('a, button, .rail-dot')) {
+        cursor.classList.remove('is-active');
+        cursor.classList.add('is-hover');
+        label.textContent = '';
+      }
+    };
+
+    window.addEventListener('mouseover', updateCursorState);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCustomCursor);
+  } else {
+    initCustomCursor();
+  }
+
+  document.addEventListener('astro:page-load', initCustomCursor);
+</script>

@@ -10,6 +10,18 @@
   
   --transition-fast: 0.2s ease;
   --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Unified motion & tone tokens */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
+  --dur-fast: 0.2s;
+  --dur-base: 0.4s;
+  --dur-slow: 0.8s;
+
+  /* Global tone variables */
+  --sv-tone-bg: #0c0d0e;
+  --sv-tone-text: #ffffff;
+  --sv-accent: #d2b4ad;
 }
 
 * {
@@ -22,8 +34,31 @@ html {
   font-family: var(--font-sans);
   background-color: var(--bg-dark);
   color: var(--text-light);
-  scroll-behavior: smooth;
   overflow-x: hidden;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {

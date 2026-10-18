@@ -1,0 +1,799 @@
+---
+import imagesManifest from '../data/images.json';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// 5 Time of Day steps
+const timeSteps = [
+  {
+    time: '05:40',
+    phase: 'FIRST LIGHT',
+    desc: 'Pale dawn mist rising over the mirror-calm waters of Lake Saimaa.',
+    slug: 'dawn-mist-lake',
+    isFramed: false,
+    bgTone: '#121418',
+    textTone: '#f0f2f5'
+  },
+  {
+    time: '08:15',
+    phase: 'MORNING GOLD',
+    desc: 'Low golden sun warming the cantilevered cedar deck and glass balustrades.',
+    slug: 'deck-morning-gold',
+    isFramed: false,
+    bgTone: '#181614',
+    textTone: '#fdfbf7'
+  },
+  {
+    time: '13:30',
+    phase: 'HIGH SOLAR',
+    desc: 'Direct Nordic sun highlighting the charred Shou Sugi Ban cladding and zinc roof.',
+    slug: 'front-elevation-day',
+    isFramed: false,
+    bgTone: '#1a1918',
+    textTone: '#ffffff'
+  },
+  {
+    time: '19:45',
+    phase: 'BLUE DUSK',
+    desc: 'Twilight descends on the private dock, cedar canoe, and still pine reflections.',
+    slug: 'lake-dusk-dock',
+    isFramed: true, // Specifically framed, low-res, never full-bleed
+    bgTone: '#0d1014',
+    textTone: '#e6ebf2'
+  },
+  {
+    time: '23:00',
+    phase: 'MIDNIGHT FIRE',
+    desc: 'Starlit sky overhead with flickering concrete firepit and warm interior hearth.',
+    slug: 'deck-night-firepit',
+    isFramed: false,
+    bgTone: '#090a0d',
+    textTone: '#f5f5f7'
+  }
+];
+
+// Compare slider images
+const dayCompare = imagesManifest['forest-entrance-day'];
+const nightCompare = imagesManifest['forest-entrance-night'];
+---
+
+<section id="chapter-dawntodusk" class="dusk-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
+  <!-- ==========================================
+       PART 1: PINNED TIME-OF-DAY SCRUB
+       ========================================== -->
+  <div class="dusk-scrub-pin" id="duskScrubPin">
+    <!-- Header HUD -->
+    <div class="dusk-hud container">
+      <div class="dusk-hud-left">
+        <span class="dusk-eyebrow">CHAPTER IV · DAWN TO DUSK</span>
+        <h2 class="dusk-title sv-reveal-heading">Diurnal Light Cycle</h2>
+      </div>
+
+      <!-- Clock Readout -->
+      <div class="dusk-clock-card">
+        <div class="clock-display">
+          <span class="clock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </span>
+          <span id="duskClockTime" class="clock-time">05:40</span>
+        </div>
+        <span id="duskClockPhase" class="clock-phase">FIRST LIGHT</span>
+      </div>
+    </div>
+
+    <!-- Time-of-day Image Layers Stage -->
+    <div class="dusk-stage">
+      {timeSteps.map((step, idx) => (
+        <div
+          class={`dusk-slide ${step.isFramed ? 'is-framed' : 'is-full'}`}
+          data-index={idx}
+          data-time={step.time}
+          data-phase={step.phase}
+          data-desc={step.desc}
+          data-tone={step.bgTone}
+          style={`opacity: ${idx === 0 ? '1' : '0'}; z-index: ${10 + idx};`}
+        >
+          <div class="slide-media-wrap">
+            <picture>
+              <source srcset={`${baseUrl}/images/optimized/${step.slug}-2200.avif 2200w, ${baseUrl}/images/optimized/${step.slug}-1440.avif 1440w, ${baseUrl}/images/optimized/${step.slug}-960.avif 960w`} type="image/avif" />
+              <source srcset={`${baseUrl}/images/optimized/${step.slug}-2200.webp 2200w, ${baseUrl}/images/optimized/${step.slug}-1440.webp 1440w, ${baseUrl}/images/optimized/${step.slug}-960.webp 960w`} type="image/webp" />
+              <img
+                src={`${baseUrl}/images/optimized/${step.slug}-1440.webp`}
+                alt={imagesManifest[step.slug]?.alt || step.desc}
+                class="slide-img"
+                loading="lazy"
+              />
+            </picture>
+            {step.isFramed && <div class="frame-vignette"></div>}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Bottom Caption Bar -->
+    <div class="dusk-caption-bar container">
+      <div class="caption-inner">
+        <span class="step-indicator" id="duskStepIndicator">01 / 05</span>
+        <p id="duskDesc" class="dusk-desc">
+          Pale dawn mist rising over the mirror-calm waters of Lake Saimaa.
+        </p>
+      </div>
+      <div class="timeline-ticks" aria-hidden="true">
+        {timeSteps.map((step, idx) => (
+          <div class={`tick-mark ${idx === 0 ? 'active' : ''}`} data-index={idx}>
+            <span class="tick-time">{step.time}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       PART 2: DAY / NIGHT COMPARE SLIDER
+       ========================================== -->
+  <div class="compare-section container">
+    <div class="compare-header">
+      <span class="compare-eyebrow">LIGHT STUDY</span>
+      <h3 class="compare-title sv-reveal-heading">Forest Entrance at Day & Night</h3>
+      <p class="compare-desc">
+        Drag the split-slider or use arrow keys to contrast the natural canopy illumination with the warm architectural night sconces.
+      </p>
+    </div>
+
+    <div
+      class="compare-slider-wrap"
+      id="compareSliderWrap"
+      role="region"
+      aria-label="Day and Night entrance comparison slider"
+    >
+      <div class="compare-slider" id="compareSlider">
+        <!-- Night Image (Bottom Layer) -->
+        <div class="compare-layer night-layer">
+          <picture>
+            <source srcset={`${baseUrl}/images/optimized/forest-entrance-night-1440.avif 1440w, ${baseUrl}/images/optimized/forest-entrance-night-960.avif 960w`} type="image/avif" />
+            <source srcset={`${baseUrl}/images/optimized/forest-entrance-night-1440.webp 1440w, ${baseUrl}/images/optimized/forest-entrance-night-960.webp 960w`} type="image/webp" />
+            <img
+              src={`${baseUrl}/images/optimized/forest-entrance-night-1440.webp`}
+              alt={nightCompare.alt}
+              class="compare-img"
+              loading="lazy"
+            />
+          </picture>
+          <span class="compare-tag night-tag">NIGHT · 22:45</span>
+        </div>
+
+        <!-- Day Image (Top Layer with Clip-path) -->
+        <div class="compare-layer day-layer" id="compareDayLayer" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+          <picture>
+            <source srcset={`${baseUrl}/images/optimized/forest-entrance-day-1440.avif 1440w, ${baseUrl}/images/optimized/forest-entrance-day-960.avif 960w`} type="image/avif" />
+            <source srcset={`${baseUrl}/images/optimized/forest-entrance-day-1440.webp 1440w, ${baseUrl}/images/optimized/forest-entrance-day-960.webp 960w`} type="image/webp" />
+            <img
+              src={`${baseUrl}/images/optimized/forest-entrance-day-1440.webp`}
+              alt={dayCompare.alt}
+              class="compare-img"
+              loading="lazy"
+            />
+          </picture>
+          <span class="compare-tag day-tag">DAY · 14:00</span>
+        </div>
+
+        <!-- Divider Handle -->
+        <div
+          class="compare-handle"
+          id="compareHandle"
+          style="left: 50%;"
+          role="slider"
+          aria-valuenow="50"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Comparison position"
+          tabindex="0"
+        >
+          <div class="handle-line"></div>
+          <div class="handle-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+          <div class="handle-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ============================================================
+     CHAPTER IV: DAWN TO DUSK STYLES
+     ============================================================ */
+  .dusk-section {
+    position: relative;
+    width: 100%;
+    background: #0c0e12;
+    color: #ffffff;
+    overflow: hidden;
+  }
+
+  /* Pinned Scrub Stage */
+  .dusk-scrub-pin {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .dusk-hud {
+    position: relative;
+    z-index: 30;
+    padding-top: 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .dusk-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--accent, #e5a970);
+    text-transform: uppercase;
+  }
+
+  .dusk-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0.35rem 0 0 0;
+    color: #ffffff;
+  }
+
+  .dusk-clock-card {
+    background: rgba(16, 18, 22, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 0.85rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .clock-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .clock-icon {
+    display: flex;
+    color: var(--accent, #e5a970);
+  }
+
+  .clock-time {
+    font-family: monospace;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  .clock-phase {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Stage Slides */
+  .dusk-stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+
+  .dusk-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dusk-slide.is-full .slide-media-wrap {
+    width: 100%;
+    height: 100%;
+  }
+
+  .dusk-slide.is-full .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Framed presentation for Step 1 (lake-dusk-dock) */
+  .dusk-slide.is-framed .slide-media-wrap {
+    width: 78vw;
+    max-width: 1100px;
+    height: 62vh;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .dusk-slide.is-framed .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .frame-vignette {
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+  }
+
+  /* Bottom Caption Bar */
+  .dusk-caption-bar {
+    position: relative;
+    z-index: 30;
+    padding-bottom: 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+  }
+
+  .caption-inner {
+    max-width: 580px;
+    background: rgba(12, 14, 18, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.25rem 1.75rem;
+    border-radius: 20px;
+  }
+
+  .step-indicator {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent, #e5a970);
+    margin-bottom: 0.4rem;
+  }
+
+  .dusk-desc {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .timeline-ticks {
+    display: flex;
+    gap: 1.5rem;
+    background: rgba(12, 14, 18, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.85rem 1.25rem;
+    border-radius: 999px;
+  }
+
+  .tick-mark {
+    position: relative;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+  }
+
+  .tick-mark.active {
+    opacity: 1;
+  }
+
+  .tick-time {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .tick-mark.active .tick-time {
+    color: var(--accent, #e5a970);
+  }
+
+  /* ============================================================
+     DAY / NIGHT COMPARE SLIDER
+     ============================================================ */
+  .compare-section {
+    padding: 8rem 1.5rem 8rem;
+  }
+
+  .compare-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .compare-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--accent, #e5a970);
+    text-transform: uppercase;
+  }
+
+  .compare-title {
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin: 0.5rem 0 0.8rem;
+  }
+
+  .compare-desc {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+  }
+
+  .compare-slider-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .compare-slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 28px;
+    overflow: hidden;
+    user-select: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .compare-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .compare-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+  }
+
+  .compare-tag {
+    position: absolute;
+    bottom: 2rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    z-index: 5;
+  }
+
+  .day-tag {
+    left: 2rem;
+    background: rgba(255, 255, 255, 0.85);
+    color: #1a1a1a;
+  }
+
+  .night-tag {
+    right: 2rem;
+    background: rgba(10, 11, 14, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Slider Divider Handle */
+  .compare-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    margin-left: -22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: ew-resize;
+    outline: none;
+  }
+
+  .compare-handle:focus-visible .handle-button {
+    box-shadow: 0 0 0 3px var(--accent, #e5a970), 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .handle-line {
+    width: 2px;
+    flex: 1;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .handle-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #101114;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .compare-handle:hover .handle-button {
+    transform: scale(1.1);
+    background: var(--accent, #e5a970);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 992px) {
+    .dusk-hud {
+      padding-top: 2rem;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .dusk-caption-bar {
+      padding-bottom: 2rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
+
+    .dusk-slide.is-framed .slide-media-wrap {
+      width: 90vw;
+      height: 50vh;
+      border-radius: 20px;
+    }
+
+    .timeline-ticks {
+      display: none;
+    }
+
+    .compare-section {
+      padding: 5rem 1.5rem 5rem;
+    }
+
+    .compare-slider {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dusk-scrub-pin {
+      height: auto;
+    }
+    .dusk-stage {
+      position: relative;
+      height: 60vh;
+    }
+    .dusk-slide {
+      opacity: 1 !important;
+      position: relative;
+      height: 60vh;
+      margin-bottom: 2rem;
+    }
+    .dusk-slide:not(:first-child) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initDawnToDusk() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1. Pinned Time of Day Scrub
+    const scrubPin = document.getElementById('duskScrubPin');
+    const slides = Array.from(document.querySelectorAll<HTMLElement>('.dusk-slide'));
+    const clockTime = document.getElementById('duskClockTime');
+    const clockPhase = document.getElementById('duskClockPhase');
+    const descEl = document.getElementById('duskDesc');
+    const indicatorEl = document.getElementById('duskStepIndicator');
+    const ticks = Array.from(document.querySelectorAll<HTMLElement>('.tick-mark'));
+
+    if (scrubPin && slides.length > 0 && !prefersReducedMotion) {
+      const totalSteps = slides.length;
+
+      ScrollTrigger.create({
+        trigger: scrubPin,
+        pin: true,
+        start: 'top top',
+        end: () => `+=${window.innerHeight * 3}`,
+        scrub: 0.6,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          // Calculate step index [0 .. totalSteps - 1]
+          const rawIdx = progress * (totalSteps - 1);
+          const currentIdx = Math.min(Math.floor(rawIdx), totalSteps - 1);
+          const nextIdx = Math.min(currentIdx + 1, totalSteps - 1);
+          const blend = rawIdx - currentIdx;
+
+          // Dissolve between current and next
+          slides.forEach((slide, idx) => {
+            if (idx === currentIdx) {
+              slide.style.opacity = `${1 - blend}`;
+            } else if (idx === nextIdx) {
+              slide.style.opacity = `${blend}`;
+            } else {
+              slide.style.opacity = '0';
+            }
+          });
+
+          // Pick the dominant slide for metadata
+          const activeIdx = blend > 0.5 ? nextIdx : currentIdx;
+          const activeSlide = slides[activeIdx];
+
+          if (activeSlide) {
+            const time = activeSlide.dataset.time || '05:40';
+            const phase = activeSlide.dataset.phase || 'FIRST LIGHT';
+            const desc = activeSlide.dataset.desc || '';
+
+            if (clockTime && clockTime.textContent !== time) clockTime.textContent = time;
+            if (clockPhase && clockPhase.textContent !== phase) clockPhase.textContent = phase;
+            if (descEl && descEl.textContent !== desc) descEl.textContent = desc;
+            if (indicatorEl) indicatorEl.textContent = `0${activeIdx + 1} / 05`;
+
+            ticks.forEach((tick, idx) => {
+              tick.classList.toggle('active', idx === activeIdx);
+            });
+          }
+        }
+      });
+    }
+
+    // 2. Day / Night Compare Slider
+    initCompareSlider();
+  }
+
+  function initCompareSlider() {
+    const slider = document.getElementById('compareSlider');
+    const dayLayer = document.getElementById('compareDayLayer');
+    const handle = document.getElementById('compareHandle');
+    if (!slider || !dayLayer || !handle) return;
+
+    let isDragging = false;
+    let currentPct = 50;
+
+    const updatePosition = (pct: number) => {
+      const clamped = Math.max(0, Math.min(100, pct));
+      currentPct = clamped;
+      dayLayer.style.clipPath = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
+      handle.style.left = `${clamped}%`;
+      handle.setAttribute('aria-valuenow', Math.round(clamped).toString());
+    };
+
+    // Pointer events
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const rect = slider.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const pct = (x / rect.width) * 100;
+      updatePosition(pct);
+    };
+
+    const onPointerUp = () => {
+      isDragging = false;
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      const rect = slider.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const pct = (x / rect.width) * 100;
+      updatePosition(pct);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+    };
+
+    slider.addEventListener('pointerdown', onPointerDown);
+
+    // Keyboard support
+    handle.addEventListener('keydown', (e: KeyboardEvent) => {
+      let delta = 0;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') delta = -5;
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') delta = 5;
+      else if (e.key === 'Home') delta = -100;
+      else if (e.key === 'End') delta = 100;
+
+      if (delta !== 0) {
+        e.preventDefault();
+        updatePosition(currentPct + delta);
+      }
+    });
+
+    // Auto-demo swipe on first scroll into view
+    let hasDemoed = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasDemoed) {
+            hasDemoed = true;
+            observer.disconnect();
+
+            // Run smooth GSAP bounce demo
+            const obj = { val: 50 };
+            gsap.timeline({ delay: 0.4 })
+              .to(obj, {
+                val: 75,
+                duration: 0.9,
+                ease: 'power2.inOut',
+                onUpdate: () => updatePosition(obj.val)
+              })
+              .to(obj, {
+                val: 30,
+                duration: 1.1,
+                ease: 'power2.inOut',
+                onUpdate: () => updatePosition(obj.val)
+              })
+              .to(obj, {
+                val: 50,
+                duration: 0.8,
+                ease: 'power3.out',
+                onUpdate: () => updatePosition(obj.val)
+              });
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(slider);
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDawnToDusk);
+  } else {
+    initDawnToDusk();
+  }
+
+  document.addEventListener('astro:page-load', initDawnToDusk);
+</script>

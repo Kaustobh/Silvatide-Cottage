@@ -1,0 +1,436 @@
+---
+import fs from 'fs';
+import path from 'path';
+
+// Read manifest
+let manifest = {
+  desktop: { count: 120, width: 1280, height: 720, pattern: 'frame-%04d.webp' },
+  mobile: { count: 60, width: 720, height: 405, pattern: 'mobile/frame-%04d.webp' },
+  milestones: [
+    { index: 0, label: '01. Site & Topography', copy: 'Low Scandinavian sun and ancient granite base.' },
+    { index: 38, label: '02. Structural Framing', copy: 'Larch timber post-and-beam system.' },
+    { index: 78, label: '03. Weather Envelope', copy: 'Standing-seam zinc roof and passive solar glazing.' },
+    { index: 110, label: '04. Lived-in Retreat', copy: 'Cottage completed on the tranquil shoreline.' }
+  ]
+};
+
+try {
+  const manifestPath = path.join(process.cwd(), 'public/frames/blueprint/manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+  }
+} catch (e) {
+  // Fallback to default
+}
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
+---
+
+<section id="chapter-drawing" class="blueprint-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#f0f2f5">
+  <div class="bp-pin-wrap" id="bpPinWrap">
+    <!-- 1. Background Grid & Drafting Metadata -->
+    <div class="bp-grid-overlay" aria-hidden="true"></div>
+    <div class="bp-drafting-stamp" aria-hidden="true">
+      <div class="stamp-line"><span>PROJECT:</span> SILVATIDE COTTAGE</div>
+      <div class="stamp-line"><span>DRAWING:</span> DWG-01 / ELEVATION ASSEMBLY</div>
+      <div class="stamp-line"><span>SCALE:</span> 1:50 · METRIC</div>
+      <div class="stamp-compass">⊕ N 61° 29' 48"</div>
+    </div>
+
+    <!-- 2. Section Header -->
+    <div class="bp-header">
+      <span class="bp-eyebrow">CHAPTER I · THE DRAWING</span>
+      <h2 class="bp-title sv-reveal-heading">From drafting line to living retreat</h2>
+    </div>
+
+    <!-- 3. Frame Canvas & Elevation Photo Wipe -->
+    <div class="bp-viewport">
+      <canvas id="bpCanvas" class="bp-canvas" aria-label="Interactive 3D building assembly sequence"></canvas>
+      
+      <!-- Hand-off target photo 7 (clipped wipe) -->
+      <div id="bpPhotoTarget" class="bp-photo-target" style={`background-image: url('${photo7}')`} aria-hidden="true"></div>
+      
+      <div class="bp-dpr-poster" id="bpPoster" style={`background-image: url('${baseUrl}/frames/blueprint/frame-0000.webp')`}></div>
+    </div>
+
+    <!-- 4. Milestone Captions & Timeline -->
+    <div class="bp-hud">
+      <div class="bp-caption-box" aria-live="polite">
+        <span class="bp-milestone-pill" id="bpMilestoneTag">01. SITE & TOPOGRAPHY</span>
+        <p class="bp-caption-text" id="bpCaption">Oriented along granite contours to capture the low Scandinavian sun across still water.</p>
+      </div>
+
+      <div class="bp-progress-bar">
+        <div class="bp-progress-fill" id="bpProgressFill"></div>
+      </div>
+
+      <div class="bp-scrub-hint">
+        <span>SCROLL TO CONSTRUCT</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initBlueprintScrub() {
+    const section = document.getElementById('chapter-drawing');
+    const pinWrap = document.getElementById('bpPinWrap');
+    const canvas = document.getElementById('bpCanvas') as HTMLCanvasElement;
+    const photoTarget = document.getElementById('bpPhotoTarget');
+    const poster = document.getElementById('bpPoster');
+    const tagEl = document.getElementById('bpMilestoneTag');
+    const captionEl = document.getElementById('bpCaption');
+    const fillEl = document.getElementById('bpProgressFill');
+
+    if (!section || !pinWrap || !canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const baseUrl = (import.meta as any).env.BASE_URL.replace(/\/$/, '');
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const totalFrames = isMobile ? 60 : 120;
+    const frameFolder = isMobile ? `${baseUrl}/frames/blueprint/mobile` : `${baseUrl}/frames/blueprint`;
+    
+    // Milestones definition
+    const milestones = [
+      { progress: 0.00, tag: '01. SITE & TOPOGRAPHY', text: 'Low Scandinavian sun and ancient granite base.' },
+      { progress: 0.32, tag: '02. STRUCTURAL FRAMING', text: 'Larch timber post-and-beam system and exposed roof trusses.' },
+      { progress: 0.65, tag: '03. WEATHER ENVELOPE', text: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
+      { progress: 0.88, tag: '04. LIVED-IN RETREAT', text: 'Cottage completed on the lake shore with private terrace and canoe.' }
+    ];
+
+    // Frame cache
+    const images: HTMLImageElement[] = [];
+    const loaded = new Set<number>();
+    let currentFrameIndex = 0;
+    let isDrawing = false;
+
+    // Canvas sizing with DPR cap at 2
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      drawFrame(currentFrameIndex);
+    }
+
+    // Draw frame with object-fit: contain/cover
+    function drawFrame(idx: number) {
+      const img = images[idx];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+
+      const scale = Math.min(cw / iw, ch / ih);
+      const nw = iw * scale;
+      const nh = ih * scale;
+      const ox = (cw - nw) / 2;
+      const oy = (ch - nh) / 2;
+
+      ctx!.clearRect(0, 0, cw, ch);
+      ctx!.drawImage(img, ox, oy, nw, nh);
+    }
+
+    // Progressive frame loading: frame 0 first, then every 5th, then rest
+    function loadFrames() {
+      for (let i = 0; i < totalFrames; i++) {
+        const img = new Image();
+        const pad = String(i).padStart(4, '0');
+        img.src = `${frameFolder}/frame-${pad}.webp`;
+        img.onload = () => {
+          loaded.add(i);
+          if (i === 0) {
+            poster?.classList.add('hidden');
+            drawFrame(0);
+          }
+          if (i === currentFrameIndex) {
+            drawFrame(currentFrameIndex);
+          }
+        };
+        images[i] = img;
+      }
+    }
+
+    loadFrames();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Reduced motion fallback
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (poster) poster.style.display = 'none';
+      drawFrame(totalFrames - 1);
+      if (photoTarget) photoTarget.style.clipPath = 'inset(0 0 0 0)';
+      return;
+    }
+
+    // GSAP ScrollTrigger pinning & scrub
+    const scrubData = { frame: 0, wipe: 0 };
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: '+=350%',
+      pin: pinWrap,
+      anticipatePin: 1,
+      scrub: 0.4,
+      onUpdate: (self) => {
+        const p = self.progress;
+
+        // Frame scrub from 0% to 85%
+        const frameP = Math.min(1, p / 0.85);
+        const targetFrame = Math.min(totalFrames - 1, Math.floor(frameP * (totalFrames - 1)));
+
+        if (targetFrame !== currentFrameIndex) {
+          currentFrameIndex = targetFrame;
+          if (!isDrawing) {
+            isDrawing = true;
+            requestAnimationFrame(() => {
+              drawFrame(currentFrameIndex);
+              isDrawing = false;
+            });
+          }
+        }
+
+        // Clip-path wipe into Photo 7 from 82% to 100%
+        if (photoTarget) {
+          if (p >= 0.82) {
+            const wipeP = (p - 0.82) / 0.18;
+            photoTarget.style.opacity = '1';
+            photoTarget.style.clipPath = `inset(0 0 0 ${(1 - wipeP) * 100}%)`;
+          } else {
+            photoTarget.style.opacity = '0';
+            photoTarget.style.clipPath = `inset(0 0 0 100%)`;
+          }
+        }
+
+        // Progress bar fill
+        if (fillEl) {
+          fillEl.style.width = `${p * 100}%`;
+        }
+
+        // Milestone copy update
+        for (let i = milestones.length - 1; i >= 0; i--) {
+          if (p >= milestones[i].progress) {
+            if (tagEl && tagEl.textContent !== milestones[i].tag) {
+              tagEl.textContent = milestones[i].tag;
+              if (captionEl) captionEl.textContent = milestones[i].text;
+            }
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlueprintScrub);
+  } else {
+    initBlueprintScrub();
+  }
+</script>
+
+<style>
+  .blueprint-section {
+    position: relative;
+    width: 100%;
+    min-height: 450vh;
+    background-color: var(--sv-tone-bg, #0c0e12);
+    color: var(--sv-tone-text, #ffffff);
+    overflow: hidden;
+  }
+
+  .bp-pin-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 32px 48px;
+    box-sizing: border-box;
+    background: radial-gradient(circle at 50% 50%, rgba(18, 24, 38, 0.6) 0%, rgba(10, 12, 16, 0.98) 100%);
+  }
+
+  .bp-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.6;
+  }
+
+  .bp-drafting-stamp {
+    position: absolute;
+    top: 36px;
+    right: 48px;
+    font-family: monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    border-left: 2px solid rgba(77, 208, 225, 0.4);
+    padding-left: 12px;
+    pointer-events: none;
+  }
+
+  .stamp-line span {
+    color: rgba(77, 208, 225, 0.8);
+    margin-right: 6px;
+  }
+
+  .bp-header {
+    position: relative;
+    z-index: 10;
+    max-width: 600px;
+  }
+
+  .bp-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: #4dd0e1;
+    margin-bottom: 8px;
+  }
+
+  .bp-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  .bp-viewport {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 72vh;
+    max-width: 1400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .bp-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .bp-photo-target {
+    position: absolute;
+    inset: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .bp-dpr-poster {
+    position: absolute;
+    inset: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+
+  .bp-dpr-poster.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bp-hud {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .bp-caption-box {
+    max-width: 480px;
+  }
+
+  .bp-milestone-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-family: monospace;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #4dd0e1;
+    margin-bottom: 6px;
+  }
+
+  .bp-caption-text {
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+  }
+
+  .bp-progress-bar {
+    position: absolute;
+    bottom: -16px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .bp-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #4dd0e1;
+    transition: width 0.1s linear;
+  }
+
+  .bp-scrub-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .bp-pin-wrap {
+      padding: 24px 20px;
+    }
+    .bp-drafting-stamp {
+      display: none;
+    }
+    .bp-hud {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .bp-scrub-hint {
+      display: none;
+    }
+  }
+</style>

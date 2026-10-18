@@ -4,15 +4,45 @@ import MainHero from '../components/MainHero.astro';
 import Gallery from '../components/Gallery.astro';
 import Features from '../components/Features.astro';
 import Architecture from '../components/Architecture.astro';
+import BlueprintReveal from '../components/BlueprintReveal.astro';
+import StudioViewer from '../components/StudioViewer.astro';
+import Inside from '../components/Inside.astro';
+import DawnToDusk from '../components/DawnToDusk.astro';
 import FooterHero from '../components/FooterHero.astro';
+import ChapterRail from '../components/ChapterRail.astro';
+import CustomCursor from '../components/CustomCursor.astro';
 ---
 
-<Layout title="Silvatide Cottage | Lakeside Retreat">
-	<main>
+<Layout title="Silvatide Cottage | Lakeside Architectural Retreat">
+	<ChapterRail />
+	<CustomCursor />
+
+	<main id="main-content">
+		<!-- Existing Sections (Preserved) -->
 		<MainHero />
 		<Gallery />
 		<Features />
 		<Architecture />
-    <FooterHero />
+
+		<!-- New Cinematic Scroll Experience & 3D Chapters -->
+		<BlueprintReveal />
+		<StudioViewer />
+		<Inside />
+		<DawnToDusk />
+
+		<!-- Final CTA Hero -->
+		<FooterHero />
 	</main>
 </Layout>
+
+<script>
+	import { initScrollSystem } from '../scripts/scroll';
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', () => initScrollSystem());
+	} else {
+		initScrollSystem();
+	}
+
+	document.addEventListener('astro:page-load', () => initScrollSystem());
+</script>

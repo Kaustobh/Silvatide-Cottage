@@ -1,0 +1,38 @@
+{
+  "desktop": {
+    "count": 120,
+    "width": 1280,
+    "height": 720,
+    "sizeMB": "2.29",
+    "pattern": "frame-%04d.webp"
+  },
+  "mobile": {
+    "count": 60,
+    "width": 720,
+    "height": 405,
+    "sizeMB": "0.35",
+    "pattern": "mobile/frame-%04d.webp"
+  },
+  "milestones": [
+    {
+      "index": 0,
+      "label": "01. Site & Topography",
+      "copy": "Low Scandinavian sun and ancient granite base."
+    },
+    {
+      "index": 38,
+      "label": "02. Structural Framing",
+      "copy": "Larch timber post-and-beam system."
+    },
+    {
+      "index": 78,
+      "label": "03. Weather Envelope",
+      "copy": "Standing-seam zinc roof and passive solar glazing."
+    },
+    {
+      "index": 110,
+      "label": "04. Lived-in Retreat",
+      "copy": "Cottage completed on the tranquil shoreline."
+    }
+  ]
+}

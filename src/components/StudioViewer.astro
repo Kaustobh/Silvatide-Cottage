@@ -1,0 +1,760 @@
+---
+import { studioConfig } from '../config/studio';
+import imagesManifest from '../data/images.json';
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
+---
+
+<section id="chapter-studio" class="studio-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
+  <div class="studio-container">
+    <!-- Header -->
+    <div class="studio-header">
+      <div class="studio-header-left">
+        <span class="studio-eyebrow">CHAPTER II · 3D STUDIO</span>
+        <h2 class="studio-title sv-reveal-heading">Spatial Architecture Inspection</h2>
+      </div>
+      <p class="studio-desc">
+        Explore the structural framing, inspect the furnished interior quarters, or execute section cuts through the Scandinavian timber envelope.
+      </p>
+    </div>
+
+    <!-- 3D Canvas Viewport -->
+    <div class="studio-viewport-wrap" id="studioViewportWrap">
+      <canvas id="studioCanvas" class="studio-canvas" aria-label="Interactive 3D Architectural Cottage Studio"></canvas>
+
+      <!-- Poster / Loading State -->
+      <div id="studioPoster" class="studio-poster" style={`background-image: url('${posterUrl}')`}>
+        <div class="studio-loader-card">
+          <div class="loader-spinner"></div>
+          <span class="loader-text">Loading 3D Architectural Scene...</span>
+        </div>
+      </div>
+
+      <!-- Mobile Tap-to-Interact Overlay -->
+      <div id="studioTouchOverlay" class="studio-touch-overlay">
+        <button id="btnTouchInteract" class="touch-interact-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          TAP TO EXPLORE 3D SCENE
+        </button>
+      </div>
+
+      <!-- Hotspot Overlay Pins (projected from 3D) -->
+      <div id="studioHotspotsContainer" class="studio-hotspots">
+        {studioConfig.hotspots.map((h) => (
+          <button class="hotspot-pin" data-id={h.id} data-slug={h.imageSlug} aria-label={`Inspect ${h.name}`}>
+            <span class="hotspot-pulse"></span>
+            <span class="hotspot-dot"></span>
+            <span class="hotspot-label">{h.name}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Hotspot Detail Modal / Card -->
+      <div id="hotspotCard" class="hotspot-modal" hidden>
+        <div class="hotspot-modal-inner">
+          <button id="btnCloseHotspot" class="modal-close" aria-label="Close modal">&times;</button>
+          <div class="hotspot-modal-media">
+            <img id="hotspotModalImg" src="" alt="" loading="lazy" />
+          </div>
+          <div class="hotspot-modal-body">
+            <span class="hotspot-modal-tag">ARCHITECTURAL IMPRESSION</span>
+            <h3 id="hotspotModalTitle" class="hotspot-modal-title"></h3>
+            <p id="hotspotModalDesc" class="hotspot-modal-desc"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Floating Control Deck -->
+      <div class="studio-controls-deck">
+        <!-- Explode Scrub Control -->
+        <div class="ctrl-group ctrl-explode">
+          <span class="ctrl-label">EXPLODE</span>
+          <input type="range" id="explodeRange" min="0" max="1" step="0.01" value="0" aria-label="Explode cottage layers" />
+          <button id="btnResetView" class="ctrl-icon-btn" title="Reset View" aria-label="Reset Camera and Assembly">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+        </div>
+
+        <!-- Mode Presets -->
+        <div class="ctrl-group ctrl-modes">
+          <button id="btnDollhouse" class="ctrl-mode-btn" data-mode="dollhouse">DOLLHOUSE</button>
+          <button id="btnSectionCut" class="ctrl-mode-btn" data-mode="section">SECTION CUT</button>
+        </div>
+
+        <!-- Camera Views -->
+        <div class="ctrl-group ctrl-views">
+          {studioConfig.cameraPresets.map((p) => (
+            <button class="ctrl-cam-btn" data-preset={p.id} title={`${p.label} (Key ${p.key})`}>
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  let isStudioInitialized = false;
+
+  async function loadStudioModule() {
+    if (isStudioInitialized) return;
+    const canvas = document.getElementById('studioCanvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    isStudioInitialized = true;
+
+    // Dynamic lazy-load Three.js and dependencies
+    const [THREE, { OrbitControls }, { GLTFLoader }, { MeshoptDecoder }, { gsap }, { studioConfig }] = await Promise.all([
+      import('three'),
+      import('three/examples/jsm/controls/OrbitControls.js'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
+      import('meshoptimizer'),
+      import('gsap'),
+      import('../config/studio')
+    ]);
+
+    await MeshoptDecoder.ready;
+
+    const poster = document.getElementById('studioPoster');
+    const touchOverlay = document.getElementById('studioTouchOverlay');
+    const btnTouch = document.getElementById('btnTouchInteract');
+    const explodeRange = document.getElementById('explodeRange') as HTMLInputElement;
+    const btnReset = document.getElementById('btnResetView');
+    const btnDollhouse = document.getElementById('btnDollhouse');
+    const btnSectionCut = document.getElementById('btnSectionCut');
+    const camButtons = document.querySelectorAll<HTMLButtonElement>('.ctrl-cam-btn');
+    const hotspotPins = document.querySelectorAll<HTMLButtonElement>('.hotspot-pin');
+    const hotspotModal = document.getElementById('hotspotCard');
+    const hotspotModalImg = document.getElementById('hotspotModalImg') as HTMLImageElement;
+    const hotspotModalTitle = document.getElementById('hotspotModalTitle');
+    const hotspotModalDesc = document.getElementById('hotspotModalDesc');
+    const btnCloseHotspot = document.getElementById('btnCloseHotspot');
+
+    const baseUrl = (import.meta as any).env.BASE_URL.replace(/\/$/, '');
+
+    // Setup Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: window.innerWidth > 768,
+      powerPreference: 'high-performance',
+      alpha: true
+    });
+
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.localClippingEnabled = true;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0c0e12);
+
+    // Camera & Controls
+    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 100);
+    camera.position.set(0.9, 0.6, 1.1);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.maxPolarAngle = Math.PI / 2 + 0.05;
+    controls.minDistance = 0.4;
+    controls.maxDistance = 4.0;
+
+    // Lighting
+    const ambLight = new THREE.AmbientLight(0xfff8ee, 1.6);
+    scene.add(ambLight);
+
+    const sun = new THREE.DirectionalLight(0xffeedd, 2.5);
+    sun.position.set(4, 7, 5);
+    scene.add(sun);
+
+    const fillSun = new THREE.DirectionalLight(0x88b0dd, 1.2);
+    fillSun.position.set(-4, 3, -4);
+    scene.add(fillSun);
+
+    // Floor Contact Shadow Plane
+    const shadowGeo = new THREE.PlaneGeometry(3, 3);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+    const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.y = -0.15;
+    scene.add(shadowPlane);
+
+    // Clipping plane for section cut
+    const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10); // inactive by default
+
+    // Load Model
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
+    let model: any = null;
+    let meshes: any[] = [];
+    let isRenderDemandActive = true;
+    let renderDemandTimer = 0;
+
+    function requestRender(durationMs = 1200) {
+      isRenderDemandActive = true;
+      clearTimeout(renderDemandTimer);
+      renderDemandTimer = window.setTimeout(() => {
+        isRenderDemandActive = false;
+      }, durationMs);
+    }
+
+    try {
+      const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
+      model = gltf.scene;
+
+      // Center and normalize
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+
+      model.traverse((child: any) => {
+        if (child.isMesh) {
+          meshes.push(child);
+          child.material.clippingPlanes = [clipPlane];
+          child.material.clipShadows = true;
+        }
+      });
+
+      scene.add(model);
+      poster?.classList.add('hidden');
+      requestRender(3000);
+    } catch (err) {
+      console.error('Failed to load cottage model:', err);
+    }
+
+    // Explode Control
+    let currentExplode = 0;
+    function updateExplode(val: number) {
+      currentExplode = val;
+      if (!model) return;
+
+      model.traverse((child: any) => {
+        if (child.isMesh) {
+          // Displace meshes slightly along Y based on height
+          const originalY = child.userData.origY ?? child.position.y;
+          child.userData.origY = originalY;
+          child.position.y = originalY + val * 0.18;
+        }
+      });
+
+      // Camera dolly back slightly to maintain framing
+      camera.position.setLength(1.4 + val * 0.4);
+      requestRender();
+    }
+
+    explodeRange?.addEventListener('input', (e) => {
+      updateExplode(parseFloat((e.target as HTMLInputElement).value));
+    });
+
+    btnReset?.addEventListener('click', () => {
+      if (explodeRange) explodeRange.value = '0';
+      gsap.to({ val: currentExplode }, {
+        val: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        onUpdate: function() { updateExplode(this.targets()[0].val); }
+      });
+      tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
+    });
+
+    // Camera Tweening
+    function tweenCamera(pos: [number, number, number], target: [number, number, number]) {
+      gsap.to(camera.position, {
+        x: pos[0],
+        y: pos[1],
+        z: pos[2],
+        duration: 1.2,
+        ease: 'power3.inOut',
+        onUpdate: () => requestRender(200)
+      });
+      gsap.to(controls.target, {
+        x: target[0],
+        y: target[1],
+        z: target[2],
+        duration: 1.2,
+        ease: 'power3.inOut',
+        onUpdate: () => {
+          controls.update();
+          requestRender(200);
+        }
+      });
+    }
+
+    camButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.preset;
+        const preset = studioConfig.cameraPresets.find((p) => p.id === id);
+        if (preset) {
+          tweenCamera(preset.position, preset.target);
+        }
+      });
+    });
+
+    // Keyboard Shortcuts (1-6)
+    window.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= studioConfig.cameraPresets.length) {
+        const preset = studioConfig.cameraPresets[num - 1];
+        if (preset) tweenCamera(preset.position, preset.target);
+      }
+      if (e.key === 'Escape') {
+        if (hotspotModal && !hotspotModal.hasAttribute('hidden')) {
+          hotspotModal.setAttribute('hidden', '');
+        }
+      }
+    });
+
+    // Dollhouse Mode
+    let isDollhouse = false;
+    btnDollhouse?.addEventListener('click', () => {
+      isDollhouse = !isDollhouse;
+      btnDollhouse.classList.toggle('active', isDollhouse);
+      if (isDollhouse) {
+        tweenCamera([0.0, 1.2, 0.7], [0, -0.05, 0]);
+      } else {
+        tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
+      }
+    });
+
+    // Section Cut Mode (animated clipping plane)
+    let isSection = false;
+    btnSectionCut?.addEventListener('click', () => {
+      isSection = !isSection;
+      btnSectionCut.classList.toggle('active', isSection);
+      if (isSection) {
+        clipPlane.constant = 0.5;
+        gsap.to(clipPlane, {
+          constant: -0.02,
+          duration: 2.0,
+          repeat: 1,
+          yoyo: true,
+          ease: 'power2.inOut',
+          onUpdate: () => requestRender()
+        });
+      } else {
+        clipPlane.constant = 10;
+        requestRender();
+      }
+    });
+
+    // Hotspot Modal
+    hotspotPins.forEach((pin) => {
+      pin.addEventListener('click', () => {
+        const id = pin.dataset.id;
+        const hotspot = studioConfig.hotspots.find((h) => h.id === id);
+        if (!hotspot || !hotspotModal) return;
+
+        hotspotModalImg.src = `${baseUrl}/images/optimized/${hotspot.imageSlug}-1440.webp`;
+        hotspotModalImg.alt = hotspot.name;
+        if (hotspotModalTitle) hotspotModalTitle.textContent = hotspot.name;
+        if (hotspotModalDesc) hotspotModalDesc.textContent = hotspot.description;
+
+        hotspotModal.removeAttribute('hidden');
+      });
+    });
+
+    btnCloseHotspot?.addEventListener('click', () => {
+      hotspotModal?.setAttribute('hidden', '');
+    });
+
+    // Touch overlay enable
+    btnTouch?.addEventListener('click', () => {
+      touchOverlay?.classList.add('disabled');
+      requestRender(3000);
+    });
+
+    controls.addEventListener('start', () => { requestRender(1000); });
+    controls.addEventListener('change', () => { requestRender(500); });
+
+    // Render Loop (Demand Governor)
+    function animate() {
+      requestAnimationFrame(animate);
+      if (isRenderDemandActive) {
+        controls.update();
+        renderer.render(scene, camera);
+      }
+    }
+    animate();
+
+    // Window Resize
+    window.addEventListener('resize', () => {
+      if (!canvas) return;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      requestRender();
+    });
+  }
+
+  // IntersectionObserver to warm up / initialize Three.js within 1.5 viewports
+  const studioObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadStudioModule();
+          studioObserver.disconnect();
+        }
+      });
+    },
+    { rootMargin: '0px 0px 150% 0px' }
+  );
+
+  const sectionEl = document.getElementById('chapter-studio');
+  if (sectionEl) studioObserver.observe(sectionEl);
+</script>
+
+<style>
+  .studio-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding: 80px 48px;
+    background-color: var(--sv-tone-bg, #0c0e12);
+    box-sizing: border-box;
+  }
+
+  .studio-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .studio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .studio-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: #d2b4ad;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .studio-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .studio-desc {
+    max-width: 440px;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+  }
+
+  .studio-viewport-wrap {
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    min-height: 520px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #090a0d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .studio-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .studio-poster {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+    z-index: 5;
+  }
+
+  .studio-poster.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .studio-loader-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(12, 14, 18, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 12px 24px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .loader-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #d2b4ad;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loader-text {
+    font-size: 0.85rem;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Touch overlay */
+  .studio-touch-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .studio-touch-overlay.disabled {
+    display: none !important;
+  }
+
+  .touch-interact-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #000000;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Hotspot Pins */
+  .studio-hotspots {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+    flex-wrap: wrap;
+  }
+
+  .hotspot-pin {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(18, 22, 28, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+  }
+
+  .hotspot-pin:hover {
+    background: rgba(210, 180, 173, 0.9);
+    color: #000000;
+    transform: translateY(-2px);
+  }
+
+  .hotspot-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d2b4ad;
+  }
+
+  .hotspot-pin:hover .hotspot-dot {
+    background: #000000;
+  }
+
+  /* Hotspot Modal */
+  .hotspot-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 24px;
+  }
+
+  .hotspot-modal[hidden] {
+    display: none !important;
+  }
+
+  .hotspot-modal-inner {
+    position: relative;
+    max-width: 580px;
+    width: 100%;
+    background: #14171d;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    border: none;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hotspot-modal-media img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+  }
+
+  .hotspot-modal-body {
+    padding: 20px 24px;
+  }
+
+  .hotspot-modal-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: #d2b4ad;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .hotspot-modal-title {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .hotspot-modal-desc {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+  }
+
+  /* Floating Control Deck */
+  .studio-controls-deck {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(14, 17, 22, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 10px 20px;
+    border-radius: 40px;
+    z-index: 20;
+    max-width: 95vw;
+    overflow-x: auto;
+  }
+
+  .ctrl-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ctrl-label {
+    font-size: 0.7rem;
+    font-family: monospace;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .ctrl-explode input[type="range"] {
+    width: 100px;
+    accent-color: #d2b4ad;
+    cursor: pointer;
+  }
+
+  .ctrl-icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .ctrl-mode-btn, .ctrl-cam-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ctrl-mode-btn:hover, .ctrl-cam-btn:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .ctrl-mode-btn.active {
+    background: #d2b4ad;
+    color: #000000;
+    border-color: #d2b4ad;
+  }
+
+  @media (max-width: 768px) {
+    .studio-section {
+      padding: 48px 20px;
+    }
+    .studio-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .studio-touch-overlay {
+      display: flex;
+    }
+    .studio-controls-deck {
+      bottom: 12px;
+      padding: 8px 14px;
+      gap: 10px;
+    }
+  }
+</style>

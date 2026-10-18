@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; background: #0c0e12; overflow: hidden; }
+    #canvas { width: 1280px; height: 720px; display: block; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/addons/": "/node_modules/three/examples/jsm/",
+        "meshoptimizer": "/node_modules/meshoptimizer/meshopt_decoder.mjs"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="canvas" width="1280" height="720"></canvas>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { MeshoptDecoder } from 'meshoptimizer';
+
+    window.isReady = false;
+
+    const canvas = document.getElementById('canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(1280, 720);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0c0e12);
+
+    // Architectural grid background
+    const grid = new THREE.GridHelper(20, 40, 0x1f2937, 0x111827);
+    grid.position.y = -0.3;
+    scene.add(grid);
+
+    // Broad front-elevation camera closely framing the cottage
+    const camera = new THREE.PerspectiveCamera(42, 1280 / 720, 0.1, 100);
+    camera.position.set(0.78, 0.02, 0);
+    camera.lookAt(0, 0, 0);
+
+    const ambLight = new THREE.AmbientLight(0xfff5ea, 1.8);
+    scene.add(ambLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffeedd, 2.8);
+    dirLight1.position.set(4, 5, 4);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xaaccff, 1.5);
+    dirLight2.position.set(-4, 3, -2);
+    scene.add(dirLight2);
+
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
+    const gltf = await loader.loadAsync('/models/cottage-exploded.glb');
+    const model = gltf.scene;
+
+    // Center model
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    model.position.sub(center);
+    scene.add(model);
+
+    // Store original materials and create blueprint ink material
+    const blueprintMat = new THREE.MeshBasicMaterial({
+      color: 0x4dd0e1,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.6
+    });
+
+    const solidDraftingMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2332,
+      roughness: 0.8,
+      metalness: 0.1
+    });
+
+    let originalMaterials = new Map();
+    model.traverse(child => {
+      if (child.isMesh) {
+        originalMaterials.set(child, child.material);
+      }
+    });
+
+    window.renderFrame = (progress) => {
+      // progress from 0.0 to 1.0 (120 frames total)
+      // 1. Vertical assembly animation
+      // When progress = 0: high exploded stack
+      // When progress = 1: assembled together
+      const explodeFactor = Math.max(0, 1 - progress * 1.1);
+      
+      model.traverse(child => {
+        if (child.isMesh) {
+          // Explode along Y based on local vertex Y
+          child.position.y = explodeFactor * 0.15;
+
+          // Three phases:
+          // Phase 1: progress < 0.35 -> Blueprint ink wireframe
+          // Phase 2: 0.35 <= progress < 0.70 -> Solid drafting tone
+          // Phase 3: progress >= 0.70 -> Full textured material
+          if (progress < 0.35) {
+            child.material = blueprintMat;
+            blueprintMat.opacity = 0.4 + (progress / 0.35) * 0.4;
+          } else if (progress < 0.70) {
+            child.material = solidDraftingMat;
+          } else {
+            child.material = originalMaterials.get(child);
+          }
+        }
+      });
+
+      // Subtle camera dolly as it crystallizes
+      camera.position.x = 0.85 - progress * 0.1;
+      camera.lookAt(0, -0.02 + progress * 0.02, 0);
+
+      renderer.render(scene, camera);
+      return canvas.toDataURL('image/jpeg', 0.95);
+    };
+
+    window.renderFrame(0);
+    window.isReady = true;
+  </script>
+</body>
+</html>
