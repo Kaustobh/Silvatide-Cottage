@@ -882,6 +882,13 @@ const rooms = [
         model.scale.setScalar(targetScale);
         model.position.sub(center.multiplyScalar(targetScale));
         model.position.y += (size.y * targetScale) / 2;
+        model.traverse((c: any) => {
+          if (c.isMesh && c.material) {
+            c.material.side = THREE.DoubleSide;
+            c.material.roughness = 0.65;
+            c.material.metalness = 0.1;
+          }
+        });
 
         scene.add(model);
         controls.target.set(0, (size.y * targetScale) / 2, 0);

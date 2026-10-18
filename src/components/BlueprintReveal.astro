@@ -1,52 +1,132 @@
 ---
-import fs from 'fs';
-import path from 'path';
-
-// Read manifest
-let manifest = {
-  desktop: { count: 120, width: 1280, height: 720, pattern: 'frame-%04d.webp' },
-  mobile: { count: 60, width: 720, height: 405, pattern: 'mobile/frame-%04d.webp' },
-  milestones: [
-    { index: 0, label: '01. Site & Topography', copy: 'Ancient granite contours capture the low Nordic sun across still water.' },
-    { index: 38, label: '02. Structural Framing', copy: 'Larch timber post-and-beam system and exposed roof trusses.' },
-    { index: 78, label: '03. Weather Envelope', copy: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
-    { index: 110, label: '04. Lived-in Retreat', copy: 'Cottage completed on the lake shore with private terrace and canoe.' }
-  ]
-};
-
-try {
-  const manifestPath = path.join(process.cwd(), 'public/frames/blueprint/manifest.json');
-  if (fs.existsSync(manifestPath)) {
-    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-  }
-} catch (e) {
-  // Fallback to default
-}
+import imagesManifest from '../data/images.json';
 
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
+const photo7Avif = `${baseUrl}/images/optimized/front-elevation-day-1440.avif`;
 ---
 
-<section id="chapter-drawing" class="blueprint-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#f0f2f5">
+<section id="chapter-drawing" class="blueprint-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
   <div class="bp-pin-wrap" id="bpPinWrap">
-    <!-- Subtle Architectural Background Guidelines -->
+    <!-- Subtle Architectural Background Drafting Grid -->
     <div class="bp-grid-overlay" aria-hidden="true"></div>
 
-    <!-- Architectural Editorial Title Header -->
+    <!-- Editorial Header -->
     <div class="bp-header">
       <span class="bp-eyebrow">CHAPTER I · THE GENESIS</span>
-      <h2 class="bp-title sv-reveal-heading">From Drafting Ink to Living Retreat</h2>
-      <p class="bp-subtitle">Watch the structural timber, insulation envelope, and gabled roof materialize over ancient lakeside granite.</p>
+      <h2 class="bp-title sv-reveal-heading">Architectural Drafting to Reality</h2>
+      <p class="bp-subtitle">Precision hand-drawn elevation lines stroke onto archival drafting paper before crystallizing into the finished Finnish retreat.</p>
     </div>
 
-    <!-- Canvas Viewport with Photo 7 Wipe -->
-    <div class="bp-viewport">
-      <canvas id="bpCanvas" class="bp-canvas" aria-label="Architectural building assembly sequence"></canvas>
-      
-      <!-- Hand-off target photo 7 (aligned wipe) -->
-      <div id="bpPhotoTarget" class="bp-photo-target" style={`background-image: url('${photo7}')`} aria-hidden="true"></div>
-      
-      <div class="bp-dpr-poster" id="bpPoster" style={`background-image: url('${baseUrl}/frames/blueprint/frame-0000.webp')`}></div>
+    <!-- Architectural Drafting Stage & Photo Wipe -->
+    <div class="bp-stage">
+      <div class="bp-drawing-container" id="bpDrawingContainer">
+        <!-- SVG Architectural Front Elevation (Vector Sharp at 4K) -->
+        <svg
+          id="bpSvg"
+          class="bp-svg"
+          viewBox="0 0 1200 750"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Silvatide Cottage Front Elevation Blueprint"
+        >
+          <!-- Ground / Granite Bedrock (Phase 1) -->
+          <g class="bp-group bp-phase-1" id="bpGroundGroup">
+            <!-- Bedrock contours -->
+            <path d="M 50 640 Q 250 635 450 645 T 850 640 T 1150 645" class="bp-stroke bp-contour" stroke-width="2.5" />
+            <path d="M 80 660 Q 300 655 600 665 T 1120 660" class="bp-stroke bp-contour-light" stroke-width="1.2" stroke-dasharray="4 4" />
+            <!-- Granite Plinth -->
+            <rect x="240" y="580" width="720" height="60" class="bp-stroke bp-stone-plinth" stroke-width="2" />
+            <line x1="240" y1="610" x2="960" y2="610" class="bp-stroke bp-stone-course" stroke-width="1" stroke-dasharray="8 6" />
+            <!-- Cantilevered Cedar Deck -->
+            <rect x="200" y="560" width="800" height="20" class="bp-stroke bp-deck-slab" stroke-width="2" />
+            <line x1="200" y1="565" x2="1000" y2="565" class="bp-stroke bp-deck-grain" stroke-width="1" />
+            <line x1="200" y1="570" x2="1000" y2="570" class="bp-stroke bp-deck-grain" stroke-width="1" />
+          </g>
+
+          <!-- Structural Timber Framing & Glazing (Phase 2) -->
+          <g class="bp-group bp-phase-2" id="bpStructureGroup">
+            <!-- Main Floor Walls (Charred Yakisugi timber) -->
+            <rect x="280" y="340" width="640" height="220" class="bp-stroke bp-main-wall" stroke-width="2.5" />
+            
+            <!-- Floor-to-Ceiling Glazed Panels -->
+            <rect x="320" y="360" width="140" height="200" class="bp-stroke bp-glazing" stroke-width="1.5" />
+            <rect x="500" y="360" width="200" height="200" class="bp-stroke bp-glazing" stroke-width="1.5" />
+            <rect x="740" y="360" width="140" height="200" class="bp-stroke bp-glazing" stroke-width="1.5" />
+            
+            <!-- Mullions & Glass reflections -->
+            <line x1="390" y1="360" x2="390" y2="560" class="bp-stroke bp-mullion" stroke-width="1" />
+            <line x1="600" y1="360" x2="600" y2="560" class="bp-stroke bp-mullion" stroke-width="1" />
+            <line x1="810" y1="360" x2="810" y2="560" class="bp-stroke bp-mullion" stroke-width="1" />
+            <line x1="340" y1="520" x2="440" y2="380" class="bp-stroke bp-glass-reflection" stroke-width="0.8" opacity="0.4" />
+            <line x1="530" y1="520" x2="670" y2="380" class="bp-stroke bp-glass-reflection" stroke-width="0.8" opacity="0.4" />
+
+            <!-- Vertical Timber Slat Accents -->
+            <line x1="290" y1="340" x2="290" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+            <line x1="300" y1="340" x2="300" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+            <line x1="310" y1="340" x2="310" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+            <line x1="890" y1="340" x2="890" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+            <line x1="900" y1="340" x2="900" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+            <line x1="910" y1="340" x2="910" y2="560" class="bp-stroke bp-slat" stroke-width="1" />
+          </g>
+
+          <!-- Standing-Seam Zinc Roof, Dormer & Chimney (Phase 3) -->
+          <g class="bp-group bp-phase-3" id="bpRoofGroup">
+            <!-- Main Gabled Roof Outline -->
+            <polygon points="220,340 600,120 980,340" class="bp-stroke bp-roof-gable" stroke-width="3" />
+            
+            <!-- Standing Seams -->
+            <line x1="300" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="380" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="460" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="540" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="660" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="740" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="820" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+            <line x1="900" y1="340" x2="600" y2="120" class="bp-stroke bp-seam" stroke-width="1" opacity="0.6" />
+
+            <!-- Clerestory Dormer Window -->
+            <rect x="520" y="210" width="160" height="90" class="bp-stroke bp-dormer" stroke-width="2" />
+            <polygon points="500,210 600,165 700,210" class="bp-stroke bp-dormer-roof" stroke-width="2" />
+            <line x1="600" y1="210" x2="600" y2="300" class="bp-stroke bp-mullion" stroke-width="1.2" />
+
+            <!-- Stone Chimney Stack -->
+            <rect x="760" y="100" width="60" height="150" class="bp-stroke bp-chimney" stroke-width="2" />
+            <line x1="755" y1="100" x2="825" y2="100" class="bp-stroke bp-chimney-cap" stroke-width="3" />
+          </g>
+
+          <!-- Technical CAD Dimension Guidelines & Elevation Markers -->
+          <g class="bp-group bp-technical" id="bpTechGroup" opacity="0.6">
+            <!-- Ridge Height Datum -->
+            <line x1="160" y1="120" x2="1040" y2="120" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3" />
+            <text x="1050" y="124" class="bp-datum-text">EL +6.80 M · RIDGE</text>
+
+            <!-- Wall Plate Datum -->
+            <line x1="160" y1="340" x2="1040" y2="340" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3" />
+            <text x="1050" y="344" class="bp-datum-text">EL +3.40 M · EAVES</text>
+
+            <!-- Ground Plinth Datum -->
+            <line x1="160" y1="560" x2="1040" y2="560" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3" />
+            <text x="1050" y="564" class="bp-datum-text">EL +0.60 M · TERRACE</text>
+
+            <line x1="160" y1="640" x2="1040" y2="640" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3" />
+            <text x="1050" y="644" class="bp-datum-text">EL +0.00 M · GRANITE BASE</text>
+
+            <!-- Title Block & Coordinates -->
+            <text x="80" y="700" class="bp-stamp-title">SILVATIDE COTTAGE · DWG-01</text>
+            <text x="80" y="718" class="bp-stamp-meta">ARCHITECTURAL FRONT ELEVATION · 1:50 METRIC · 61° 29' 48" N</text>
+          </g>
+        </svg>
+
+        <!-- Hand-off Target Photo 7 (Seamless Photographic Crystallization) -->
+        <div id="bpPhotoTarget" class="bp-photo-target" aria-hidden="true">
+          <picture>
+            <source srcset={photo7Avif} type="image/avif" />
+            <source srcset={photo7} type="image/webp" />
+            <img src={photo7} alt="Silvatide Cottage completed front elevation in daylight" class="target-photo-img" />
+          </picture>
+        </div>
+      </div>
     </div>
 
     <!-- Editorial Milestone HUD -->
@@ -56,7 +136,7 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
           <span class="bp-milestone-pill" id="bpMilestoneTag">01. SITE & TOPOGRAPHY</span>
           <span class="bp-step-number" id="bpStepNumber">PHASE 01 / 04</span>
         </div>
-        <p class="bp-caption-text" id="bpCaption">Ancient granite contours capture the low Nordic sun across still water.</p>
+        <p class="bp-caption-text" id="bpCaption">Granite bedrock contours capture the low Nordic sun across still water.</p>
       </div>
 
       <div class="bp-progress-track">
@@ -64,7 +144,7 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       </div>
 
       <div class="bp-scrub-indicator">
-        <span class="bp-scrub-text">SCROLL TO CONSTRUCT</span>
+        <span class="bp-scrub-text">SCROLL TO MATERIALIZE</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
       </div>
     </div>
@@ -76,7 +156,7 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     position: relative;
     width: 100%;
     background: #0c0e12;
-    color: #f0f2f5;
+    color: #ffffff;
     overflow: hidden;
   }
 
@@ -130,13 +210,13 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
   .bp-subtitle {
     font-size: 0.95rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.65);
     margin: 0;
   }
 
-  /* Viewport */
-  .bp-viewport {
+  /* Stage Container */
+  .bp-stage {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -145,40 +225,71 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 6rem 4rem 8rem;
   }
 
-  .bp-canvas {
+  .bp-drawing-container {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    aspect-ratio: 16 / 10;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #101217;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .bp-svg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    position: relative;
     z-index: 3;
-    pointer-events: none;
+    color: rgba(255, 255, 255, 0.75);
   }
 
+  /* Strokes & Vector Drafting */
+  .bp-stroke {
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke-dashoffset 0.1s linear, opacity 0.3s ease;
+  }
+
+  .bp-datum-text,
+  .bp-stamp-meta {
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    fill: rgba(255, 255, 255, 0.5);
+  }
+
+  .bp-stamp-title {
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    fill: var(--accent, #e5a970);
+  }
+
+  /* Hand-off Target Photo 7 */
   .bp-photo-target {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
     z-index: 4;
     pointer-events: none;
     clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
     transition: clip-path 0.05s linear;
   }
 
-  .bp-dpr-poster {
-    position: absolute;
-    inset: 0;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+  .target-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   /* Milestone HUD */
@@ -192,9 +303,9 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
   }
 
   .bp-caption-card {
-    background: rgba(14, 16, 20, 0.68);
+    background: rgba(14, 16, 20, 0.75);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 1.25rem 1.6rem;
     max-width: 520px;
@@ -205,13 +316,13 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
   }
 
   .bp-milestone-pill {
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.16em;
     color: var(--accent, #e5a970);
     text-transform: uppercase;
   }
@@ -269,6 +380,12 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     .bp-pin-wrap {
       padding: 2rem 1.5rem;
     }
+    .bp-stage {
+      padding: 4rem 1.5rem 6rem;
+    }
+    .bp-drawing-container {
+      aspect-ratio: 4 / 3;
+    }
     .bp-hud {
       flex-direction: column;
       align-items: flex-start;
@@ -289,7 +406,7 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       height: auto;
       padding: 4rem 1.5rem;
     }
-    .bp-canvas {
+    .bp-svg {
       display: none;
     }
     .bp-photo-target {
@@ -309,61 +426,26 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
   function initBlueprintScrub() {
     const section = document.getElementById('chapter-drawing');
     const pinWrap = document.getElementById('bpPinWrap');
-    const canvas = document.getElementById('bpCanvas') as HTMLCanvasElement;
     const photoTarget = document.getElementById('bpPhotoTarget');
     const tagEl = document.getElementById('bpMilestoneTag');
     const captionEl = document.getElementById('bpCaption');
     const fillEl = document.getElementById('bpProgressFill');
     const stepEl = document.getElementById('bpStepNumber');
 
-    if (!section || !pinWrap || !canvas) return;
+    const group1 = document.getElementById('bpGroundGroup');
+    const group2 = document.getElementById('bpStructureGroup');
+    const group3 = document.getElementById('bpRoofGroup');
+    const groupTech = document.getElementById('bpTechGroup');
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!section || !pinWrap) return;
 
-    const baseUrl = (import.meta as any).env.BASE_URL.replace(/\/$/, '');
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const totalFrames = isMobile ? 60 : 120;
-    const frameFolder = isMobile ? `${baseUrl}/frames/blueprint/mobile` : `${baseUrl}/frames/blueprint`;
-    
     // Milestones
     const milestones = [
-      { progress: 0.00, tag: '01. SITE & TOPOGRAPHY', step: 'PHASE 01 / 04', text: 'Ancient granite contours capture the low Nordic sun across still water.' },
-      { progress: 0.32, tag: '02. STRUCTURAL FRAMING', step: 'PHASE 02 / 04', text: 'Larch timber post-and-beam system and exposed roof trusses.' },
-      { progress: 0.65, tag: '03. WEATHER ENVELOPE', step: 'PHASE 03 / 04', text: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
-      { progress: 0.88, tag: '04. LIVED-IN RETREAT', step: 'PHASE 04 / 04', text: 'Cottage completed on the lake shore with private terrace and canoe.' }
+      { progress: 0.00, tag: '01. SITE & TOPOGRAPHY', step: 'PHASE 01 / 04', text: 'Granite bedrock contours capture the low Nordic sun across still water.' },
+      { progress: 0.32, tag: '02. STRUCTURAL FRAMING', step: 'PHASE 02 / 04', text: 'Larch timber post-and-beam system and floor-to-ceiling glass fenestration.' },
+      { progress: 0.65, tag: '03. WEATHER ENVELOPE', step: 'PHASE 03 / 04', text: 'Standing-seam zinc roof, dormer clerestory, and charred vertical Yakisugi cladding.' },
+      { progress: 0.85, tag: '04. LIVED-IN RETREAT', step: 'PHASE 04 / 04', text: 'Cottage completed on the lake shore with private cedar terrace and water reflections.' }
     ];
-
-    // Frame preloading
-    const images: HTMLImageElement[] = [];
-    let loadedCount = 0;
-    let currentDrawnIndex = -1;
-
-    canvas.width = isMobile ? 720 : 1280;
-    canvas.height = isMobile ? 405 : 720;
-
-    for (let i = 0; i < totalFrames; i++) {
-      const img = new Image();
-      const pad = String(i).padStart(4, '0');
-      img.src = `${frameFolder}/frame-${pad}.webp`;
-      img.onload = () => {
-        loadedCount++;
-        if (i === 0 && currentDrawnIndex === -1) {
-          drawFrame(0);
-        }
-      };
-      images.push(img);
-    }
-
-    function drawFrame(idx: number) {
-      if (idx === currentDrawnIndex) return;
-      const img = images[idx];
-      if (img && img.complete) {
-        ctx?.clearRect(0, 0, canvas.width, canvas.height);
-        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        currentDrawnIndex = idx;
-      }
-    }
 
     // ScrollTrigger Pinned Scrub (~400svh)
     ScrollTrigger.create({
@@ -371,7 +453,7 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       pin: pinWrap,
       start: 'top top',
       end: '+=400%',
-      scrub: 0.5,
+      scrub: 0.6,
       anticipatePin: 1,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
@@ -379,10 +461,6 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
         // Progress bar fill
         if (fillEl) fillEl.style.width = `${p * 100}%`;
-
-        // Frame selection
-        const targetFrame = Math.min(Math.floor(p * totalFrames), totalFrames - 1);
-        drawFrame(targetFrame);
 
         // Milestone captions update
         let activeM = milestones[0];
@@ -394,10 +472,16 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
         if (captionEl && captionEl.textContent !== activeM.text) captionEl.textContent = activeM.text;
         if (stepEl && stepEl.textContent !== activeM.step) stepEl.textContent = activeM.step;
 
-        // Seamless wipe into Photo 7 at final stretch [0.85 -> 1.0]
+        // Vector phase opacities
+        if (group1) group1.style.opacity = `${Math.min(1.0, p * 3.5 + 0.2)}`;
+        if (group2) group2.style.opacity = `${Math.min(1.0, Math.max(0, (p - 0.25) * 4.0))}`;
+        if (group3) group3.style.opacity = `${Math.min(1.0, Math.max(0, (p - 0.55) * 4.0))}`;
+        if (groupTech) groupTech.style.opacity = `${Math.min(0.65, p * 1.5)}`;
+
+        // Seamless wipe into Photo 7 at final stretch [0.82 -> 1.0]
         if (photoTarget) {
-          if (p >= 0.85) {
-            const wipePct = Math.min(100, ((p - 0.85) / 0.15) * 100);
+          if (p >= 0.82) {
+            const wipePct = Math.min(100, ((p - 0.82) / 0.18) * 100);
             photoTarget.style.clipPath = `polygon(0 0, ${wipePct}% 0, ${wipePct}% 100%, 0 100%)`;
           } else {
             photoTarget.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';

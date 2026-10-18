@@ -253,18 +253,68 @@ const layerChips = [
       const center = box.getCenter(new THREE.Vector3());
       model.position.sub(center);
 
-      // Setup layer nodes and double-sided clipping materials
+      // Setup layer nodes
       model.traverse((child: any) => {
-        if (child.isMesh) {
-          child.material.side = THREE.DoubleSide;
-          child.material.clippingPlanes = [clipPlane];
-          child.material.clipShadows = true;
-          child.userData.origMaterial = child.material.clone();
-        }
         if (child.name && layerOffsets[child.name] !== undefined) {
           layerNodes[child.name] = child;
         }
       });
+
+      // Luxury Architectural Museum Model Materials (Eliminates AI texture mush!)
+      const architecturalMaterials: { [key: string]: any } = {
+        layer_foundation: new THREE.MeshStandardMaterial({
+          color: 0x1a1c22, // Honed Nordic dark granite slate
+          roughness: 0.85,
+          metalness: 0.1,
+          side: THREE.DoubleSide
+        }),
+        layer_floors: new THREE.MeshStandardMaterial({
+          color: 0x9b7852, // Oiled Finnish cedar decking
+          roughness: 0.65,
+          metalness: 0.05,
+          side: THREE.DoubleSide
+        }),
+        layer_walls_interior: new THREE.MeshStandardMaterial({
+          color: 0x16181d, // Charred Yakisugi / Shou Sugi Ban timber
+          roughness: 0.52,
+          metalness: 0.18,
+          side: THREE.DoubleSide
+        }),
+        layer_upper: new THREE.MeshStandardMaterial({
+          color: 0xc2a37b, // Blonde Scandinavian birch loft
+          roughness: 0.62,
+          metalness: 0.05,
+          side: THREE.DoubleSide
+        }),
+        layer_truss: new THREE.MeshStandardMaterial({
+          color: 0x856848, // Larch post-and-beam timber trusses
+          roughness: 0.72,
+          metalness: 0.05,
+          side: THREE.DoubleSide
+        }),
+        layer_roof: new THREE.MeshStandardMaterial({
+          color: 0x252932, // Standing-seam architectural milled zinc
+          roughness: 0.32,
+          metalness: 0.78,
+          side: THREE.DoubleSide
+        })
+      };
+
+      // Assign bespoke physical materials to each layer
+      for (const [name, node] of Object.entries(layerNodes)) {
+        const mat = architecturalMaterials[name];
+        if (mat) {
+          node.traverse((child: any) => {
+            if (child.isMesh) {
+              const layerMat = mat.clone();
+              layerMat.clippingPlanes = [clipPlane];
+              layerMat.clipShadows = true;
+              child.material = layerMat;
+              child.userData.baseMaterial = layerMat;
+            }
+          });
+        }
+      }
 
       scene.add(model);
       poster?.classList.add('hidden');
