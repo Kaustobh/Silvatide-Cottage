@@ -5,39 +5,43 @@ import imagesManifest from '../data/images.json';
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
-const layerChips = [
-  { id: 'all', label: 'All Layers' },
-  { id: 'layer_foundation', label: 'Foundation' },
-  { id: 'layer_floors', label: 'Deck & Slabs' },
-  { id: 'layer_walls_interior', label: 'Walls & Living' },
-  { id: 'layer_upper', label: 'Upper Loft' },
-  { id: 'layer_truss', label: 'Roof Trusses' },
-  { id: 'layer_roof', label: 'Zinc Roof' }
+const storyModes = [
+  { id: 'overview', key: '1', label: 'Overview', desc: 'Front 3/4 perspective of the complete timber & zinc retreat.' },
+  { id: 'dollhouse', key: '2', label: 'Dollhouse Interior', desc: 'High-angle view down into the furnished quarters & slate hearth.' },
+  { id: 'terrace', key: '3', label: 'Terrace & Hearth', desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.' },
+  { id: 'elevation', key: '4', label: 'Front Elevation', desc: 'Symmetrical front elevation view matching architectural drawings.' }
+];
+
+const hotspots = [
+  { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.18, 0.05, 0.15], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
+  { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [0.15, 0.05, 0.18], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
+  { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, 0.05, -0.22], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
+  { id: 'firepit', name: 'Lakeside Firepit', slug: 'firepit-night-close', pos: [0.38, -0.15, -0.18], desc: 'Monolithic concrete firepit perched on the edge of the granite shoreline.' }
 ];
 ---
 
 <section id="chapter-studio" class="studio-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
   <div class="studio-container">
-    <!-- Header -->
+    <!-- Editorial Header -->
     <div class="studio-header">
       <div class="studio-header-left">
         <span class="studio-eyebrow">CHAPTER II · 3D STUDIO</span>
-        <h2 class="studio-title sv-reveal-heading">Spatial Anatomy & Tectonic Isolation</h2>
+        <h2 class="studio-title sv-reveal-heading">Architectural Scale Model</h2>
       </div>
       <p class="studio-desc">
-        Interact with the physical layers of Silvatide Cottage. Explode the vertical envelope, isolate individual construction tiers, or execute an internal section cut.
+        Explore the physical scale model of Silvatide Cottage presented on a honed Finnish slate plinth. Orbit freely or select a curated architectural perspective.
       </p>
     </div>
 
     <!-- 3D Canvas Viewport -->
     <div class="studio-viewport-wrap" id="studioViewportWrap">
-      <canvas id="studioCanvas" class="studio-canvas" aria-label="Interactive 3D Architectural Cottage Studio"></canvas>
+      <canvas id="studioCanvas" class="studio-canvas" aria-label="Interactive 3D Architectural Cottage Scale Model"></canvas>
 
       <!-- Poster / Loading State -->
       <div id="studioPoster" class="studio-poster" style={`background-image: url('${posterUrl}')`}>
         <div class="studio-loader-card">
           <div class="loader-spinner"></div>
-          <span class="loader-text">Loading 3D Tectonic Model...</span>
+          <span class="loader-text">Materializing Architectural Model...</span>
         </div>
       </div>
 
@@ -45,14 +49,14 @@ const layerChips = [
       <div id="studioTouchOverlay" class="studio-touch-overlay">
         <button id="btnTouchInteract" class="touch-interact-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          TAP TO EXPLORE 3D SCENE
+          TAP TO EXPLORE 3D MODEL
         </button>
       </div>
 
       <!-- Hotspot Overlay Pins (projected from 3D) -->
       <div id="studioHotspotsContainer" class="studio-hotspots">
-        {studioConfig.hotspots.map((h) => (
-          <button class="hotspot-pin" data-id={h.id} data-slug={h.imageSlug} aria-label={`Inspect ${h.name}`}>
+        {hotspots.map((h) => (
+          <button class="hotspot-pin" data-id={h.id} data-slug={h.slug} aria-label={`Inspect ${h.name}`}>
             <span class="hotspot-pulse"></span>
             <span class="hotspot-dot"></span>
             <span class="hotspot-label">{h.name}</span>
@@ -60,10 +64,10 @@ const layerChips = [
         ))}
       </div>
 
-      <!-- Hotspot Detail Modal / Card -->
+      <!-- Hotspot Detail Card -->
       <div id="hotspotCard" class="hotspot-modal" hidden>
         <div class="hotspot-modal-inner">
-          <button id="btnCloseHotspot" class="modal-close" aria-label="Close modal">&times;</button>
+          <button id="btnCloseHotspot" class="modal-close" aria-label="Close card">&times;</button>
           <div class="hotspot-modal-media">
             <img id="hotspotModalImg" src="" alt="" loading="lazy" />
           </div>
@@ -75,539 +79,47 @@ const layerChips = [
         </div>
       </div>
 
-      <!-- Studio Floating Control Deck -->
-      <div class="studio-controls-deck">
-        <!-- Layer Selection Chips -->
-        <div class="ctrl-group ctrl-layers-row">
-          <span class="ctrl-group-label">LAYERS:</span>
-          <div class="layer-chips-scroll">
-            {layerChips.map((chip, idx) => (
-              <button class={`layer-chip ${idx === 0 ? 'active' : ''}`} data-layer={chip.id}>
-                {chip.label}
-              </button>
-            ))}
-          </div>
+      <!-- Mode Story Description Badge (Top Right) -->
+      <div class="studio-mode-badge" id="studioModeBadge">
+        <span class="badge-tag">PERSPECTIVE:</span>
+        <span class="badge-title" id="modeBadgeTitle">Overview</span>
+        <span class="badge-desc" id="modeBadgeDesc">Front 3/4 perspective of the complete timber & zinc retreat.</span>
+      </div>
+
+      <!-- Studio Floating Control Dock -->
+      <div class="studio-controls-dock">
+        <!-- Curated Modes -->
+        <div class="dock-modes-group">
+          {storyModes.map((mode, idx) => (
+            <button class={`dock-btn ${idx === 0 ? 'active' : ''}`} data-mode={mode.id} title={`${mode.label} (Key ${mode.key})`}>
+              <span class="btn-num">{mode.key}</span>
+              <span class="btn-label">{mode.label}</span>
+            </button>
+          ))}
         </div>
 
-        <div class="ctrl-row-bottom">
-          <!-- Explode Scrub Control -->
-          <div class="ctrl-group ctrl-explode">
-            <span class="ctrl-label">EXPLODE:</span>
-            <input type="range" id="explodeRange" min="0" max="1" step="0.01" value="0" aria-label="Explode cottage layers" />
-            <button id="btnResetView" class="ctrl-icon-btn" title="Reset View" aria-label="Reset Camera and Assembly">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            </button>
-          </div>
+        <!-- Turntable Toggle & Reset -->
+        <div class="dock-actions-group">
+          <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span class="action-label">TURNTABLE</span>
+          </button>
 
-          <!-- Mode Presets -->
-          <div class="ctrl-group ctrl-modes">
-            <button id="btnDollhouse" class="ctrl-mode-btn" data-mode="dollhouse">DOLLHOUSE</button>
-            <button id="btnSectionCut" class="ctrl-mode-btn" data-mode="section">SECTION CUT</button>
-          </div>
-
-          <!-- Camera Views -->
-          <div class="ctrl-group ctrl-views">
-            {studioConfig.cameraPresets.map((p) => (
-              <button class="ctrl-cam-btn" data-preset={p.id} title={`${p.label} (Key ${p.key})`}>
-                {p.label}
-              </button>
-            ))}
-          </div>
+          <button id="btnResetCamera" class="dock-action-btn" title="Reset Camera View">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span class="action-label">RESET</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<script>
-  let isStudioInitialized = false;
-
-  async function loadStudioModule() {
-    if (isStudioInitialized) return;
-    const canvas = document.getElementById('studioCanvas') as HTMLCanvasElement;
-    if (!canvas) return;
-
-    isStudioInitialized = true;
-
-    // Dynamic lazy-load Three.js and dependencies
-    const [THREE, { OrbitControls }, { GLTFLoader }, { MeshoptDecoder }, { gsap }, { studioConfig }] = await Promise.all([
-      import('three'),
-      import('three/examples/jsm/controls/OrbitControls.js'),
-      import('three/examples/jsm/loaders/GLTFLoader.js'),
-      import('meshoptimizer'),
-      import('gsap'),
-      import('../config/studio')
-    ]);
-
-    const poster = document.getElementById('studioPoster');
-    const touchOverlay = document.getElementById('studioTouchOverlay');
-    const btnTouch = document.getElementById('btnTouchInteract');
-    const explodeRange = document.getElementById('explodeRange') as HTMLInputElement;
-    const btnReset = document.getElementById('btnResetView');
-    const btnDollhouse = document.getElementById('btnDollhouse');
-    const btnSectionCut = document.getElementById('btnSectionCut');
-    const layerChips = document.querySelectorAll<HTMLButtonElement>('.layer-chip');
-    const camButtons = document.querySelectorAll<HTMLButtonElement>('.ctrl-cam-btn');
-    const hotspotPins = document.querySelectorAll<HTMLButtonElement>('.hotspot-pin');
-    const hotspotModal = document.getElementById('hotspotCard');
-    const hotspotModalImg = document.getElementById('hotspotModalImg') as HTMLImageElement;
-    const hotspotModalTitle = document.getElementById('hotspotModalTitle');
-    const hotspotModalDesc = document.getElementById('hotspotModalDesc');
-    const btnCloseHotspot = document.getElementById('btnCloseHotspot');
-
-    const baseUrl = (import.meta as any).env.BASE_URL.replace(/\/$/, '');
-
-    // Setup Renderer
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: window.innerWidth > 768,
-      powerPreference: 'high-performance',
-      alpha: true
-    });
-
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.localClippingEnabled = true;
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0e12);
-
-    // Camera & Controls
-    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
-    camera.position.set(0.9, 0.6, 1.1);
-
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.maxPolarAngle = Math.PI / 2 + 0.05;
-    controls.minDistance = 0.4;
-    controls.maxDistance = 3.5;
-
-    // High-End Nordic Lighting
-    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x2c221a, 1.3);
-    scene.add(hemiLight);
-
-    const sun = new THREE.DirectionalLight(0xffecd2, 2.5);
-    sun.position.set(5, 8, 4);
-    scene.add(sun);
-
-    const skyFill = new THREE.DirectionalLight(0x7890a8, 0.9);
-    skyFill.position.set(-5, 3, -3);
-    scene.add(skyFill);
-
-    const groundBounce = new THREE.DirectionalLight(0x3a3028, 0.5);
-    groundBounce.position.set(0, -3, 0);
-    scene.add(groundBounce);
-
-    // Floor Contact Shadow Plane
-    const shadowGeo = new THREE.PlaneGeometry(2.5, 2.5);
-    const shadowMat = new THREE.MeshBasicMaterial({
-      color: 0x050608,
-      transparent: true,
-      opacity: 0.4,
-      depthWrite: false
-    });
-    const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
-    shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.y = -0.42;
-    scene.add(shadowPlane);
-
-    // Section Clipping Plane
-    const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10.0); // inactive initially
-
-    // Load Split Layers Model & Metadata
-    const loader = new GLTFLoader();
-    loader.setMeshoptDecoder(MeshoptDecoder);
-
-    let model: any = null;
-    const layerNodes: { [key: string]: any } = {};
-    let layerOffsets: { [key: string]: number } = {};
-    let isRenderDemandActive = true;
-    let renderDemandTimer = 0;
-
-    function requestRender(durationMs = 1200) {
-      isRenderDemandActive = true;
-      clearTimeout(renderDemandTimer);
-      renderDemandTimer = window.setTimeout(() => {
-        isRenderDemandActive = false;
-      }, durationMs);
-    }
-
-    try {
-      const [layersRes, gltf] = await Promise.all([
-        fetch(`${baseUrl}/models/layers.json`).then(r => r.json()),
-        loader.loadAsync(`${baseUrl}/models/cottage-split-layers.glb`)
-      ]);
-
-      for (const l of layersRes.layers) {
-        layerOffsets[l.name] = l.assembledY || 0;
-      }
-
-      model = gltf.scene;
-
-      // Center model
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      model.position.sub(center);
-
-      // Setup layer nodes
-      model.traverse((child: any) => {
-        if (child.name && layerOffsets[child.name] !== undefined) {
-          layerNodes[child.name] = child;
-        }
-      });
-
-      // Luxury Architectural Museum Model Materials (Eliminates AI texture mush!)
-      const architecturalMaterials: { [key: string]: any } = {
-        layer_foundation: new THREE.MeshStandardMaterial({
-          color: 0x1a1c22, // Honed Nordic dark granite slate
-          roughness: 0.85,
-          metalness: 0.1,
-          side: THREE.DoubleSide
-        }),
-        layer_floors: new THREE.MeshStandardMaterial({
-          color: 0x9b7852, // Oiled Finnish cedar decking
-          roughness: 0.65,
-          metalness: 0.05,
-          side: THREE.DoubleSide
-        }),
-        layer_walls_interior: new THREE.MeshStandardMaterial({
-          color: 0x16181d, // Charred Yakisugi / Shou Sugi Ban timber
-          roughness: 0.52,
-          metalness: 0.18,
-          side: THREE.DoubleSide
-        }),
-        layer_upper: new THREE.MeshStandardMaterial({
-          color: 0xc2a37b, // Blonde Scandinavian birch loft
-          roughness: 0.62,
-          metalness: 0.05,
-          side: THREE.DoubleSide
-        }),
-        layer_truss: new THREE.MeshStandardMaterial({
-          color: 0x856848, // Larch post-and-beam timber trusses
-          roughness: 0.72,
-          metalness: 0.05,
-          side: THREE.DoubleSide
-        }),
-        layer_roof: new THREE.MeshStandardMaterial({
-          color: 0x252932, // Standing-seam architectural milled zinc
-          roughness: 0.32,
-          metalness: 0.78,
-          side: THREE.DoubleSide
-        })
-      };
-
-      // Assign bespoke physical materials to each layer
-      for (const [name, node] of Object.entries(layerNodes)) {
-        const mat = architecturalMaterials[name];
-        if (mat) {
-          node.traverse((child: any) => {
-            if (child.isMesh) {
-              const layerMat = mat.clone();
-              layerMat.clippingPlanes = [clipPlane];
-              layerMat.clipShadows = true;
-              child.material = layerMat;
-              child.userData.baseMaterial = layerMat;
-            }
-          });
-        }
-      }
-
-      scene.add(model);
-      poster?.classList.add('hidden');
-
-      // Initialize assembled positions (explode = 0)
-      updateExplode(0);
-      requestRender(3000);
-    } catch (err) {
-      console.error('Failed to load cottage split layers model:', err);
-    }
-
-    // Explode Control (Displaces layers based on layers.json assembled offsets)
-    let currentExplode = 0;
-    const extraSpreads: { [key: string]: number } = {
-      layer_foundation: -0.10,
-      layer_floors: -0.04,
-      layer_walls_interior: 0.03,
-      layer_upper: 0.10,
-      layer_truss: 0.18,
-      layer_roof: 0.26
-    };
-
-    function updateExplode(val: number) {
-      currentExplode = val;
-      if (!model) return;
-
-      for (const [name, node] of Object.entries(layerNodes)) {
-        const assembledY = layerOffsets[name] || 0;
-        const spread = extraSpreads[name] || 0;
-        // At 0: assembledY. At 1: spread.
-        node.position.y = (1 - val) * assembledY + val * spread;
-      }
-
-      // Camera dolly back slightly to maintain framing
-      camera.position.setLength(1.4 + val * 0.45);
-      requestRender();
-    }
-
-    explodeRange?.addEventListener('input', (e) => {
-      updateExplode(parseFloat((e.target as HTMLInputElement).value));
-    });
-
-    btnReset?.addEventListener('click', () => {
-      if (explodeRange) explodeRange.value = '0';
-      gsap.to({ val: currentExplode }, {
-        val: 0,
-        duration: 0.8,
-        ease: 'power2.out',
-        onUpdate: function() { updateExplode(this.targets()[0].val); }
-      });
-      isolateLayer('all');
-      if (isDollhouse) toggleDollhouse();
-      if (isSectionCutActive) toggleSectionCut();
-      tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
-    });
-
-    // Layer Isolation Chips
-    let activeIsolatedLayer = 'all';
-    function isolateLayer(layerId: string) {
-      activeIsolatedLayer = layerId;
-      layerChips.forEach(c => c.classList.toggle('active', c.dataset.layer === layerId));
-
-      for (const [name, node] of Object.entries(layerNodes)) {
-        const isSelected = layerId === 'all' || name === layerId;
-        node.traverse((child: any) => {
-          if (child.isMesh) {
-            if (isSelected) {
-              child.material.transparent = false;
-              child.material.opacity = 1.0;
-              child.material.depthWrite = true;
-            } else {
-              child.material.transparent = true;
-              child.material.opacity = 0.15;
-              child.material.depthWrite = false;
-            }
-          }
-        });
-      }
-      requestRender();
-    }
-
-    layerChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        const target = chip.dataset.layer || 'all';
-        isolateLayer(target);
-      });
-    });
-
-    // Camera Tweening
-    function tweenCamera(pos: [number, number, number], target: [number, number, number]) {
-      gsap.to(camera.position, {
-        x: pos[0],
-        y: pos[1],
-        z: pos[2],
-        duration: 1.2,
-        ease: 'power3.inOut',
-        onUpdate: () => requestRender(200)
-      });
-      gsap.to(controls.target, {
-        x: target[0],
-        y: target[1],
-        z: target[2],
-        duration: 1.2,
-        ease: 'power3.inOut',
-        onUpdate: () => {
-          controls.update();
-          requestRender(200);
-        }
-      });
-    }
-
-    camButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.preset;
-        const preset = studioConfig.cameraPresets.find((p) => p.id === id);
-        if (preset) {
-          tweenCamera(preset.position, preset.target);
-        }
-      });
-    });
-
-    // Keyboard Shortcuts (1-6)
-    window.addEventListener('keydown', (e) => {
-      const num = parseInt(e.key);
-      if (num >= 1 && num <= studioConfig.cameraPresets.length) {
-        const preset = studioConfig.cameraPresets[num - 1];
-        if (preset) tweenCamera(preset.position, preset.target);
-      }
-      if (e.key === 'Escape') {
-        if (hotspotModal && !hotspotModal.hasAttribute('hidden')) {
-          hotspotModal.setAttribute('hidden', '');
-        }
-        if (activeIsolatedLayer !== 'all') isolateLayer('all');
-      }
-    });
-
-    // Dollhouse Mode (Looks down at 55°, fades roof & truss)
-    let isDollhouse = false;
-    function toggleDollhouse() {
-      isDollhouse = !isDollhouse;
-      btnDollhouse?.classList.toggle('active', isDollhouse);
-
-      if (isDollhouse) {
-        tweenCamera([0.0, 1.1, 0.75], [0, -0.05, 0]);
-        // Fade roof and truss
-        ['layer_roof', 'layer_truss'].forEach(name => {
-          layerNodes[name]?.traverse((c: any) => {
-            if (c.isMesh) {
-              c.material.transparent = true;
-              c.material.opacity = 0.08;
-              c.material.depthWrite = false;
-            }
-          });
-        });
-      } else {
-        tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
-        isolateLayer(activeIsolatedLayer);
-      }
-      requestRender();
-    }
-    btnDollhouse?.addEventListener('click', toggleDollhouse);
-
-    // Section Cut (Animated Y Clipping Plane)
-    let isSectionCutActive = false;
-    let sectionCutTween: any = null;
-    function toggleSectionCut() {
-      isSectionCutActive = !isSectionCutActive;
-      btnSectionCut?.classList.toggle('active', isSectionCutActive);
-
-      if (sectionCutTween) sectionCutTween.kill();
-
-      if (isSectionCutActive) {
-        clipPlane.constant = 0.45;
-        sectionCutTween = gsap.to(clipPlane, {
-          constant: -0.2,
-          duration: 3.5,
-          repeat: -1,
-          yoyo: true,
-          ease: 'power1.inOut',
-          onUpdate: () => requestRender(100)
-        });
-      } else {
-        clipPlane.constant = 10.0;
-        requestRender();
-      }
-    }
-    btnSectionCut?.addEventListener('click', toggleSectionCut);
-
-    // Hotspots Setup
-    hotspotPins.forEach((pin) => {
-      pin.addEventListener('click', () => {
-        const id = pin.dataset.id;
-        const hotspot = studioConfig.hotspots.find((h) => h.id === id);
-        if (!hotspot || !hotspotModal) return;
-
-        const imgData = (imagesManifest as any)[hotspot.imageSlug];
-        if (hotspotModalImg && imgData) {
-          hotspotModalImg.src = `${baseUrl}/images/optimized/${imgData.formats.webp['960'].file}`;
-          hotspotModalImg.alt = imgData.alt;
-        }
-
-        if (hotspotModalTitle) hotspotModalTitle.textContent = hotspot.name;
-        if (hotspotModalDesc) hotspotModalDesc.textContent = hotspot.desc;
-
-        hotspotModal.removeAttribute('hidden');
-      });
-    });
-
-    btnCloseHotspot?.addEventListener('click', () => {
-      hotspotModal?.setAttribute('hidden', '');
-    });
-
-    // Touch overlay for mobile
-    btnTouch?.addEventListener('click', () => {
-      touchOverlay?.classList.add('hidden');
-    });
-
-    // Project Hotspot Pins to Screen Space
-    const tempVec = new THREE.Vector3();
-    function updateHotspots() {
-      if (!model) return;
-      const widthHalf = canvas.clientWidth / 2;
-      const heightHalf = canvas.clientHeight / 2;
-
-      hotspotPins.forEach((pin) => {
-        const id = pin.dataset.id;
-        const hotspot = studioConfig.hotspots.find((h) => h.id === id);
-        if (!hotspot) return;
-
-        tempVec.set(hotspot.position[0], hotspot.position[1], hotspot.position[2]);
-        tempVec.project(camera);
-
-        const isBehind = tempVec.z > 1;
-        if (isBehind) {
-          pin.style.display = 'none';
-          return;
-        }
-
-        pin.style.display = 'flex';
-        const x = tempVec.x * widthHalf + widthHalf;
-        const y = -tempVec.y * heightHalf + heightHalf;
-        pin.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-      });
-    }
-
-    // Render Governor & Resize
-    controls.addEventListener('change', () => {
-      requestRender();
-      updateHotspots();
-    });
-
-    const onResize = () => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-      requestRender(500);
-      updateHotspots();
-    };
-    window.addEventListener('resize', onResize);
-
-    // Animation Loop
-    function animate() {
-      requestAnimationFrame(animate);
-      if (controls.update()) {
-        requestRender();
-      }
-      if (isRenderDemandActive) {
-        renderer.render(scene, camera);
-        updateHotspots();
-      }
-    }
-    animate();
-    updateHotspots();
-  }
-
-  // IntersectionObserver to warm up / initialize Studio
-  const studioObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          loadStudioModule();
-          studioObserver.disconnect();
-        }
-      });
-    },
-    { rootMargin: '300px 0px' }
-  );
-
-  const sectionEl = document.getElementById('chapter-studio');
-  if (sectionEl) studioObserver.observe(sectionEl);
-</script>
 
 <style>
   .studio-section {
@@ -667,13 +179,13 @@ const layerChips = [
   .studio-viewport-wrap {
     position: relative;
     width: 100%;
-    height: 74vh;
-    min-height: 540px;
-    max-height: 820px;
+    height: 76vh;
+    min-height: 560px;
+    max-height: 840px;
     border-radius: 28px;
     overflow: hidden;
-    background: radial-gradient(circle at center, #14171d 0%, #0a0b0e 100%);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    background: radial-gradient(circle at 50% 45%, #15181f 0%, #090a0d 100%);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -818,7 +330,7 @@ const layerChips = [
   }
 
   .hotspot-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.1em;
     color: #ffffff;
@@ -838,12 +350,12 @@ const layerChips = [
     transform: translateX(0);
   }
 
-  /* Hotspot Detail Modal */
+  /* Hotspot Detail Card */
   .hotspot-modal {
     position: absolute;
-    bottom: 6rem;
+    bottom: 5.5rem;
     right: 2rem;
-    width: 340px;
+    width: 330px;
     z-index: 30;
     animation: fadeIn 0.3s ease;
   }
@@ -911,149 +423,144 @@ const layerChips = [
     margin: 0;
   }
 
-  /* Control Deck */
-  .studio-controls-deck {
+  /* Mode Story Badge (Top Right) */
+  .studio-mode-badge {
     position: absolute;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    right: 1.5rem;
-    z-index: 20;
+    top: 1.75rem;
+    right: 2rem;
+    z-index: 10;
+    background: rgba(14, 16, 20, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 0.9rem 1.4rem;
+    max-width: 320px;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    background: rgba(14, 16, 20, 0.78);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 0.9rem 1.4rem;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    gap: 0.25rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
   }
 
-  .ctrl-layers-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .ctrl-group-label {
-    font-size: 0.7rem;
+  .badge-tag {
+    font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: 0.18em;
     color: var(--accent, #e5a970);
+    text-transform: uppercase;
+  }
+
+  .badge-title {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: #ffffff;
+  }
+
+  .badge-desc {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  /* Floating Control Dock (Bottom) */
+  .studio-controls-dock {
+    position: absolute;
+    bottom: 1.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: rgba(14, 16, 20, 0.78);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    padding: 0.5rem 0.75rem 0.5rem 1.25rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
     white-space: nowrap;
   }
 
-  .layer-chips-scroll {
+  .dock-modes-group {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
 
-  .layer-chips-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  .layer-chip {
+  .dock-btn {
     background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.75);
-    padding: 0.35rem 0.85rem;
+    padding: 0.45rem 0.95rem;
     border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.04em;
     cursor: pointer;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     transition: all 0.2s ease;
   }
 
-  .layer-chip:hover {
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.3);
+  .btn-num {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.7rem;
+    opacity: 0.5;
   }
 
-  .layer-chip.active {
+  .dock-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .dock-btn.active {
     background: #ffffff;
     color: #0c0d0e;
     border-color: #ffffff;
     font-weight: 600;
   }
 
-  .ctrl-row-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.5rem;
+  .dock-btn.active .btn-num {
+    opacity: 1;
+    color: var(--accent, #e5a970);
   }
 
-  .ctrl-group {
+  .dock-actions-group {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.5rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .ctrl-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    color: rgba(255, 255, 255, 0.6);
-  }
-
-  .ctrl-explode input[type="range"] {
-    width: 130px;
-    height: 4px;
-    accent-color: var(--accent, #e5a970);
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    cursor: ew-resize;
-  }
-
-  .ctrl-icon-btn {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .ctrl-icon-btn:hover {
-    background: #ffffff;
-    color: #0c0d0e;
-  }
-
-  .ctrl-mode-btn,
-  .ctrl-cam-btn {
+  .dock-action-btn {
     background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     transition: all 0.2s ease;
   }
 
-  .ctrl-mode-btn:hover,
-  .ctrl-cam-btn:hover {
+  .dock-action-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
   }
 
-  .ctrl-mode-btn.active {
-    background: var(--accent, #e5a970);
-    color: #0c0d0e;
+  .dock-action-btn.active {
+    background: rgba(229, 169, 112, 0.2);
     border-color: var(--accent, #e5a970);
+    color: var(--accent, #e5a970);
   }
 
   @media (max-width: 992px) {
@@ -1062,19 +569,433 @@ const layerChips = [
       align-items: flex-start;
       gap: 1rem;
     }
-    .ctrl-row-bottom {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
+    .studio-mode-badge {
+      display: none;
     }
-    .ctrl-views {
+    .studio-controls-dock {
+      width: 92%;
+      overflow-x: auto;
+      justify-content: flex-start;
+      border-radius: 18px;
+      scrollbar-width: none;
+    }
+    .studio-controls-dock::-webkit-scrollbar {
       display: none;
     }
     .hotspot-modal {
       right: 1.5rem;
       left: 1.5rem;
       width: auto;
-      bottom: 8rem;
+      bottom: 6rem;
     }
   }
 </style>
+
+<script>
+  let isStudioInitialized = false;
+
+  async function loadStudioModule() {
+    if (isStudioInitialized) return;
+    const canvas = document.getElementById('studioCanvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    isStudioInitialized = true;
+
+    // Dynamic lazy-load Three.js and dependencies
+    const [THREE, { OrbitControls }, { GLTFLoader }, { MeshoptDecoder }, { gsap }] = await Promise.all([
+      import('three'),
+      import('three/examples/jsm/controls/OrbitControls.js'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
+      import('meshoptimizer'),
+      import('gsap')
+    ]);
+
+    const poster = document.getElementById('studioPoster');
+    const touchOverlay = document.getElementById('studioTouchOverlay');
+    const btnTouch = document.getElementById('btnTouchInteract');
+    const btnAutoRotate = document.getElementById('btnAutoRotate');
+    const btnResetCamera = document.getElementById('btnResetCamera');
+    const dockButtons = document.querySelectorAll<HTMLButtonElement>('.dock-btn');
+    const modeTitle = document.getElementById('modeBadgeTitle');
+    const modeDesc = document.getElementById('modeBadgeDesc');
+    const hotspotPins = document.querySelectorAll<HTMLButtonElement>('.hotspot-pin');
+    const hotspotModal = document.getElementById('hotspotCard');
+    const hotspotModalImg = document.getElementById('hotspotModalImg') as HTMLImageElement;
+    const hotspotModalTitle = document.getElementById('hotspotModalTitle');
+    const hotspotModalDesc = document.getElementById('hotspotModalDesc');
+    const btnCloseHotspot = document.getElementById('btnCloseHotspot');
+
+    const baseUrl = (import.meta as any).env.BASE_URL.replace(/\/$/, '');
+
+    // Setup High-End WebGL Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance',
+      alpha: true
+    });
+
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+
+    // Camera & Constrained Orbit Controls (Zero underbelly viewing!)
+    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
+    camera.position.set(1.15, 0.6, 1.25);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.maxPolarAngle = Math.PI / 2 - 0.08; // 85 max angle: prevents camera flipping underneath!
+    controls.minPolarAngle = Math.PI / 6;         // 30 min angle
+    controls.minDistance = 0.8;
+    controls.maxDistance = 2.8;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
+
+    // Nordic Studio Key & Rim Lighting
+    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x1e1814, 1.5);
+    scene.add(hemiLight);
+
+    const keySun = new THREE.DirectionalLight(0xffeedd, 2.6);
+    keySun.position.set(5, 7, 4);
+    scene.add(keySun);
+
+    const coolRim = new THREE.DirectionalLight(0x78a0d0, 1.6);
+    coolRim.position.set(-5, 4, -4);
+    scene.add(coolRim);
+
+    const groundBounce = new THREE.DirectionalLight(0x443224, 0.6);
+    groundBounce.position.set(0, -3, 0);
+    scene.add(groundBounce);
+
+    // Architectural Gallery Slate Pedestal
+    const pedestalGeo = new THREE.CylinderGeometry(1.4, 1.45, 0.04, 64);
+    const pedestalMat = new THREE.MeshStandardMaterial({
+      color: 0x14161a,
+      roughness: 0.85,
+      metalness: 0.15
+    });
+    const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+    pedestal.position.y = -0.32;
+    scene.add(pedestal);
+
+    // Subtle Gold Hairline Perimeter Ring
+    const ringGeo = new THREE.RingGeometry(1.36, 1.38, 64);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0xe5a970,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = -0.299;
+    scene.add(ring);
+
+    // Contact Shadow Plane
+    const shadowGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      color: 0x050608,
+      transparent: true,
+      opacity: 0.55,
+      depthWrite: false
+    });
+    const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = -0.298;
+    scene.add(shadow);
+
+    // Load Clean Assembled Model (Model B: cottage-assembled.glb)
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
+    let model: any = null;
+    let isRenderDemandActive = true;
+    let renderDemandTimer = 0;
+
+    function requestRender(durationMs = 1500) {
+      isRenderDemandActive = true;
+      clearTimeout(renderDemandTimer);
+      renderDemandTimer = window.setTimeout(() => {
+        isRenderDemandActive = false;
+      }, durationMs);
+    }
+
+    try {
+      const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
+      model = gltf.scene;
+
+      // Center model
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+
+      const targetScale = 1.25 / maxDim;
+      model.scale.setScalar(targetScale);
+      model.position.sub(center.multiplyScalar(targetScale));
+      // Ground exactly on top of pedestal
+      model.position.y += (size.y * targetScale) / 2 - 0.18;
+
+      // Luxury Architectural Museum Model Materials (Yakisugi + Zinc + Oiled Cedar)
+      model.traverse((child: any) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: 0x181a1f,   // Deep charred Yakisugi timber
+            roughness: 0.58,    // Satin finish
+            metalness: 0.22,    // Subtle crisp sheen
+            side: THREE.DoubleSide
+          });
+        }
+      });
+
+      scene.add(model);
+      poster?.classList.add('hidden');
+      requestRender(3500);
+    } catch (err) {
+      console.error('Failed to load cottage-assembled model:', err);
+    }
+
+    // Storytelling Camera Presets
+    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string } } = {
+      overview: {
+        pos: [1.15, 0.6, 1.25],
+        target: [0, -0.05, 0],
+        title: 'Overview',
+        desc: 'Front 3/4 perspective of the complete timber & zinc retreat.'
+      },
+      dollhouse: {
+        pos: [0.0, 1.35, 0.75],
+        target: [0, -0.05, 0],
+        title: 'Dollhouse Interior',
+        desc: 'High-angle view down into the furnished quarters & slate hearth.'
+      },
+      terrace: {
+        pos: [0.75, 0.15, -0.65],
+        target: [0.15, -0.1, 0.0],
+        title: 'Terrace & Hearth',
+        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.'
+      },
+      elevation: {
+        pos: [0.0, 0.15, 1.55],
+        target: [0, 0, 0],
+        title: 'Front Elevation',
+        desc: 'Symmetrical front elevation view matching architectural drawings.'
+      }
+    };
+
+    function tweenCamera(pos: [number, number, number], target: [number, number, number]) {
+      controls.autoRotate = false;
+      btnAutoRotate?.classList.remove('active');
+
+      gsap.to(camera.position, {
+        x: pos[0],
+        y: pos[1],
+        z: pos[2],
+        duration: 1.3,
+        ease: 'power3.inOut',
+        onUpdate: () => requestRender(200)
+      });
+      gsap.to(controls.target, {
+        x: target[0],
+        y: target[1],
+        z: target[2],
+        duration: 1.3,
+        ease: 'power3.inOut',
+        onUpdate: () => {
+          controls.update();
+          requestRender(200);
+        }
+      });
+    }
+
+    // Dock Buttons
+    dockButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        if (!mode || !presets[mode]) return;
+
+        dockButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const p = presets[mode];
+        if (modeTitle) modeTitle.textContent = p.title;
+        if (modeDesc) modeDesc.textContent = p.desc;
+
+        tweenCamera(p.pos, p.target);
+      });
+    });
+
+    // Auto-Rotate Turntable Toggle
+    btnAutoRotate?.addEventListener('click', () => {
+      controls.autoRotate = !controls.autoRotate;
+      btnAutoRotate.classList.toggle('active', controls.autoRotate);
+      requestRender(3000);
+    });
+
+    // Reset Camera Button
+    btnResetCamera?.addEventListener('click', () => {
+      dockButtons.forEach((b, i) => b.classList.toggle('active', i === 0));
+      const p = presets.overview;
+      if (modeTitle) modeTitle.textContent = p.title;
+      if (modeDesc) modeDesc.textContent = p.desc;
+      tweenCamera(p.pos, p.target);
+      controls.autoRotate = true;
+      btnAutoRotate?.classList.add('active');
+    });
+
+    // Keyboard Shortcuts (1-4)
+    window.addEventListener('keydown', (e) => {
+      const modeKeys = ['overview', 'dollhouse', 'terrace', 'elevation'];
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 4) {
+        const mode = modeKeys[num - 1];
+        const btn = document.querySelector(`.dock-btn[data-mode="${mode}"]`) as HTMLButtonElement;
+        btn?.click();
+      }
+      if (e.key === 'Escape') {
+        hotspotModal?.setAttribute('hidden', '');
+      }
+    });
+
+    // Hotspots Setup
+    hotspotPins.forEach((pin) => {
+      pin.addEventListener('click', () => {
+        const id = pin.dataset.id;
+        const hotspot = [
+          { id: 'living', name: 'Living Pavilion', slug: 'living-fireplace', pos: [-0.18, 0.05, 0.15], desc: 'Built-in Finnish slate hearth and uninterrupted panoramic lake views.' },
+          { id: 'kitchen', name: 'Culinary Bay', slug: 'kitchen', pos: [0.15, 0.05, 0.18], desc: 'Solid oiled Nordic birch cabinetry with cast bronze accents.' },
+          { id: 'bedroom', name: 'Primary Suite', slug: 'bedroom', pos: [-0.15, 0.05, -0.22], desc: 'Acoustic timber slat cladding with eastern morning forest orientation.' },
+          { id: 'firepit', name: 'Lakeside Firepit', slug: 'firepit-night-close', pos: [0.38, -0.15, -0.18], desc: 'Monolithic concrete firepit perched on the edge of the granite shoreline.' }
+        ].find((h) => h.id === id);
+
+        if (!hotspot || !hotspotModal) return;
+
+        const imgData = (imagesManifest as any)[hotspot.slug];
+        if (hotspotModalImg && imgData) {
+          hotspotModalImg.src = `${baseUrl}/images/optimized/${imgData.formats.webp['960'].file}`;
+          hotspotModalImg.alt = imgData.alt;
+        }
+
+        if (hotspotModalTitle) hotspotModalTitle.textContent = hotspot.name;
+        if (hotspotModalDesc) hotspotModalDesc.textContent = hotspot.desc;
+
+        hotspotModal.removeAttribute('hidden');
+
+        // Focus camera slightly toward the hotspot
+        tweenCamera([hotspot.pos[0] * 1.5 + 0.6, hotspot.pos[1] + 0.3, hotspot.pos[2] * 1.5 + 0.6], [hotspot.pos[0], hotspot.pos[1], hotspot.pos[2]]);
+      });
+    });
+
+    btnCloseHotspot?.addEventListener('click', () => {
+      hotspotModal?.setAttribute('hidden', '');
+    });
+
+    btnTouch?.addEventListener('click', () => {
+      touchOverlay?.classList.add('hidden');
+    });
+
+    // Project Hotspot Pins
+    const tempVec = new THREE.Vector3();
+    const hotspotCoords: { [key: string]: [number, number, number] } = {
+      living: [-0.18, 0.05, 0.15],
+      kitchen: [0.15, 0.05, 0.18],
+      bedroom: [-0.15, 0.05, -0.22],
+      firepit: [0.38, -0.15, -0.18]
+    };
+
+    function updateHotspots() {
+      if (!model) return;
+      const widthHalf = canvas.clientWidth / 2;
+      const heightHalf = canvas.clientHeight / 2;
+
+      hotspotPins.forEach((pin) => {
+        const id = pin.dataset.id;
+        const coords = id ? hotspotCoords[id] : null;
+        if (!coords) return;
+
+        tempVec.set(coords[0], coords[1], coords[2]);
+        tempVec.project(camera);
+
+        const isBehind = tempVec.z > 1;
+        if (isBehind) {
+          pin.style.display = 'none';
+          return;
+        }
+
+        pin.style.display = 'flex';
+        const x = tempVec.x * widthHalf + widthHalf;
+        const y = -tempVec.y * heightHalf + heightHalf;
+        pin.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      });
+    }
+
+    // Auto-Resume Turntable after user idle
+    let userIdleTimeout: any = null;
+    controls.addEventListener('start', () => {
+      clearTimeout(userIdleTimeout);
+      controls.autoRotate = false;
+      btnAutoRotate?.classList.remove('active');
+    });
+
+    controls.addEventListener('end', () => {
+      clearTimeout(userIdleTimeout);
+      userIdleTimeout = setTimeout(() => {
+        controls.autoRotate = true;
+        btnAutoRotate?.classList.add('active');
+        requestRender(5000);
+      }, 4000);
+    });
+
+    controls.addEventListener('change', () => {
+      requestRender();
+      updateHotspots();
+    });
+
+    const onResize = () => {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      requestRender(500);
+      updateHotspots();
+    };
+    window.addEventListener('resize', onResize);
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      if (controls.update() || controls.autoRotate) {
+        requestRender();
+      }
+      if (isRenderDemandActive) {
+        renderer.render(scene, camera);
+        updateHotspots();
+      }
+    }
+    animate();
+    updateHotspots();
+  }
+
+  // IntersectionObserver to warm up / initialize Studio
+  const studioObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadStudioModule();
+          studioObserver.disconnect();
+        }
+      });
+    },
+    { rootMargin: '300px 0px' }
+  );
+
+  const sectionEl = document.getElementById('chapter-studio');
+  if (sectionEl) studioObserver.observe(sectionEl);
+</script>
