@@ -4,6 +4,16 @@ import imagesManifest from '../data/images.json';
 
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
+
+const layerChips = [
+  { id: 'all', label: 'All Layers' },
+  { id: 'layer_foundation', label: 'Foundation' },
+  { id: 'layer_floors', label: 'Deck & Slabs' },
+  { id: 'layer_walls_interior', label: 'Walls & Living' },
+  { id: 'layer_upper', label: 'Upper Loft' },
+  { id: 'layer_truss', label: 'Roof Trusses' },
+  { id: 'layer_roof', label: 'Zinc Roof' }
+];
 ---
 
 <section id="chapter-studio" class="studio-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
@@ -12,10 +22,10 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     <div class="studio-header">
       <div class="studio-header-left">
         <span class="studio-eyebrow">CHAPTER II · 3D STUDIO</span>
-        <h2 class="studio-title sv-reveal-heading">Spatial Architecture Inspection</h2>
+        <h2 class="studio-title sv-reveal-heading">Spatial Anatomy & Tectonic Isolation</h2>
       </div>
       <p class="studio-desc">
-        Explore the structural framing, inspect the furnished interior quarters, or execute section cuts through the Scandinavian timber envelope.
+        Interact with the physical layers of Silvatide Cottage. Explode the vertical envelope, isolate individual construction tiers, or execute an internal section cut.
       </p>
     </div>
 
@@ -27,7 +37,7 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       <div id="studioPoster" class="studio-poster" style={`background-image: url('${posterUrl}')`}>
         <div class="studio-loader-card">
           <div class="loader-spinner"></div>
-          <span class="loader-text">Loading 3D Architectural Scene...</span>
+          <span class="loader-text">Loading 3D Tectonic Model...</span>
         </div>
       </div>
 
@@ -67,28 +77,42 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
       <!-- Studio Floating Control Deck -->
       <div class="studio-controls-deck">
-        <!-- Explode Scrub Control -->
-        <div class="ctrl-group ctrl-explode">
-          <span class="ctrl-label">EXPLODE</span>
-          <input type="range" id="explodeRange" min="0" max="1" step="0.01" value="0" aria-label="Explode cottage layers" />
-          <button id="btnResetView" class="ctrl-icon-btn" title="Reset View" aria-label="Reset Camera and Assembly">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          </button>
+        <!-- Layer Selection Chips -->
+        <div class="ctrl-group ctrl-layers-row">
+          <span class="ctrl-group-label">LAYERS:</span>
+          <div class="layer-chips-scroll">
+            {layerChips.map((chip, idx) => (
+              <button class={`layer-chip ${idx === 0 ? 'active' : ''}`} data-layer={chip.id}>
+                {chip.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <!-- Mode Presets -->
-        <div class="ctrl-group ctrl-modes">
-          <button id="btnDollhouse" class="ctrl-mode-btn" data-mode="dollhouse">DOLLHOUSE</button>
-          <button id="btnSectionCut" class="ctrl-mode-btn" data-mode="section">SECTION CUT</button>
-        </div>
-
-        <!-- Camera Views -->
-        <div class="ctrl-group ctrl-views">
-          {studioConfig.cameraPresets.map((p) => (
-            <button class="ctrl-cam-btn" data-preset={p.id} title={`${p.label} (Key ${p.key})`}>
-              {p.label}
+        <div class="ctrl-row-bottom">
+          <!-- Explode Scrub Control -->
+          <div class="ctrl-group ctrl-explode">
+            <span class="ctrl-label">EXPLODE:</span>
+            <input type="range" id="explodeRange" min="0" max="1" step="0.01" value="0" aria-label="Explode cottage layers" />
+            <button id="btnResetView" class="ctrl-icon-btn" title="Reset View" aria-label="Reset Camera and Assembly">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             </button>
-          ))}
+          </div>
+
+          <!-- Mode Presets -->
+          <div class="ctrl-group ctrl-modes">
+            <button id="btnDollhouse" class="ctrl-mode-btn" data-mode="dollhouse">DOLLHOUSE</button>
+            <button id="btnSectionCut" class="ctrl-mode-btn" data-mode="section">SECTION CUT</button>
+          </div>
+
+          <!-- Camera Views -->
+          <div class="ctrl-group ctrl-views">
+            {studioConfig.cameraPresets.map((p) => (
+              <button class="ctrl-cam-btn" data-preset={p.id} title={`${p.label} (Key ${p.key})`}>
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -115,8 +139,6 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       import('../config/studio')
     ]);
 
-    await MeshoptDecoder.ready;
-
     const poster = document.getElementById('studioPoster');
     const touchOverlay = document.getElementById('studioTouchOverlay');
     const btnTouch = document.getElementById('btnTouchInteract');
@@ -124,6 +146,7 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     const btnReset = document.getElementById('btnResetView');
     const btnDollhouse = document.getElementById('btnDollhouse');
     const btnSectionCut = document.getElementById('btnSectionCut');
+    const layerChips = document.querySelectorAll<HTMLButtonElement>('.layer-chip');
     const camButtons = document.querySelectorAll<HTMLButtonElement>('.ctrl-cam-btn');
     const hotspotPins = document.querySelectorAll<HTMLButtonElement>('.hotspot-pin');
     const hotspotModal = document.getElementById('hotspotCard');
@@ -146,13 +169,14 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.localClippingEnabled = true;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0c0e12);
 
     // Camera & Controls
-    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 100);
+    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
     camera.position.set(0.9, 0.6, 1.1);
 
     const controls = new OrbitControls(camera, canvas);
@@ -160,37 +184,47 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     controls.dampingFactor = 0.08;
     controls.maxPolarAngle = Math.PI / 2 + 0.05;
     controls.minDistance = 0.4;
-    controls.maxDistance = 4.0;
+    controls.maxDistance = 3.5;
 
-    // Lighting
-    const ambLight = new THREE.AmbientLight(0xfff8ee, 1.6);
-    scene.add(ambLight);
+    // High-End Nordic Lighting
+    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x2c221a, 1.3);
+    scene.add(hemiLight);
 
-    const sun = new THREE.DirectionalLight(0xffeedd, 2.5);
-    sun.position.set(4, 7, 5);
+    const sun = new THREE.DirectionalLight(0xffecd2, 2.5);
+    sun.position.set(5, 8, 4);
     scene.add(sun);
 
-    const fillSun = new THREE.DirectionalLight(0x88b0dd, 1.2);
-    fillSun.position.set(-4, 3, -4);
-    scene.add(fillSun);
+    const skyFill = new THREE.DirectionalLight(0x7890a8, 0.9);
+    skyFill.position.set(-5, 3, -3);
+    scene.add(skyFill);
+
+    const groundBounce = new THREE.DirectionalLight(0x3a3028, 0.5);
+    groundBounce.position.set(0, -3, 0);
+    scene.add(groundBounce);
 
     // Floor Contact Shadow Plane
-    const shadowGeo = new THREE.PlaneGeometry(3, 3);
-    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+    const shadowGeo = new THREE.PlaneGeometry(2.5, 2.5);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      color: 0x050608,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false
+    });
     const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
     shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.y = -0.15;
+    shadowPlane.position.y = -0.42;
     scene.add(shadowPlane);
 
-    // Clipping plane for section cut
-    const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10); // inactive by default
+    // Section Clipping Plane
+    const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 10.0); // inactive initially
 
-    // Load Model
+    // Load Split Layers Model & Metadata
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: any = null;
-    let meshes: any[] = [];
+    const layerNodes: { [key: string]: any } = {};
+    let layerOffsets: { [key: string]: number } = {};
     let isRenderDemandActive = true;
     let renderDemandTimer = 0;
 
@@ -203,46 +237,69 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     }
 
     try {
-      const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
+      const [layersRes, gltf] = await Promise.all([
+        fetch(`${baseUrl}/models/layers.json`).then(r => r.json()),
+        loader.loadAsync(`${baseUrl}/models/cottage-split-layers.glb`)
+      ]);
+
+      for (const l of layersRes.layers) {
+        layerOffsets[l.name] = l.assembledY || 0;
+      }
+
       model = gltf.scene;
 
-      // Center and normalize
+      // Center model
       const box = new THREE.Box3().setFromObject(model);
       const center = box.getCenter(new THREE.Vector3());
       model.position.sub(center);
 
+      // Setup layer nodes and double-sided clipping materials
       model.traverse((child: any) => {
         if (child.isMesh) {
-          meshes.push(child);
+          child.material.side = THREE.DoubleSide;
           child.material.clippingPlanes = [clipPlane];
           child.material.clipShadows = true;
+          child.userData.origMaterial = child.material.clone();
+        }
+        if (child.name && layerOffsets[child.name] !== undefined) {
+          layerNodes[child.name] = child;
         }
       });
 
       scene.add(model);
       poster?.classList.add('hidden');
+
+      // Initialize assembled positions (explode = 0)
+      updateExplode(0);
       requestRender(3000);
     } catch (err) {
-      console.error('Failed to load cottage model:', err);
+      console.error('Failed to load cottage split layers model:', err);
     }
 
-    // Explode Control
+    // Explode Control (Displaces layers based on layers.json assembled offsets)
     let currentExplode = 0;
+    const extraSpreads: { [key: string]: number } = {
+      layer_foundation: -0.10,
+      layer_floors: -0.04,
+      layer_walls_interior: 0.03,
+      layer_upper: 0.10,
+      layer_truss: 0.18,
+      layer_roof: 0.26
+    };
+
     function updateExplode(val: number) {
       currentExplode = val;
       if (!model) return;
 
-      model.traverse((child: any) => {
-        if (child.isMesh) {
-          // Displace meshes slightly along Y based on height
-          const originalY = child.userData.origY ?? child.position.y;
-          child.userData.origY = originalY;
-          child.position.y = originalY + val * 0.18;
-        }
-      });
+      for (const [name, node] of Object.entries(layerNodes)) {
+        const assembledY = layerOffsets[name] || 0;
+        const spread = extraSpreads[name] || 0;
+        // At 0: assembledY. At 1: spread.
+        node.position.y = (1 - val) * assembledY + val * spread;
+      }
 
       // Camera dolly back slightly to maintain framing
-      camera.position.setLength(1.4 + val * 0.4);
+      camera.position.setLength(1.4 + val * 0.45);
       requestRender();
     }
 
@@ -258,7 +315,42 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
         ease: 'power2.out',
         onUpdate: function() { updateExplode(this.targets()[0].val); }
       });
+      isolateLayer('all');
+      if (isDollhouse) toggleDollhouse();
+      if (isSectionCutActive) toggleSectionCut();
       tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
+    });
+
+    // Layer Isolation Chips
+    let activeIsolatedLayer = 'all';
+    function isolateLayer(layerId: string) {
+      activeIsolatedLayer = layerId;
+      layerChips.forEach(c => c.classList.toggle('active', c.dataset.layer === layerId));
+
+      for (const [name, node] of Object.entries(layerNodes)) {
+        const isSelected = layerId === 'all' || name === layerId;
+        node.traverse((child: any) => {
+          if (child.isMesh) {
+            if (isSelected) {
+              child.material.transparent = false;
+              child.material.opacity = 1.0;
+              child.material.depthWrite = true;
+            } else {
+              child.material.transparent = true;
+              child.material.opacity = 0.15;
+              child.material.depthWrite = false;
+            }
+          }
+        });
+      }
+      requestRender();
+    }
+
+    layerChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const target = chip.dataset.layer || 'all';
+        isolateLayer(target);
+      });
     });
 
     // Camera Tweening
@@ -305,53 +397,77 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
         if (hotspotModal && !hotspotModal.hasAttribute('hidden')) {
           hotspotModal.setAttribute('hidden', '');
         }
+        if (activeIsolatedLayer !== 'all') isolateLayer('all');
       }
     });
 
-    // Dollhouse Mode
+    // Dollhouse Mode (Looks down at 55°, fades roof & truss)
     let isDollhouse = false;
-    btnDollhouse?.addEventListener('click', () => {
+    function toggleDollhouse() {
       isDollhouse = !isDollhouse;
-      btnDollhouse.classList.toggle('active', isDollhouse);
-      if (isDollhouse) {
-        tweenCamera([0.0, 1.2, 0.7], [0, -0.05, 0]);
-      } else {
-        tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
-      }
-    });
+      btnDollhouse?.classList.toggle('active', isDollhouse);
 
-    // Section Cut Mode (animated clipping plane)
-    let isSection = false;
-    btnSectionCut?.addEventListener('click', () => {
-      isSection = !isSection;
-      btnSectionCut.classList.toggle('active', isSection);
-      if (isSection) {
-        clipPlane.constant = 0.5;
-        gsap.to(clipPlane, {
-          constant: -0.02,
-          duration: 2.0,
-          repeat: 1,
-          yoyo: true,
-          ease: 'power2.inOut',
-          onUpdate: () => requestRender()
+      if (isDollhouse) {
+        tweenCamera([0.0, 1.1, 0.75], [0, -0.05, 0]);
+        // Fade roof and truss
+        ['layer_roof', 'layer_truss'].forEach(name => {
+          layerNodes[name]?.traverse((c: any) => {
+            if (c.isMesh) {
+              c.material.transparent = true;
+              c.material.opacity = 0.08;
+              c.material.depthWrite = false;
+            }
+          });
         });
       } else {
-        clipPlane.constant = 10;
+        tweenCamera([0.9, 0.6, 1.1], [0, 0, 0]);
+        isolateLayer(activeIsolatedLayer);
+      }
+      requestRender();
+    }
+    btnDollhouse?.addEventListener('click', toggleDollhouse);
+
+    // Section Cut (Animated Y Clipping Plane)
+    let isSectionCutActive = false;
+    let sectionCutTween: any = null;
+    function toggleSectionCut() {
+      isSectionCutActive = !isSectionCutActive;
+      btnSectionCut?.classList.toggle('active', isSectionCutActive);
+
+      if (sectionCutTween) sectionCutTween.kill();
+
+      if (isSectionCutActive) {
+        clipPlane.constant = 0.45;
+        sectionCutTween = gsap.to(clipPlane, {
+          constant: -0.2,
+          duration: 3.5,
+          repeat: -1,
+          yoyo: true,
+          ease: 'power1.inOut',
+          onUpdate: () => requestRender(100)
+        });
+      } else {
+        clipPlane.constant = 10.0;
         requestRender();
       }
-    });
+    }
+    btnSectionCut?.addEventListener('click', toggleSectionCut);
 
-    // Hotspot Modal
+    // Hotspots Setup
     hotspotPins.forEach((pin) => {
       pin.addEventListener('click', () => {
         const id = pin.dataset.id;
         const hotspot = studioConfig.hotspots.find((h) => h.id === id);
         if (!hotspot || !hotspotModal) return;
 
-        hotspotModalImg.src = `${baseUrl}/images/optimized/${hotspot.imageSlug}-1440.webp`;
-        hotspotModalImg.alt = hotspot.name;
+        const imgData = (imagesManifest as any)[hotspot.imageSlug];
+        if (hotspotModalImg && imgData) {
+          hotspotModalImg.src = `${baseUrl}/images/optimized/${imgData.formats.webp['960'].file}`;
+          hotspotModalImg.alt = imgData.alt;
+        }
+
         if (hotspotModalTitle) hotspotModalTitle.textContent = hotspot.name;
-        if (hotspotModalDesc) hotspotModalDesc.textContent = hotspot.description;
+        if (hotspotModalDesc) hotspotModalDesc.textContent = hotspot.desc;
 
         hotspotModal.removeAttribute('hidden');
       });
@@ -361,36 +477,72 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
       hotspotModal?.setAttribute('hidden', '');
     });
 
-    // Touch overlay enable
+    // Touch overlay for mobile
     btnTouch?.addEventListener('click', () => {
-      touchOverlay?.classList.add('disabled');
-      requestRender(3000);
+      touchOverlay?.classList.add('hidden');
     });
 
-    controls.addEventListener('start', () => { requestRender(1000); });
-    controls.addEventListener('change', () => { requestRender(500); });
+    // Project Hotspot Pins to Screen Space
+    const tempVec = new THREE.Vector3();
+    function updateHotspots() {
+      if (!model) return;
+      const widthHalf = canvas.clientWidth / 2;
+      const heightHalf = canvas.clientHeight / 2;
 
-    // Render Loop (Demand Governor)
+      hotspotPins.forEach((pin) => {
+        const id = pin.dataset.id;
+        const hotspot = studioConfig.hotspots.find((h) => h.id === id);
+        if (!hotspot) return;
+
+        tempVec.set(hotspot.position[0], hotspot.position[1], hotspot.position[2]);
+        tempVec.project(camera);
+
+        const isBehind = tempVec.z > 1;
+        if (isBehind) {
+          pin.style.display = 'none';
+          return;
+        }
+
+        pin.style.display = 'flex';
+        const x = tempVec.x * widthHalf + widthHalf;
+        const y = -tempVec.y * heightHalf + heightHalf;
+        pin.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      });
+    }
+
+    // Render Governor & Resize
+    controls.addEventListener('change', () => {
+      requestRender();
+      updateHotspots();
+    });
+
+    const onResize = () => {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      requestRender(500);
+      updateHotspots();
+    };
+    window.addEventListener('resize', onResize);
+
+    // Animation Loop
     function animate() {
       requestAnimationFrame(animate);
+      if (controls.update()) {
+        requestRender();
+      }
       if (isRenderDemandActive) {
-        controls.update();
         renderer.render(scene, camera);
+        updateHotspots();
       }
     }
     animate();
-
-    // Window Resize
-    window.addEventListener('resize', () => {
-      if (!canvas) return;
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      requestRender();
-    });
+    updateHotspots();
   }
 
-  // IntersectionObserver to warm up / initialize Three.js within 1.5 viewports
+  // IntersectionObserver to warm up / initialize Studio
   const studioObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -400,7 +552,7 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
         }
       });
     },
-    { rootMargin: '0px 0px 150% 0px' }
+    { rootMargin: '300px 0px' }
   );
 
   const sectionEl = document.getElementById('chapter-studio');
@@ -412,55 +564,66 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     position: relative;
     width: 100%;
     min-height: 100vh;
-    padding: 80px 48px;
-    background-color: var(--sv-tone-bg, #0c0e12);
-    box-sizing: border-box;
+    background: #0c0e12;
+    color: #ffffff;
+    padding: 6rem 0 6rem;
   }
 
   .studio-container {
-    max-width: 1400px;
+    max-width: 1320px;
     margin: 0 auto;
+    padding: 0 2rem;
   }
 
+  /* Header */
   .studio-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 32px;
-    margin-bottom: 32px;
+    gap: 3rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .studio-header-left {
+    max-width: 640px;
   }
 
   .studio-eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.16em;
-    color: #d2b4ad;
-    display: block;
-    margin-bottom: 8px;
+    letter-spacing: 0.22em;
+    color: var(--accent, #e5a970);
+    text-transform: uppercase;
   }
 
   .studio-title {
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    font-weight: 500;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0.4rem 0 0;
     color: #ffffff;
-    line-height: 1.1;
   }
 
   .studio-desc {
     max-width: 440px;
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
   }
 
+  /* Viewport */
   .studio-viewport-wrap {
     position: relative;
     width: 100%;
-    height: 75vh;
-    min-height: 520px;
-    border-radius: 12px;
+    height: 74vh;
+    min-height: 540px;
+    max-height: 820px;
+    border-radius: 28px;
     overflow: hidden;
-    background: #090a0d;
+    background: radial-gradient(circle at center, #14171d 0%, #0a0b0e 100%);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -468,8 +631,14 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     width: 100%;
     height: 100%;
     display: block;
+    cursor: grab;
   }
 
+  .studio-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* Poster */
   .studio-poster {
     position: absolute;
     inset: 0;
@@ -478,8 +647,8 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.6s ease;
-    z-index: 5;
+    z-index: 10;
+    transition: opacity 0.5s ease;
   }
 
   .studio-poster.hidden {
@@ -488,273 +657,374 @@ const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
   }
 
   .studio-loader-card {
+    background: rgba(14, 16, 20, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: rgba(12, 14, 18, 0.85);
-    backdrop-filter: blur(8px);
-    padding: 12px 24px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    gap: 1.25rem;
   }
 
   .loader-spinner {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #d2b4ad;
+    border-top-color: var(--accent, #e5a970);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-  }
-
-  .loader-text {
-    font-size: 0.85rem;
-    color: #ffffff;
-    letter-spacing: 0.04em;
   }
 
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
 
+  .loader-text {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
   /* Touch overlay */
   .studio-touch-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(10, 12, 16, 0.6);
+    backdrop-filter: blur(4px);
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 15;
   }
 
-  .studio-touch-overlay.disabled {
+  @media (pointer: coarse) {
+    .studio-touch-overlay {
+      display: flex;
+    }
+  }
+
+  .studio-touch-overlay.hidden {
     display: none !important;
   }
 
   .touch-interact-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.65rem;
     background: #ffffff;
-    color: #000000;
+    color: #0c0d0e;
+    border: none;
+    border-radius: 999px;
+    padding: 0.9rem 1.6rem;
     font-size: 0.85rem;
     font-weight: 600;
-    padding: 14px 24px;
-    border-radius: 40px;
-    border: none;
-    cursor: pointer;
+    letter-spacing: 0.1em;
   }
 
-  /* Hotspot Pins */
+  /* Hotspots */
   .studio-hotspots {
     position: absolute;
-    top: 24px;
-    left: 24px;
-    display: flex;
-    gap: 10px;
-    z-index: 20;
-    flex-wrap: wrap;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
   }
 
   .hotspot-pin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(18, 22, 28, 0.75);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
-  }
-
-  .hotspot-pin:hover {
-    background: rgba(210, 180, 173, 0.9);
-    color: #000000;
-    transform: translateY(-2px);
+    gap: 0.5rem;
+    padding: 0.4rem;
   }
 
   .hotspot-dot {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: #d2b4ad;
+    background: var(--accent, #e5a970);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 10px rgba(229, 169, 112, 0.8);
   }
 
-  .hotspot-pin:hover .hotspot-dot {
-    background: #000000;
+  .hotspot-pulse {
+    position: absolute;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--accent, #e5a970);
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
 
-  /* Hotspot Modal */
+  @keyframes ping {
+    75%, 100% { transform: scale(2); opacity: 0; }
+  }
+
+  .hotspot-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    background: rgba(14, 16, 20, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(4px);
+    transition: all 0.2s ease;
+  }
+
+  .hotspot-pin:hover .hotspot-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Hotspot Detail Modal */
   .hotspot-modal {
     position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    padding: 24px;
+    bottom: 6rem;
+    right: 2rem;
+    width: 340px;
+    z-index: 30;
+    animation: fadeIn 0.3s ease;
   }
 
-  .hotspot-modal[hidden] {
-    display: none !important;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .hotspot-modal-inner {
-    position: relative;
-    max-width: 580px;
-    width: 100%;
-    background: #14171d;
-    border-radius: 12px;
+    background: rgba(16, 18, 24, 0.92);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
   }
 
   .modal-close {
     position: absolute;
-    top: 12px;
-    right: 14px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #ffffff;
-    border: none;
-    font-size: 24px;
-    width: 32px;
-    height: 32px;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    cursor: pointer;
-    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    z-index: 5;
   }
 
   .hotspot-modal-media img {
     width: 100%;
-    height: 280px;
+    height: 180px;
     object-fit: cover;
   }
 
   .hotspot-modal-body {
-    padding: 20px 24px;
+    padding: 1.25rem;
   }
 
   .hotspot-modal-tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    color: #d2b4ad;
-    display: block;
-    margin-bottom: 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent, #e5a970);
   }
 
   .hotspot-modal-title {
-    font-size: 1.4rem;
-    font-weight: 500;
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin: 0.25rem 0 0.5rem 0;
     color: #ffffff;
-    margin-bottom: 8px;
   }
 
   .hotspot-modal-desc {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
   }
 
-  /* Floating Control Deck */
+  /* Control Deck */
   .studio-controls-deck {
     position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: rgba(14, 16, 20, 0.78);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.9rem 1.4rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .ctrl-layers-row {
     display: flex;
     align-items: center;
-    gap: 16px;
-    background: rgba(14, 17, 22, 0.85);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 10px 20px;
-    border-radius: 40px;
-    z-index: 20;
-    max-width: 95vw;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ctrl-group-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--accent, #e5a970);
+    white-space: nowrap;
+  }
+
+  .layer-chips-scroll {
+    display: flex;
+    gap: 0.5rem;
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .layer-chips-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .layer-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .layer-chip:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .layer-chip.active {
+    background: #ffffff;
+    color: #0c0d0e;
+    border-color: #ffffff;
+    font-weight: 600;
+  }
+
+  .ctrl-row-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
   }
 
   .ctrl-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.65rem;
   }
 
   .ctrl-label {
     font-size: 0.7rem;
-    font-family: monospace;
-    letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .ctrl-explode input[type="range"] {
-    width: 100px;
-    accent-color: #d2b4ad;
-    cursor: pointer;
+    width: 130px;
+    height: 4px;
+    accent-color: var(--accent, #e5a970);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    cursor: ew-resize;
   }
 
   .ctrl-icon-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #ffffff;
-    border: none;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .ctrl-mode-btn, .ctrl-cam-btn {
-    background: transparent;
-    color: rgba(255, 255, 255, 0.7);
+  .ctrl-icon-btn:hover {
+    background: #ffffff;
+    color: #0c0d0e;
+  }
+
+  .ctrl-mode-btn,
+  .ctrl-cam-btn {
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .ctrl-mode-btn:hover, .ctrl-cam-btn:hover {
+  .ctrl-mode-btn:hover,
+  .ctrl-cam-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.4);
   }
 
   .ctrl-mode-btn.active {
-    background: #d2b4ad;
-    color: #000000;
-    border-color: #d2b4ad;
+    background: var(--accent, #e5a970);
+    color: #0c0d0e;
+    border-color: var(--accent, #e5a970);
   }
 
-  @media (max-width: 768px) {
-    .studio-section {
-      padding: 48px 20px;
-    }
+  @media (max-width: 992px) {
     .studio-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: 1rem;
     }
-    .studio-touch-overlay {
-      display: flex;
+    .ctrl-row-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
     }
-    .studio-controls-deck {
-      bottom: 12px;
-      padding: 8px 14px;
-      gap: 10px;
+    .ctrl-views {
+      display: none;
+    }
+    .hotspot-modal {
+      right: 1.5rem;
+      left: 1.5rem;
+      width: auto;
+      bottom: 8rem;
     }
   }
 </style>

@@ -3,14 +3,14 @@
     "count": 120,
     "width": 1280,
     "height": 720,
-    "sizeMB": "2.29",
+    "sizeMB": "5.88",
     "pattern": "frame-%04d.webp"
   },
   "mobile": {
     "count": 60,
     "width": 720,
     "height": 405,
-    "sizeMB": "0.35",
+    "sizeMB": "1.20",
     "pattern": "mobile/frame-%04d.webp"
   },
   "milestones": [

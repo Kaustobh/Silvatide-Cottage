@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { margin: 0; background: #0c0e12; overflow: hidden; }
+    body { margin: 0; background: #f6f4ee; overflow: hidden; }
     #canvas { width: 1280px; height: 720px; display: block; }
   </style>
   <script type="importmap">
@@ -29,37 +29,93 @@
     const canvas = document.getElementById('canvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(1280, 720);
+    renderer.setPixelRatio(1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0e12);
+    scene.background = new THREE.Color(0xf6f4ee);
 
-    // Architectural grid background
-    const grid = new THREE.GridHelper(20, 40, 0x1f2937, 0x111827);
-    grid.position.y = -0.3;
-    scene.add(grid);
+    // Front elevation camera framing matching Photo 7
+    const camera = new THREE.PerspectiveCamera(40, 1280 / 720, 0.05, 50);
+    // Broad elevation view: cottage is centered along X/Z
+    camera.position.set(0.72, 0.02, 0.0);
+    camera.lookAt(0, -0.03, 0);
 
-    // Broad front-elevation camera closely framing the cottage
-    const camera = new THREE.PerspectiveCamera(42, 1280 / 720, 0.1, 100);
-    camera.position.set(0.78, 0.02, 0);
-    camera.lookAt(0, 0, 0);
+    // High-end Lighting
+    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x222630, 1.4);
+    scene.add(hemiLight);
 
-    const ambLight = new THREE.AmbientLight(0xfff5ea, 1.8);
-    scene.add(ambLight);
+    const sun = new THREE.DirectionalLight(0xffeedd, 2.6);
+    sun.position.set(4, 6, 3);
+    scene.add(sun);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffeedd, 2.8);
-    dirLight1.position.set(4, 5, 4);
-    scene.add(dirLight1);
+    const skyFill = new THREE.DirectionalLight(0x88aacc, 1.0);
+    skyFill.position.set(-4, 3, -3);
+    scene.add(skyFill);
 
-    const dirLight2 = new THREE.DirectionalLight(0xaaccff, 1.5);
-    dirLight2.position.set(-4, 3, -2);
-    scene.add(dirLight2);
+    // Architectural Contour Shader (Ink on paper)
+    const contourVertexShader = `
+      varying vec3 vNormal;
+      varying vec3 vViewPosition;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        vViewPosition = -mvPosition.xyz;
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `;
 
-    const loader = new GLTFLoader();
-    loader.setMeshoptDecoder(MeshoptDecoder);
+    const contourFragmentShader = `
+      varying vec3 vNormal;
+      varying vec3 vViewPosition;
+      uniform vec3 inkColor;
+      uniform vec3 paperColor;
+      uniform float shadeFactor;
 
-    const gltf = await loader.loadAsync('/models/cottage-exploded.glb');
+      void main() {
+        vec3 normal = normalize(vNormal);
+        vec3 viewDir = normalize(vViewPosition);
+        float NdotV = abs(dot(normal, viewDir));
+        float rim = 1.0 - NdotV;
+        
+        // Clean contour edges
+        float edge = smoothstep(0.48, 0.78, rim);
+        
+        // Soft volumetric hatch/depth
+        float depthShade = (1.0 - NdotV) * shadeFactor * 0.45;
+        
+        vec3 base = mix(paperColor, inkColor * 1.5, depthShade);
+        vec3 finalColor = mix(base, inkColor, edge * 0.95);
+        
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `;
+
+    const contourUniforms = {
+      inkColor: { value: new THREE.Color(0x111317) },
+      paperColor: { value: new THREE.Color(0xf6f4ee) },
+      shadeFactor: { value: 0.0 }
+    };
+
+    const contourMaterial = new THREE.ShaderMaterial({
+      vertexShader: contourVertexShader,
+      fragmentShader: contourFragmentShader,
+      uniforms: contourUniforms,
+      side: THREE.DoubleSide
+    });
+
+    // Load split layers model & layer metadata
+    const [layersData, gltf] = await Promise.all([
+      fetch('/models/layers.json').then(r => r.json()),
+      (async () => {
+        const loader = new GLTFLoader();
+        loader.setMeshoptDecoder(MeshoptDecoder);
+        return loader.loadAsync('/models/cottage-split-layers.glb');
+      })()
+    ]);
+
     const model = gltf.scene;
 
     // Center model
@@ -68,57 +124,99 @@
     model.position.sub(center);
     scene.add(model);
 
-    // Store original materials and create blueprint ink material
-    const blueprintMat = new THREE.MeshBasicMaterial({
-      color: 0x4dd0e1,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.6
-    });
+    // Map layer nodes and original materials
+    const layerOffsets = {};
+    for (const l of layersData.layers) {
+      layerOffsets[l.name] = l.assembledY || 0;
+    }
 
-    const solidDraftingMat = new THREE.MeshStandardMaterial({
-      color: 0x1a2332,
-      roughness: 0.8,
-      metalness: 0.1
-    });
+    const layerNodes = {};
+    const originalMaterials = new Map();
 
-    let originalMaterials = new Map();
     model.traverse(child => {
       if (child.isMesh) {
         originalMaterials.set(child, child.material);
       }
+      if (child.name && layerOffsets[child.name] !== undefined) {
+        layerNodes[child.name] = child;
+      }
     });
 
+    console.log('Layer nodes loaded:', Object.keys(layerNodes));
+
+    // Render frame function
     window.renderFrame = (progress) => {
-      // progress from 0.0 to 1.0 (120 frames total)
-      // 1. Vertical assembly animation
-      // When progress = 0: high exploded stack
-      // When progress = 1: assembled together
-      const explodeFactor = Math.max(0, 1 - progress * 1.1);
-      
-      model.traverse(child => {
-        if (child.isMesh) {
-          // Explode along Y based on local vertex Y
-          child.position.y = explodeFactor * 0.15;
+      // Progress [0.0 .. 1.0]
+      // 1. Physical layer assembly animation
+      // When progress = 0: exploded stack
+      // When progress >= 0.75: fully assembled
+      const assemblyProgress = Math.min(1.0, progress / 0.75);
+      const easeAssembly = 1 - Math.pow(1 - assemblyProgress, 3); // cubic out
 
-          // Three phases:
-          // Phase 1: progress < 0.35 -> Blueprint ink wireframe
-          // Phase 2: 0.35 <= progress < 0.70 -> Solid drafting tone
-          // Phase 3: progress >= 0.70 -> Full textured material
-          if (progress < 0.35) {
-            child.material = blueprintMat;
-            blueprintMat.opacity = 0.4 + (progress / 0.35) * 0.4;
-          } else if (progress < 0.70) {
-            child.material = solidDraftingMat;
-          } else {
-            child.material = originalMaterials.get(child);
+      // Move each layer from exploded position to assembled position
+      for (const [name, node] of Object.entries(layerNodes)) {
+        const assembledY = layerOffsets[name] || 0;
+        // At progress 0, offset = 0 (native exploded position in CAD)
+        // At progress 1, offset = assembledY (touching adjacent layers)
+        node.position.y = (1 - easeAssembly) * 0 + easeAssembly * assembledY;
+      }
+
+      // 2. Material & Background Transitions:
+      // Phase A: 0.00 <= progress < 0.35 -> Pure ink contour on warm paper
+      // Phase B: 0.35 <= progress < 0.65 -> Tone shading fills in, background blends to dark
+      // Phase C: 0.65 <= progress <= 1.00 -> Textures & lighting materialize into full reality
+
+      const paperBg = new THREE.Color(0xf6f4ee);
+      const darkBg = new THREE.Color(0x0c0e12);
+
+      if (progress < 0.35) {
+        const pA = progress / 0.35;
+        scene.background.copy(paperBg);
+        contourUniforms.shadeFactor.value = pA * 0.5;
+        contourUniforms.paperColor.value.copy(paperBg);
+        contourUniforms.inkColor.value.setHex(0x111317);
+
+        model.traverse(child => {
+          if (child.isMesh) child.material = contourMaterial;
+        });
+      } else if (progress < 0.65) {
+        const pB = (progress - 0.35) / 0.30;
+        // Blend background from paper to deep dark
+        scene.background.lerpColors(paperBg, darkBg, pB);
+        
+        contourUniforms.shadeFactor.value = 0.5 + pB * 0.5;
+        // Tone ink and paper for inverted dark mode contrast
+        const currentPaper = new THREE.Color().lerpColors(paperBg, new THREE.Color(0x161a22), pB);
+        const currentInk = new THREE.Color().lerpColors(new THREE.Color(0x111317), new THREE.Color(0xdce2ec), pB);
+        contourUniforms.paperColor.value.copy(currentPaper);
+        contourUniforms.inkColor.value.copy(currentInk);
+
+        model.traverse(child => {
+          if (child.isMesh) child.material = contourMaterial;
+        });
+      } else {
+        const pC = (progress - 0.65) / 0.35;
+        scene.background.copy(darkBg);
+
+        model.traverse(child => {
+          if (child.isMesh) {
+            const orig = originalMaterials.get(child);
+            if (orig) {
+              child.material = orig;
+              orig.roughness = 0.7;
+              orig.metalness = 0.1;
+            }
           }
-        }
-      });
+        });
 
-      // Subtle camera dolly as it crystallizes
-      camera.position.x = 0.85 - progress * 0.1;
-      camera.lookAt(0, -0.02 + progress * 0.02, 0);
+        // Enhance direct sun as it completes
+        sun.intensity = 2.0 + pC * 0.8;
+      }
+
+      // Camera gently tracks from slight diagonal into straight elevation
+      camera.position.x = 0.76 - progress * 0.04;
+      camera.position.y = 0.04 - progress * 0.02;
+      camera.lookAt(0, -0.02, 0);
 
       renderer.render(scene, camera);
       return canvas.toDataURL('image/jpeg', 0.95);
@@ -126,6 +224,7 @@
 
     window.renderFrame(0);
     window.isReady = true;
+    console.log('Frame renderer ready');
   </script>
 </body>
 </html>

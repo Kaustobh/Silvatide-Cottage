@@ -7,10 +7,10 @@ let manifest = {
   desktop: { count: 120, width: 1280, height: 720, pattern: 'frame-%04d.webp' },
   mobile: { count: 60, width: 720, height: 405, pattern: 'mobile/frame-%04d.webp' },
   milestones: [
-    { index: 0, label: '01. Site & Topography', copy: 'Low Scandinavian sun and ancient granite base.' },
-    { index: 38, label: '02. Structural Framing', copy: 'Larch timber post-and-beam system.' },
-    { index: 78, label: '03. Weather Envelope', copy: 'Standing-seam zinc roof and passive solar glazing.' },
-    { index: 110, label: '04. Lived-in Retreat', copy: 'Cottage completed on the tranquil shoreline.' }
+    { index: 0, label: '01. Site & Topography', copy: 'Ancient granite contours capture the low Nordic sun across still water.' },
+    { index: 38, label: '02. Structural Framing', copy: 'Larch timber post-and-beam system and exposed roof trusses.' },
+    { index: 78, label: '03. Weather Envelope', copy: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
+    { index: 110, label: '04. Lived-in Retreat', copy: 'Cottage completed on the lake shore with private terrace and canoe.' }
   ]
 };
 
@@ -29,49 +29,276 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
 <section id="chapter-drawing" class="blueprint-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#f0f2f5">
   <div class="bp-pin-wrap" id="bpPinWrap">
-    <!-- 1. Background Grid & Drafting Metadata -->
+    <!-- Subtle Architectural Background Guidelines -->
     <div class="bp-grid-overlay" aria-hidden="true"></div>
-    <div class="bp-drafting-stamp" aria-hidden="true">
-      <div class="stamp-line"><span>PROJECT:</span> SILVATIDE COTTAGE</div>
-      <div class="stamp-line"><span>DRAWING:</span> DWG-01 / ELEVATION ASSEMBLY</div>
-      <div class="stamp-line"><span>SCALE:</span> 1:50 · METRIC</div>
-      <div class="stamp-compass">⊕ N 61° 29' 48"</div>
-    </div>
 
-    <!-- 2. Section Header -->
+    <!-- Architectural Editorial Title Header -->
     <div class="bp-header">
-      <span class="bp-eyebrow">CHAPTER I · THE DRAWING</span>
-      <h2 class="bp-title sv-reveal-heading">From drafting line to living retreat</h2>
+      <span class="bp-eyebrow">CHAPTER I · THE GENESIS</span>
+      <h2 class="bp-title sv-reveal-heading">From Drafting Ink to Living Retreat</h2>
+      <p class="bp-subtitle">Watch the structural timber, insulation envelope, and gabled roof materialize over ancient lakeside granite.</p>
     </div>
 
-    <!-- 3. Frame Canvas & Elevation Photo Wipe -->
+    <!-- Canvas Viewport with Photo 7 Wipe -->
     <div class="bp-viewport">
-      <canvas id="bpCanvas" class="bp-canvas" aria-label="Interactive 3D building assembly sequence"></canvas>
+      <canvas id="bpCanvas" class="bp-canvas" aria-label="Architectural building assembly sequence"></canvas>
       
-      <!-- Hand-off target photo 7 (clipped wipe) -->
+      <!-- Hand-off target photo 7 (aligned wipe) -->
       <div id="bpPhotoTarget" class="bp-photo-target" style={`background-image: url('${photo7}')`} aria-hidden="true"></div>
       
       <div class="bp-dpr-poster" id="bpPoster" style={`background-image: url('${baseUrl}/frames/blueprint/frame-0000.webp')`}></div>
     </div>
 
-    <!-- 4. Milestone Captions & Timeline -->
+    <!-- Editorial Milestone HUD -->
     <div class="bp-hud">
-      <div class="bp-caption-box" aria-live="polite">
-        <span class="bp-milestone-pill" id="bpMilestoneTag">01. SITE & TOPOGRAPHY</span>
-        <p class="bp-caption-text" id="bpCaption">Oriented along granite contours to capture the low Scandinavian sun across still water.</p>
+      <div class="bp-caption-card" aria-live="polite">
+        <div class="bp-meta-row">
+          <span class="bp-milestone-pill" id="bpMilestoneTag">01. SITE & TOPOGRAPHY</span>
+          <span class="bp-step-number" id="bpStepNumber">PHASE 01 / 04</span>
+        </div>
+        <p class="bp-caption-text" id="bpCaption">Ancient granite contours capture the low Nordic sun across still water.</p>
       </div>
 
-      <div class="bp-progress-bar">
+      <div class="bp-progress-track">
         <div class="bp-progress-fill" id="bpProgressFill"></div>
       </div>
 
-      <div class="bp-scrub-hint">
-        <span>SCROLL TO CONSTRUCT</span>
+      <div class="bp-scrub-indicator">
+        <span class="bp-scrub-text">SCROLL TO CONSTRUCT</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .blueprint-section {
+    position: relative;
+    width: 100%;
+    background: #0c0e12;
+    color: #f0f2f5;
+    overflow: hidden;
+  }
+
+  .bp-pin-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem 4rem;
+    overflow: hidden;
+  }
+
+  .bp-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+    z-index: 1;
+  }
+
+  /* Header */
+  .bp-header {
+    position: relative;
+    z-index: 10;
+    max-width: 640px;
+  }
+
+  .bp-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: var(--accent, #e5a970);
+    text-transform: uppercase;
+  }
+
+  .bp-title {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2rem, 3.4vw, 3.2rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0.4rem 0 0.5rem 0;
+    color: #ffffff;
+  }
+
+  .bp-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+  }
+
+  /* Viewport */
+  .bp-viewport {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bp-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .bp-photo-target {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 4;
+    pointer-events: none;
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    transition: clip-path 0.05s linear;
+  }
+
+  .bp-dpr-poster {
+    position: absolute;
+    inset: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Milestone HUD */
+  .bp-hud {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+  }
+
+  .bp-caption-card {
+    background: rgba(14, 16, 20, 0.68);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.25rem 1.6rem;
+    max-width: 520px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .bp-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .bp-milestone-pill {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent, #e5a970);
+    text-transform: uppercase;
+  }
+
+  .bp-step-number {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .bp-caption-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+  }
+
+  .bp-progress-track {
+    flex: 1;
+    max-width: 240px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+  }
+
+  .bp-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent, #e5a970);
+    box-shadow: 0 0 8px rgba(229, 169, 112, 0.8);
+    transition: width 0.05s linear;
+  }
+
+  .bp-scrub-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 0.8rem;
+    animation: gentleBob 2s infinite ease-in-out;
+  }
+
+  @keyframes gentleBob {
+    0%, 100% { transform: translateY(0); opacity: 0.45; }
+    50% { transform: translateY(4px); opacity: 0.85; }
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .bp-pin-wrap {
+      padding: 2rem 1.5rem;
+    }
+    .bp-hud {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .bp-progress-track {
+      max-width: 100%;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .bp-scrub-indicator {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bp-pin-wrap {
+      height: auto;
+      padding: 4rem 1.5rem;
+    }
+    .bp-canvas {
+      display: none;
+    }
+    .bp-photo-target {
+      position: relative;
+      height: 60vh;
+      clip-path: none !important;
+    }
+  }
+</style>
 
 <script>
   import gsap from 'gsap';
@@ -84,10 +311,10 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     const pinWrap = document.getElementById('bpPinWrap');
     const canvas = document.getElementById('bpCanvas') as HTMLCanvasElement;
     const photoTarget = document.getElementById('bpPhotoTarget');
-    const poster = document.getElementById('bpPoster');
     const tagEl = document.getElementById('bpMilestoneTag');
     const captionEl = document.getElementById('bpCaption');
     const fillEl = document.getElementById('bpProgressFill');
+    const stepEl = document.getElementById('bpStepNumber');
 
     if (!section || !pinWrap || !canvas) return;
 
@@ -99,134 +326,81 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
     const totalFrames = isMobile ? 60 : 120;
     const frameFolder = isMobile ? `${baseUrl}/frames/blueprint/mobile` : `${baseUrl}/frames/blueprint`;
     
-    // Milestones definition
+    // Milestones
     const milestones = [
-      { progress: 0.00, tag: '01. SITE & TOPOGRAPHY', text: 'Low Scandinavian sun and ancient granite base.' },
-      { progress: 0.32, tag: '02. STRUCTURAL FRAMING', text: 'Larch timber post-and-beam system and exposed roof trusses.' },
-      { progress: 0.65, tag: '03. WEATHER ENVELOPE', text: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
-      { progress: 0.88, tag: '04. LIVED-IN RETREAT', text: 'Cottage completed on the lake shore with private terrace and canoe.' }
+      { progress: 0.00, tag: '01. SITE & TOPOGRAPHY', step: 'PHASE 01 / 04', text: 'Ancient granite contours capture the low Nordic sun across still water.' },
+      { progress: 0.32, tag: '02. STRUCTURAL FRAMING', step: 'PHASE 02 / 04', text: 'Larch timber post-and-beam system and exposed roof trusses.' },
+      { progress: 0.65, tag: '03. WEATHER ENVELOPE', step: 'PHASE 03 / 04', text: 'Standing-seam zinc roof, charred vertical cladding, and solar glazing.' },
+      { progress: 0.88, tag: '04. LIVED-IN RETREAT', step: 'PHASE 04 / 04', text: 'Cottage completed on the lake shore with private terrace and canoe.' }
     ];
 
-    // Frame cache
+    // Frame preloading
     const images: HTMLImageElement[] = [];
-    const loaded = new Set<number>();
-    let currentFrameIndex = 0;
-    let isDrawing = false;
+    let loadedCount = 0;
+    let currentDrawnIndex = -1;
 
-    // Canvas sizing with DPR cap at 2
-    function resizeCanvas() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      drawFrame(currentFrameIndex);
+    canvas.width = isMobile ? 720 : 1280;
+    canvas.height = isMobile ? 405 : 720;
+
+    for (let i = 0; i < totalFrames; i++) {
+      const img = new Image();
+      const pad = String(i).padStart(4, '0');
+      img.src = `${frameFolder}/frame-${pad}.webp`;
+      img.onload = () => {
+        loadedCount++;
+        if (i === 0 && currentDrawnIndex === -1) {
+          drawFrame(0);
+        }
+      };
+      images.push(img);
     }
 
-    // Draw frame with object-fit: contain/cover
     function drawFrame(idx: number) {
+      if (idx === currentDrawnIndex) return;
       const img = images[idx];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
-
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const iw = img.naturalWidth;
-      const ih = img.naturalHeight;
-
-      const scale = Math.min(cw / iw, ch / ih);
-      const nw = iw * scale;
-      const nh = ih * scale;
-      const ox = (cw - nw) / 2;
-      const oy = (ch - nh) / 2;
-
-      ctx!.clearRect(0, 0, cw, ch);
-      ctx!.drawImage(img, ox, oy, nw, nh);
-    }
-
-    // Progressive frame loading: frame 0 first, then every 5th, then rest
-    function loadFrames() {
-      for (let i = 0; i < totalFrames; i++) {
-        const img = new Image();
-        const pad = String(i).padStart(4, '0');
-        img.src = `${frameFolder}/frame-${pad}.webp`;
-        img.onload = () => {
-          loaded.add(i);
-          if (i === 0) {
-            poster?.classList.add('hidden');
-            drawFrame(0);
-          }
-          if (i === currentFrameIndex) {
-            drawFrame(currentFrameIndex);
-          }
-        };
-        images[i] = img;
+      if (img && img.complete) {
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        currentDrawnIndex = idx;
       }
     }
 
-    loadFrames();
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Reduced motion fallback
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      if (poster) poster.style.display = 'none';
-      drawFrame(totalFrames - 1);
-      if (photoTarget) photoTarget.style.clipPath = 'inset(0 0 0 0)';
-      return;
-    }
-
-    // GSAP ScrollTrigger pinning & scrub
-    const scrubData = { frame: 0, wipe: 0 };
-
+    // ScrollTrigger Pinned Scrub (~400svh)
     ScrollTrigger.create({
       trigger: section,
-      start: 'top top',
-      end: '+=350%',
       pin: pinWrap,
+      start: 'top top',
+      end: '+=400%',
+      scrub: 0.5,
       anticipatePin: 1,
-      scrub: 0.4,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const p = self.progress;
 
-        // Frame scrub from 0% to 85%
-        const frameP = Math.min(1, p / 0.85);
-        const targetFrame = Math.min(totalFrames - 1, Math.floor(frameP * (totalFrames - 1)));
-
-        if (targetFrame !== currentFrameIndex) {
-          currentFrameIndex = targetFrame;
-          if (!isDrawing) {
-            isDrawing = true;
-            requestAnimationFrame(() => {
-              drawFrame(currentFrameIndex);
-              isDrawing = false;
-            });
-          }
-        }
-
-        // Clip-path wipe into Photo 7 from 82% to 100%
-        if (photoTarget) {
-          if (p >= 0.82) {
-            const wipeP = (p - 0.82) / 0.18;
-            photoTarget.style.opacity = '1';
-            photoTarget.style.clipPath = `inset(0 0 0 ${(1 - wipeP) * 100}%)`;
-          } else {
-            photoTarget.style.opacity = '0';
-            photoTarget.style.clipPath = `inset(0 0 0 100%)`;
-          }
-        }
-
         // Progress bar fill
-        if (fillEl) {
-          fillEl.style.width = `${p * 100}%`;
+        if (fillEl) fillEl.style.width = `${p * 100}%`;
+
+        // Frame selection
+        const targetFrame = Math.min(Math.floor(p * totalFrames), totalFrames - 1);
+        drawFrame(targetFrame);
+
+        // Milestone captions update
+        let activeM = milestones[0];
+        for (const m of milestones) {
+          if (p >= m.progress) activeM = m;
         }
 
-        // Milestone copy update
-        for (let i = milestones.length - 1; i >= 0; i--) {
-          if (p >= milestones[i].progress) {
-            if (tagEl && tagEl.textContent !== milestones[i].tag) {
-              tagEl.textContent = milestones[i].tag;
-              if (captionEl) captionEl.textContent = milestones[i].text;
-            }
-            break;
+        if (tagEl && tagEl.textContent !== activeM.tag) tagEl.textContent = activeM.tag;
+        if (captionEl && captionEl.textContent !== activeM.text) captionEl.textContent = activeM.text;
+        if (stepEl && stepEl.textContent !== activeM.step) stepEl.textContent = activeM.step;
+
+        // Seamless wipe into Photo 7 at final stretch [0.85 -> 1.0]
+        if (photoTarget) {
+          if (p >= 0.85) {
+            const wipePct = Math.min(100, ((p - 0.85) / 0.15) * 100);
+            photoTarget.style.clipPath = `polygon(0 0, ${wipePct}% 0, ${wipePct}% 100%, 0 100%)`;
+          } else {
+            photoTarget.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
           }
         }
       }
@@ -238,199 +412,6 @@ const photo7 = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
   } else {
     initBlueprintScrub();
   }
+
+  document.addEventListener('astro:page-load', initBlueprintScrub);
 </script>
-
-<style>
-  .blueprint-section {
-    position: relative;
-    width: 100%;
-    min-height: 450vh;
-    background-color: var(--sv-tone-bg, #0c0e12);
-    color: var(--sv-tone-text, #ffffff);
-    overflow: hidden;
-  }
-
-  .bp-pin-wrap {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 32px 48px;
-    box-sizing: border-box;
-    background: radial-gradient(circle at 50% 50%, rgba(18, 24, 38, 0.6) 0%, rgba(10, 12, 16, 0.98) 100%);
-  }
-
-  .bp-grid-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.6;
-  }
-
-  .bp-drafting-stamp {
-    position: absolute;
-    top: 36px;
-    right: 48px;
-    font-family: monospace;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.45);
-    line-height: 1.6;
-    letter-spacing: 0.08em;
-    border-left: 2px solid rgba(77, 208, 225, 0.4);
-    padding-left: 12px;
-    pointer-events: none;
-  }
-
-  .stamp-line span {
-    color: rgba(77, 208, 225, 0.8);
-    margin-right: 6px;
-  }
-
-  .bp-header {
-    position: relative;
-    z-index: 10;
-    max-width: 600px;
-  }
-
-  .bp-eyebrow {
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    color: #4dd0e1;
-    margin-bottom: 8px;
-  }
-
-  .bp-title {
-    font-size: clamp(1.8rem, 3.6vw, 2.8rem);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: #ffffff;
-  }
-
-  .bp-viewport {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw;
-    height: 72vh;
-    max-width: 1400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  }
-
-  .bp-canvas {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .bp-photo-target {
-    position: absolute;
-    inset: 0;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  .bp-dpr-poster {
-    position: absolute;
-    inset: 0;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 1;
-    transition: opacity 0.5s ease;
-  }
-
-  .bp-dpr-poster.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .bp-hud {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .bp-caption-box {
-    max-width: 480px;
-  }
-
-  .bp-milestone-pill {
-    display: inline-block;
-    font-size: 0.75rem;
-    font-family: monospace;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: #4dd0e1;
-    margin-bottom: 6px;
-  }
-
-  .bp-caption-text {
-    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-    color: rgba(255, 255, 255, 0.85);
-    line-height: 1.5;
-  }
-
-  .bp-progress-bar {
-    position: absolute;
-    bottom: -16px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .bp-progress-fill {
-    width: 0%;
-    height: 100%;
-    background: #4dd0e1;
-    transition: width 0.1s linear;
-  }
-
-  .bp-scrub-hint {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  @media (max-width: 768px) {
-    .bp-pin-wrap {
-      padding: 24px 20px;
-    }
-    .bp-drafting-stamp {
-      display: none;
-    }
-    .bp-hud {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    .bp-scrub-hint {
-      display: none;
-    }
-  }
-</style>

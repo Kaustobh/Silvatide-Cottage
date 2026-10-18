@@ -81,7 +81,7 @@ const rooms = [
 </section>
 
 <!-- ==========================================
-     CHAPTER III: INSIDE (Horizontal Track)
+     CHAPTER III: INSIDE (Horizontal Track with Inline 3D)
      ========================================== -->
 <section id="chapter-inside" class="inside-section" data-tone="true" data-tone-bg="#101114" data-tone-text="#f5f5f7">
   <!-- Pinned track wrapper for desktop -->
@@ -91,7 +91,7 @@ const rooms = [
       <span class="inside-eyebrow">CHAPTER III · INSIDE</span>
       <h2 class="inside-title sv-reveal-heading">Atmospheric Living Quarters</h2>
       <p class="inside-desc">
-        Four micro-environments shaped by Finnish pine, honed stone, and changing natural daylight. Explore each space or inspect in 3D.
+        Four micro-environments shaped by Finnish pine, honed stone, and changing natural daylight. Inspect the rooms as architectural photographs or explore their 3D spatial models directly inline.
       </p>
       <div class="inside-scroll-hint">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -104,6 +104,7 @@ const rooms = [
       {rooms.map((room) => (
         <article class="room-card" data-slug={room.slug} data-has-3d={room.has3D ? 'true' : 'false'}>
           <div class="room-frame">
+            <!-- 1. Photographic View -->
             <div class="room-img-wrap">
               <picture>
                 <source srcset={`${baseUrl}/images/optimized/${room.slug}-1440.avif 1440w, ${baseUrl}/images/optimized/${room.slug}-960.avif 960w`} type="image/avif" />
@@ -136,46 +137,47 @@ const rooms = [
                   class="btn-inspect-3d"
                   data-model={room.model}
                   data-room-name={room.name}
-                  aria-label={`Inspect ${room.name} in 3D`}
+                  aria-label={`Explore ${room.name} in 3D`}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                     <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                     <line x1="12" y1="22.08" x2="12" y2="12"></line>
                   </svg>
-                  <span>3D ROOM</span>
+                  <span>EXPLORE IN 3D</span>
                 </button>
               )}
             </div>
+
+            <!-- 2. Seamless Inline 3D Viewport (Zero intrusive popups!) -->
+            {room.has3D && (
+              <div class="room-inline-3d" data-model={room.model} aria-hidden="true">
+                <canvas class="inline-3d-canvas" aria-label={`3D Spatial View of ${room.name}`}></canvas>
+                <div class="inline-3d-header">
+                  <div class="inline-3d-badge">
+                    <span class="badge-dot"></span>
+                    <span>INTERACTIVE 3D ROOM</span>
+                  </div>
+                  <button class="btn-close-inline-3d" aria-label="Return to photo view">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    <span>RETURN TO PHOTO</span>
+                  </button>
+                </div>
+                <div class="inline-3d-loader">
+                  <div class="spinner-ring"></div>
+                  <span>Loading Spatial Room...</span>
+                </div>
+                <div class="inline-3d-hint">
+                  <span>Drag to orbit · Pinch or wheel to zoom</span>
+                </div>
+              </div>
+            )}
           </div>
         </article>
       ))}
-    </div>
-  </div>
-
-  <!-- Dedicated 3D Room Inspection Modal -->
-  <div id="room3dModal" class="room-3d-modal" hidden>
-    <div class="room-3d-backdrop" id="room3dBackdrop"></div>
-    <div class="room-3d-dialog">
-      <div class="room-3d-header">
-        <div class="room-3d-info">
-          <span class="room-3d-badge">3D SPATIAL MODEL</span>
-          <h4 id="room3dTitle" class="room-3d-title">Living Pavilion</h4>
-        </div>
-        <button id="room3dClose" class="room-3d-close" aria-label="Close 3D Viewer">&times;</button>
-      </div>
-
-      <div class="room-3d-viewport">
-        <canvas id="room3dCanvas" class="room-3d-canvas"></canvas>
-        <div id="room3dSpinner" class="room-3d-spinner">
-          <div class="spinner-ring"></div>
-          <span>Loading Spatial Room Geometry...</span>
-        </div>
-      </div>
-
-      <div class="room-3d-footer">
-        <span class="room-3d-hint">Drag to orbit · Pinch or scroll to zoom · Double-click to reset</span>
-      </div>
     </div>
   </div>
 </section>
@@ -197,9 +199,9 @@ const rooms = [
 
   .interlude-bg-wrap {
     position: absolute;
-    inset: -10% 0 -10% 0; /* Extra overflow for parallax */
+    inset: -15% 0 -15% 0;
     width: 100%;
-    height: 120%;
+    height: 130%;
     z-index: 1;
   }
 
@@ -208,14 +210,14 @@ const rooms = [
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transform: scale(1.08);
+    transform: scale(1.05);
     will-change: transform;
   }
 
   .interlude-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(10, 12, 14, 0.45) 0%, rgba(10, 12, 14, 0.85) 100%);
+    background: radial-gradient(circle at center, rgba(10, 12, 14, 0.4) 0%, rgba(10, 12, 14, 0.88) 100%);
   }
 
   .interlude-content {
@@ -232,7 +234,7 @@ const rooms = [
 
   .interlude-coord {
     font-family: monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     letter-spacing: 0.25em;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
@@ -251,7 +253,7 @@ const rooms = [
   }
 
   .interlude-sub {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.2em;
     color: rgba(255, 255, 255, 0.5);
@@ -279,10 +281,10 @@ const rooms = [
 
   .inside-intro-panel {
     flex-shrink: 0;
-    width: 38vw;
-    min-width: 340px;
-    max-width: 500px;
-    padding: 0 4rem 0 5vw;
+    width: 36vw;
+    min-width: 320px;
+    max-width: 480px;
+    padding: 0 3.5rem 0 5vw;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -290,15 +292,16 @@ const rooms = [
   }
 
   .inside-eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     color: var(--accent, #e5a970);
     text-transform: uppercase;
   }
 
   .inside-title {
-    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2.2rem, 3.2vw, 3rem);
     font-weight: 400;
     letter-spacing: -0.02em;
     line-height: 1.15;
@@ -307,7 +310,7 @@ const rooms = [
   }
 
   .inside-desc {
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.65);
     margin: 0;
@@ -317,17 +320,11 @@ const rooms = [
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.15em;
     color: rgba(255, 255, 255, 0.45);
-    margin-top: 1rem;
-    animation: pulseHint 2s infinite ease-in-out;
-  }
-
-  @keyframes pulseHint {
-    0%, 100% { opacity: 0.45; transform: translateX(0); }
-    50% { opacity: 0.85; transform: translateX(6px); }
+    margin-top: 0.5rem;
   }
 
   .inside-track {
@@ -359,7 +356,7 @@ const rooms = [
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: border-color 0.3s ease, transform 0.4s ease;
+    transition: border-color 0.3s ease;
   }
 
   .room-frame:hover {
@@ -373,6 +370,13 @@ const rooms = [
     height: 100%;
     overflow: hidden;
     z-index: 1;
+    transition: opacity 0.4s ease;
+  }
+
+  .room-card.showing-3d .room-img-wrap,
+  .room-card.showing-3d .room-card-footer {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .room-photo {
@@ -385,7 +389,7 @@ const rooms = [
   }
 
   .room-frame:hover .room-photo {
-    transform: scale(1.1);
+    transform: scale(1.08);
   }
 
   .room-scrim {
@@ -393,8 +397,8 @@ const rooms = [
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(16, 17, 20, 0.55) 0%,
-      rgba(16, 17, 20, 0.1) 40%,
+      rgba(16, 17, 20, 0.5) 0%,
+      rgba(16, 17, 20, 0.05) 40%,
       rgba(16, 17, 20, 0.85) 90%,
       rgba(16, 17, 20, 0.95) 100%
     );
@@ -412,7 +416,7 @@ const rooms = [
 
   .room-tick {
     font-family: monospace;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.15em;
     color: #ffffff;
@@ -424,9 +428,9 @@ const rooms = [
   }
 
   .room-role {
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
   }
@@ -439,22 +443,23 @@ const rooms = [
     justify-content: space-between;
     align-items: flex-end;
     gap: 1.5rem;
+    transition: opacity 0.3s ease;
   }
 
   .room-text {
-    max-width: 520px;
+    max-width: 500px;
   }
 
   .room-name {
+    font-family: var(--font-serif, Georgia, serif);
     font-size: clamp(1.6rem, 2.2vw, 2.2rem);
     font-weight: 400;
     color: #ffffff;
     margin: 0 0 0.5rem 0;
-    letter-spacing: -0.01em;
   }
 
   .room-desc {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     line-height: 1.55;
     color: rgba(255, 255, 255, 0.75);
     margin: 0;
@@ -463,15 +468,15 @@ const rooms = [
   .btn-inspect-3d {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.25);
     color: #ffffff;
-    padding: 0.65rem 1.15rem;
+    padding: 0.7rem 1.25rem;
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     cursor: pointer;
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
@@ -487,104 +492,95 @@ const rooms = [
   }
 
   /* ============================================================
-     3D ROOM INSPECTION MODAL
+     SEAMLESS INLINE 3D VIEWPORT (NO MODAL!)
      ============================================================ */
-  .room-3d-modal {
-    position: fixed;
+  .room-inline-3d {
+    position: absolute;
     inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 10;
+    background: radial-gradient(circle at center, #181a20 0%, #0d0e12 100%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
-  .room-3d-modal.active {
+  .room-card.showing-3d .room-inline-3d {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .room-3d-backdrop {
+  .inline-3d-canvas {
     position: absolute;
     inset: 0;
-    background: rgba(10, 11, 14, 0.88);
-    backdrop-filter: blur(16px);
-  }
-
-  .room-3d-dialog {
-    position: relative;
-    z-index: 2;
-    width: 90vw;
-    max-width: 1040px;
-    height: 82vh;
-    background: #14161a;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 24px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-  }
-
-  .room-3d-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .room-3d-badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    color: var(--accent, #e5a970);
-  }
-
-  .room-3d-title {
-    font-size: 1.35rem;
-    font-weight: 400;
-    color: #ffffff;
-    margin: 0.2rem 0 0 0;
-  }
-
-  .room-3d-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 2rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    transition: color 0.2s ease;
-  }
-
-  .room-3d-close:hover {
-    color: #ffffff;
-  }
-
-  .room-3d-viewport {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    min-height: 0;
-    background: radial-gradient(circle at center, #1a1c22 0%, #0d0e12 100%);
-  }
-
-  .room-3d-canvas {
     width: 100%;
     height: 100%;
     display: block;
     cursor: grab;
+    z-index: 1;
   }
 
-  .room-3d-canvas:active {
+  .inline-3d-canvas:active {
     cursor: grabbing;
   }
 
-  .room-3d-spinner {
+  .inline-3d-header {
+    position: relative;
+    z-index: 5;
+    padding: 1.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .inline-3d-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent, #e5a970);
+    background: rgba(14, 16, 20, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent, #e5a970);
+    box-shadow: 0 0 6px var(--accent, #e5a970);
+  }
+
+  .btn-close-inline-3d {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+
+  .btn-close-inline-3d:hover {
+    background: #ffffff;
+    color: #0c0d0e;
+  }
+
+  .inline-3d-loader {
     position: absolute;
     inset: 0;
     display: flex;
@@ -595,14 +591,13 @@ const rooms = [
     background: #14161a;
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    z-index: 3;
+    z-index: 2;
     transition: opacity 0.3s ease;
   }
 
   .spinner-ring {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: 3px solid rgba(255, 255, 255, 0.1);
     border-top-color: var(--accent, #e5a970);
     border-radius: 50%;
@@ -613,22 +608,18 @@ const rooms = [
     to { transform: rotate(360deg); }
   }
 
-  .room-3d-footer {
-    padding: 0.85rem 1.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    justify-content: center;
-    background: #111216;
-  }
-
-  .room-3d-hint {
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
+  .inline-3d-hint {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding-bottom: 1.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.45);
   }
 
   /* ============================================================
-     RESPONSIVE OVERRIDES (MOBILE STACKED CARDS)
+     RESPONSIVE
      ============================================================ */
   @media (max-width: 992px) {
     .inside-pin-wrap {
@@ -674,11 +665,6 @@ const rooms = [
     .room-card-header {
       padding: 1.5rem;
     }
-
-    .room-3d-dialog {
-      width: 95vw;
-      height: 75vh;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -714,9 +700,9 @@ const rooms = [
     if (interludeSection && interludeBg && !prefersReducedMotion) {
       gsap.fromTo(
         interludeBg,
-        { yPercent: -10 },
+        { yPercent: -8 },
         {
-          yPercent: 10,
+          yPercent: 8,
           ease: 'none',
           scrollTrigger: {
             trigger: interludeSection,
@@ -760,9 +746,9 @@ const rooms = [
       photos.forEach((photo) => {
         gsap.fromTo(
           photo,
-          { xPercent: 5 },
+          { xPercent: 4 },
           {
-            xPercent: -5,
+            xPercent: -4,
             ease: 'none',
             scrollTrigger: {
               trigger: photo.closest('.room-card'),
@@ -776,126 +762,108 @@ const rooms = [
       });
     }
 
-    // 3. 3D Room Viewer Modal Controller
-    setupRoom3DViewer();
+    // 3. Seamless Inline 3D Card Viewer
+    setupInline3DViewers();
   }
 
-  let roomViewerLoaded = false;
-  let activeScene: any = null;
-  let activeCamera: any = null;
-  let activeRenderer: any = null;
-  let activeControls: any = null;
-  let animFrameId: number | null = null;
+  // Active instances for cleanup
+  const activeViewers = new Map();
 
-  function setupRoom3DViewer() {
-    const modal = document.getElementById('room3dModal');
-    const backdrop = document.getElementById('room3dBackdrop');
-    const closeBtn = document.getElementById('room3dClose');
-    const titleEl = document.getElementById('room3dTitle');
-    const spinner = document.getElementById('room3dSpinner');
-    const canvas = document.getElementById('room3dCanvas') as HTMLCanvasElement;
-    const inspectBtns = document.querySelectorAll('.btn-inspect-3d');
+  function setupInline3DViewers() {
+    const cards = document.querySelectorAll('.room-card');
 
-    if (!modal || !canvas) return;
+    cards.forEach((card) => {
+      const inspectBtn = card.querySelector('.btn-inspect-3d');
+      const closeBtn = card.querySelector('.btn-close-inline-3d');
+      const inlineContainer = card.querySelector('.room-inline-3d') as HTMLElement;
+      const canvas = card.querySelector('.inline-3d-canvas') as HTMLCanvasElement;
+      const loaderEl = card.querySelector('.inline-3d-loader') as HTMLElement;
 
-    const closeModal = () => {
-      modal.classList.remove('active');
-      modal.setAttribute('hidden', '');
-      if (animFrameId) {
-        cancelAnimationFrame(animFrameId);
-        animFrameId = null;
-      }
-    };
+      if (!inspectBtn || !closeBtn || !inlineContainer || !canvas) return;
 
-    closeBtn?.addEventListener('click', closeModal);
-    backdrop?.addEventListener('click', closeModal);
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closeModal();
-      }
-    });
-
-    inspectBtns.forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
+      inspectBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const modelUrl = (btn as HTMLElement).dataset.model;
-        const roomName = (btn as HTMLElement).dataset.roomName || 'Spatial Room';
+        card.classList.add('showing-3d');
+        inlineContainer.setAttribute('aria-hidden', 'false');
 
+        const modelUrl = inlineContainer.dataset.model;
         if (!modelUrl) return;
 
-        if (titleEl) titleEl.textContent = roomName;
-        modal.removeAttribute('hidden');
-        modal.classList.add('active');
-        if (spinner) spinner.style.opacity = '1';
+        // Initialize 3D on that canvas if not already created
+        if (!activeViewers.has(card)) {
+          if (loaderEl) loaderEl.style.opacity = '1';
+          const viewerInstance = await initCard3D(canvas, modelUrl, loaderEl);
+          activeViewers.set(card, viewerInstance);
+        } else {
+          const viewer = activeViewers.get(card);
+          viewer?.resume();
+        }
+      });
 
-        // Lazy load Three.js & render room
-        await renderRoomModel(canvas, modelUrl, spinner);
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.classList.remove('showing-3d');
+        inlineContainer.setAttribute('aria-hidden', 'true');
+        const viewer = activeViewers.get(card);
+        viewer?.pause();
       });
     });
   }
 
-  async function renderRoomModel(canvas: HTMLCanvasElement, modelUrl: string, spinner: HTMLElement | null) {
-    const THREE = await import('three');
-    const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
-    const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
-    const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js');
+  async function initCard3D(canvas: HTMLCanvasElement, modelUrl: string, loaderEl: HTMLElement | null) {
+    const [THREE, { OrbitControls }, { GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
+      import('three'),
+      import('three/examples/jsm/controls/OrbitControls.js'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
+      import('meshoptimizer')
+    ]);
 
-    const container = canvas.parentElement;
-    if (!container) return;
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width || 600;
+    const height = rect.height || 450;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    // Renderer
-    if (!activeRenderer) {
-      activeRenderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: true,
-        alpha: false,
-        powerPreference: 'high-performance'
-      });
-      activeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      activeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-      activeRenderer.toneMappingExposure = 1.15;
-      activeRenderer.outputColorSpace = THREE.SRGBColorSpace;
-    }
-    activeRenderer.setSize(width, height);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x101216);
 
-    // Scene
-    activeScene = new THREE.Scene();
-    activeScene.background = new THREE.Color(0x121317);
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.05, 50);
+    camera.position.set(0.65, 0.45, 0.65);
 
-    // Camera
-    activeCamera = new THREE.PerspectiveCamera(40, width / height, 0.05, 50);
-    activeCamera.position.set(0.6, 0.45, 0.6);
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.maxPolarAngle = Math.PI / 2 + 0.05;
+    controls.minDistance = 0.3;
+    controls.maxDistance = 2.5;
 
-    // Controls
-    if (activeControls) activeControls.dispose();
-    activeControls = new OrbitControls(activeCamera, canvas);
-    activeControls.enableDamping = true;
-    activeControls.dampingFactor = 0.05;
-    activeControls.maxPolarAngle = Math.PI / 2 + 0.05;
-    activeControls.minDistance = 0.2;
-    activeControls.maxDistance = 2.5;
-
-    // Lighting
+    // Warm Interior Nordic Lighting
     const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x1a1c24, 1.4);
-    activeScene.add(hemiLight);
+    scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 2.0);
-    dirLight.position.set(2, 4, 3);
-    activeScene.add(dirLight);
+    const keyLight = new THREE.DirectionalLight(0xffecd2, 2.2);
+    keyLight.position.set(2, 4, 3);
+    scene.add(keyLight);
 
-    const softFill = new THREE.DirectionalLight(0x90a4ae, 0.8);
+    const softFill = new THREE.DirectionalLight(0x8899aa, 0.8);
     softFill.position.set(-2, 1, -2);
-    activeScene.add(softFill);
+    scene.add(softFill);
 
-    // Grid Floor Accent
-    const grid = new THREE.GridHelper(2, 20, 0x333742, 0x20222a);
+    // Floor Accent Grid
+    const grid = new THREE.GridHelper(2, 20, 0x2a2e38, 0x1c1e24);
     grid.position.y = -0.01;
-    activeScene.add(grid);
+    scene.add(grid);
 
-    // GLTFLoader
+    // Load Model
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
 
@@ -910,48 +878,45 @@ const rooms = [
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
 
-        // Normalize scale
-        const targetScale = 0.8 / maxDim;
+        const targetScale = 0.85 / maxDim;
         model.scale.setScalar(targetScale);
         model.position.sub(center.multiplyScalar(targetScale));
         model.position.y += (size.y * targetScale) / 2;
 
-        activeScene.add(model);
-        activeControls.target.set(0, (size.y * targetScale) / 2, 0);
-        activeControls.update();
+        scene.add(model);
+        controls.target.set(0, (size.y * targetScale) / 2, 0);
+        controls.update();
 
-        if (spinner) spinner.style.opacity = '0';
+        if (loaderEl) loaderEl.style.opacity = '0';
       },
       undefined,
       (err) => {
-        console.error('Failed to load room model:', err);
-        if (spinner) spinner.innerHTML = '<span style="color:#e06666">Failed to load room geometry.</span>';
+        console.error('Failed to load inline room model:', err);
       }
     );
 
-    // Resize handler
-    const handleResize = () => {
-      if (!container || !activeRenderer || !activeCamera) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      activeCamera.aspect = w / h;
-      activeCamera.updateProjectionMatrix();
-      activeRenderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
+    let isRunning = true;
+    let animId = 0;
 
-    // Animation Loop
     const animate = () => {
-      animFrameId = requestAnimationFrame(animate);
-      if (activeControls) activeControls.update();
-      if (activeRenderer && activeScene && activeCamera) {
-        activeRenderer.render(activeScene, activeCamera);
-      }
+      if (!isRunning) return;
+      animId = requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
     };
     animate();
+
+    return {
+      pause: () => { isRunning = false; cancelAnimationFrame(animId); },
+      resume: () => {
+        if (!isRunning) {
+          isRunning = true;
+          animate();
+        }
+      }
+    };
   }
 
-  // Initialize on DOM load or Astro transitions
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initInsideExperience);
   } else {

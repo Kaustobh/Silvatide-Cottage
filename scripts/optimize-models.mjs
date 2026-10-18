@@ -39,6 +39,11 @@ async function optimizeModelVariant({ inputPath, outputPath, isMobile }) {
   const doc = await io.read(inputPath);
   doc.createExtension(EXTTextureWebP).setRequired(true);
 
+  // Set double-sided on all materials to prevent hollow backfaces
+  for (const mat of doc.getRoot().listMaterials()) {
+    mat.setDoubleSided(true);
+  }
+
   // 1. Run weld first to eliminate co-located vertices
   console.log('Running weld...');
   await doc.transform(weld({ tolerance: 0.0001 }));
@@ -123,10 +128,12 @@ async function optimizeModelVariant({ inputPath, outputPath, isMobile }) {
 
 async function run() {
   const input = 'assets-src/split/cottage-split-raw.glb';
-  const desktopOut = 'public/models/cottage.glb';
+  const desktopOut = 'public/models/cottage-split-layers.glb';
   const mobileOut = 'public/models/cottage-mobile.glb';
 
   const desktopStats = await optimizeModelVariant({ inputPath: input, outputPath: desktopOut, isMobile: false });
+  // Also copy to cottage.glb for legacy compatibility
+  fs.copyFileSync(desktopOut, 'public/models/cottage.glb');
   const mobileStats = await optimizeModelVariant({ inputPath: input, outputPath: mobileOut, isMobile: true });
 
   console.log('\n========================================');
