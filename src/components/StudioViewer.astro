@@ -6,10 +6,10 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posterUrl = `${baseUrl}/images/optimized/front-elevation-day-1440.webp`;
 
 const storyModes = [
-  { id: 'overview', key: '1', label: 'Overview', desc: 'Front 3/4 perspective of the complete timber & zinc retreat.' },
-  { id: 'dollhouse', key: '2', label: 'Dollhouse Interior', desc: 'High-angle view down into the furnished quarters & slate hearth.' },
+  { id: 'overview', key: '1', label: 'Overview', desc: 'Front 3/4 perspective of the complete architectural dollhouse.' },
+  { id: 'dollhouse', key: '2', label: 'Dollhouse Interior', desc: 'Elevated view down into the furnished quarters & slate hearth.' },
   { id: 'terrace', key: '3', label: 'Lakeside Terrace', desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.' },
-  { id: 'elevation', key: '4', label: 'Front Elevation', desc: 'Symmetrical front elevation view matching architectural drawings.' }
+  { id: 'elevation', key: '4', label: 'Front Elevation', desc: 'Front elevation view showcasing post-and-beam architecture.' }
 ];
 
 const hotspots = [
@@ -29,7 +29,7 @@ const hotspots = [
         <h2 class="studio-title sv-reveal-heading">Architectural Scale Model</h2>
       </div>
       <p class="studio-desc">
-        Explore the physical scale model of Silvatide Cottage presented on a honed Finnish slate plinth. Orbit freely or select a curated architectural perspective.
+        Explore the physical architectural scale model of Silvatide Cottage presented on a honed Finnish slate plinth in warm alabaster plaster. Inspect the open living quarters, slate hearth, and cantilevered terrace.
       </p>
     </div>
 
@@ -98,16 +98,8 @@ const hotspots = [
           ))}
         </div>
 
-        <!-- Roof Cutaway, Turntable & Reset -->
+        <!-- Turntable & Reset Controls -->
         <div class="dock-actions-group">
-          <button id="btnToggleRoof" class="dock-action-btn" title="Toggle Roof Cutaway Lift">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span class="action-label" id="lblRoofAction">ROOF LIFT</span>
-          </button>
-
           <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -625,8 +617,6 @@ const hotspots = [
     const btnTouch = document.getElementById('btnTouchInteract');
     const btnAutoRotate = document.getElementById('btnAutoRotate');
     const btnResetCamera = document.getElementById('btnResetCamera');
-    const btnToggleRoof = document.getElementById('btnToggleRoof');
-    const lblRoofAction = document.getElementById('lblRoofAction');
     const dockButtons = document.querySelectorAll<HTMLButtonElement>('.dock-btn');
     const modeTitle = document.getElementById('modeBadgeTitle');
     const modeDesc = document.getElementById('modeBadgeDesc');
@@ -670,19 +660,19 @@ const hotspots = [
     controls.autoRotateSpeed = 0.5;
     controls.target.set(0, -0.05, 0);
 
-    // Nordic Studio Key & Rim Lighting (Bright, Crisp Daylight)
-    const hemiLight = new THREE.HemisphereLight(0xfffdfa, 0x2a3038, 1.8);
+    // Nordic Studio Key & Rim Lighting (Soft, tactile architectural gallery illumination)
+    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x2e343e, 2.4);
     scene.add(hemiLight);
 
-    const keySun = new THREE.DirectionalLight(0xffeedd, 2.8);
-    keySun.position.set(5, 7, 4);
+    const keySun = new THREE.DirectionalLight(0xffeedd, 2.2);
+    keySun.position.set(6, 8, 5);
     scene.add(keySun);
 
-    const coolRim = new THREE.DirectionalLight(0x78a0d0, 1.4);
-    coolRim.position.set(-5, 4, -4);
+    const coolRim = new THREE.DirectionalLight(0x8cb0d8, 1.3);
+    coolRim.position.set(-6, 5, -4);
     scene.add(coolRim);
 
-    const groundBounce = new THREE.DirectionalLight(0x443224, 0.6);
+    const groundBounce = new THREE.DirectionalLight(0x443528, 0.7);
     groundBounce.position.set(0, -3, 0);
     scene.add(groundBounce);
 
@@ -723,19 +713,13 @@ const hotspots = [
     shadow.position.y = -0.298;
     scene.add(shadow);
 
-    // Load Clean Assembled Model with Full Colors & Textures
+    // Load Pure Architectural Dollhouse in Warm Alabaster Plaster
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: any = null;
-    let truss: any = null;
-    let roof: any = null;
-    let isRoofLifted = false;
     let isRenderDemandActive = true;
     let renderDemandTimer = 0;
-
-    const trussRestY = -0.052;
-    const roofRestY = -0.108;
 
     function requestRender(durationMs = 1500) {
       isRenderDemandActive = true;
@@ -745,74 +729,15 @@ const hotspots = [
       }, durationMs);
     }
 
-    function setRoofLift(lifted: boolean) {
-      isRoofLifted = lifted;
-      btnToggleRoof?.classList.toggle('active', lifted);
-      if (lblRoofAction) {
-        lblRoofAction.textContent = lifted ? 'ROOF LOWER' : 'ROOF LIFT';
-      }
-
-      if (roof) {
-        gsap.to(roof.position, {
-          y: lifted ? roofRestY + 0.35 : roofRestY,
-          duration: 1.1,
-          ease: 'power2.inOut',
-          onUpdate: () => requestRender(200)
-        });
-        roof.traverse((c: any) => {
-          if (c.isMesh && c.material) {
-            c.material.transparent = true;
-            gsap.to(c.material, {
-              opacity: lifted ? 0.0 : 1.0,
-              duration: 0.85,
-              ease: 'power2.inOut'
-            });
-          }
-        });
-      }
-      if (truss) {
-        gsap.to(truss.position, {
-          y: lifted ? trussRestY + 0.22 : trussRestY,
-          duration: 1.1,
-          ease: 'power2.inOut',
-          onUpdate: () => requestRender(200)
-        });
-        truss.traverse((c: any) => {
-          if (c.isMesh && c.material) {
-            c.material.transparent = true;
-            gsap.to(c.material, {
-              opacity: lifted ? 0.0 : 1.0,
-              duration: 0.85,
-              ease: 'power2.inOut'
-            });
-          }
-        });
-      }
-    }
-
     try {
       const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
       model = gltf.scene;
 
-      truss = model.getObjectByName('cottage_truss');
-      roof = model.getObjectByName('cottage_roof');
-
-      if (truss) {
-        truss.position.y += trussRestY;
-        truss.traverse((c: any) => {
-          if (c.isMesh && c.material) {
-            c.material = c.material.clone();
-          }
-        });
-      }
-      if (roof) {
-        roof.position.y += roofRestY;
-        roof.traverse((c: any) => {
-          if (c.isMesh && c.material) {
-            c.material = c.material.clone();
-          }
-        });
-      }
+      // Pure architectural dollhouse: permanently remove submerging partial roof and truss
+      const truss = model.getObjectByName('cottage_truss');
+      const roof = model.getObjectByName('cottage_roof');
+      if (truss) truss.visible = false;
+      if (roof) roof.visible = false;
 
       // Center model
       const box = new THREE.Box3().setFromObject(model);
@@ -826,22 +751,17 @@ const hotspots = [
       // Ground exactly on top of pedestal
       model.position.y += (size.y * targetScale) / 2 - 0.28;
 
-      // Preserve authentic full-color PBR materials (Blonde Pine, Zinc, Glass, Oiled Cedar)
+      // Tactile Warm Alabaster Architectural Plaster Material
+      const architecturalMat = new THREE.MeshStandardMaterial({
+        color: 0xefeae1,
+        roughness: 0.72,
+        metalness: 0.04,
+        side: THREE.DoubleSide
+      });
+
       model.traverse((child: any) => {
-        if (child.isMesh && child.material) {
-          child.material.side = THREE.DoubleSide;
-          child.material.toneMapped = true;
-          // Ensure base color is pure white so diffuse texture maps display with 100% color accuracy
-          if (child.material.color) {
-            child.material.color.setHex(0xffffff);
-          }
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace;
-            child.material.map.needsUpdate = true;
-          }
-          child.material.roughness = 0.65;
-          child.material.metalness = 0.12;
-          child.material.needsUpdate = true;
+        if (child.isMesh) {
+          child.material = architecturalMat;
         }
       });
 
@@ -849,38 +769,34 @@ const hotspots = [
       poster?.classList.add('hidden');
       requestRender(3500);
     } catch (err) {
-      console.error('Failed to load cottage-assembled model:', err);
+      console.error('Failed to load cottage architectural model:', err);
     }
 
     // Storytelling Camera Presets
-    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string; liftRoof?: boolean } } = {
+    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string } } = {
       overview: {
         pos: [1.15, 0.65, 1.25],
         target: [0, -0.05, 0],
         title: 'Overview',
-        desc: 'Front 3/4 perspective of the complete timber & zinc retreat.',
-        liftRoof: false
+        desc: 'Front 3/4 perspective of the complete architectural dollhouse.'
       },
       dollhouse: {
-        pos: [-0.10, 1.45, 0.55],
+        pos: [-0.05, 1.35, 0.65],
         target: [-0.05, -0.1, 0.0],
         title: 'Dollhouse Interior',
-        desc: 'Elevated view down into the furnished quarters & slate hearth.',
-        liftRoof: true
+        desc: 'Elevated view down into the furnished quarters & slate hearth.'
       },
       terrace: {
         pos: [1.15, 0.28, -0.25],
         target: [0.25, -0.1, 0.0],
         title: 'Lakeside Terrace',
-        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.',
-        liftRoof: false
+        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.'
       },
       elevation: {
-        pos: [0.0, 0.2, 1.6],
+        pos: [0.0, 0.22, 1.6],
         target: [0, -0.05, 0],
         title: 'Front Elevation',
-        desc: 'Symmetrical front elevation view matching architectural drawings.',
-        liftRoof: false
+        desc: 'Front elevation view showcasing post-and-beam architecture.'
       }
     };
 
@@ -922,14 +838,8 @@ const hotspots = [
         if (modeTitle) modeTitle.textContent = p.title;
         if (modeDesc) modeDesc.textContent = p.desc;
 
-        setRoofLift(!!p.liftRoof);
         tweenCamera(p.pos, p.target);
       });
-    });
-
-    // Roof Lift Toggle Button
-    btnToggleRoof?.addEventListener('click', () => {
-      setRoofLift(!isRoofLifted);
     });
 
     // Auto-Rotate Turntable Toggle
@@ -945,7 +855,6 @@ const hotspots = [
       const p = presets.overview;
       if (modeTitle) modeTitle.textContent = p.title;
       if (modeDesc) modeDesc.textContent = p.desc;
-      setRoofLift(false);
       tweenCamera(p.pos, p.target);
       controls.autoRotate = true;
       btnAutoRotate?.classList.add('active');
