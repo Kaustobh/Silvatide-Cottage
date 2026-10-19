@@ -21,102 +21,100 @@ const hotspots = [
 ---
 
 <section id="chapter-studio" class="studio-section" data-tone="true" data-tone-bg="#0c0e12" data-tone-text="#ffffff">
-  <div class="studio-container">
-    <!-- Editorial Header -->
-    <div class="studio-header">
-      <div class="studio-header-left">
-        <span class="studio-eyebrow">CHAPTER II · 3D STUDIO</span>
-        <h2 class="studio-title sv-reveal-heading">Architectural Scale Model</h2>
-      </div>
+  <!-- Full-Bleed 3D Canvas Viewport -->
+  <canvas id="studioCanvas" class="studio-canvas" aria-label="Interactive 3D Architectural Cottage Scale Model"></canvas>
+
+  <!-- Poster / Loading State -->
+  <div id="studioPoster" class="studio-poster" style={`background-image: url('${posterUrl}')`}>
+    <div class="studio-loader-card">
+      <div class="loader-spinner"></div>
+      <span class="loader-text">Materializing Architectural Model...</span>
+    </div>
+  </div>
+
+  <!-- Editorial HUD Header Overlay (Floating over canvas) -->
+  <div class="studio-hud-header">
+    <div class="studio-header-left">
+      <span class="studio-eyebrow">CHAPTER II · 3D STUDIO</span>
+      <h2 class="studio-title sv-reveal-heading">Architectural Scale Model</h2>
+    </div>
+    <div class="studio-header-right">
       <p class="studio-desc">
         Explore the physical architectural scale model of Silvatide Cottage presented on a honed Finnish slate plinth in warm alabaster plaster. Inspect the open living quarters, slate hearth, and cantilevered terrace.
       </p>
     </div>
+  </div>
 
-    <!-- 3D Canvas Viewport -->
-    <div class="studio-viewport-wrap" id="studioViewportWrap">
-      <canvas id="studioCanvas" class="studio-canvas" aria-label="Interactive 3D Architectural Cottage Scale Model"></canvas>
+  <!-- Mode Story Description Badge (Floating in upper-right) -->
+  <div class="studio-mode-badge" id="studioModeBadge">
+    <span class="badge-tag">PERSPECTIVE:</span>
+    <span class="badge-title" id="modeBadgeTitle">Overview</span>
+    <span class="badge-desc" id="modeBadgeDesc">Front 3/4 perspective of the complete architectural dollhouse.</span>
+  </div>
 
-      <!-- Poster / Loading State -->
-      <div id="studioPoster" class="studio-poster" style={`background-image: url('${posterUrl}')`}>
-        <div class="studio-loader-card">
-          <div class="loader-spinner"></div>
-          <span class="loader-text">Materializing Architectural Model...</span>
-        </div>
+  <!-- Mobile Tap-to-Interact Overlay -->
+  <div id="studioTouchOverlay" class="studio-touch-overlay">
+    <button id="btnTouchInteract" class="touch-interact-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+      TAP TO EXPLORE 3D MODEL
+    </button>
+  </div>
+
+  <!-- Hotspot Overlay Pins (projected from 3D) -->
+  <div id="studioHotspotsContainer" class="studio-hotspots">
+    {hotspots.map((h) => (
+      <button class="hotspot-pin" data-id={h.id} data-slug={h.slug} aria-label={`Inspect ${h.name}`}>
+        <span class="hotspot-pulse"></span>
+        <span class="hotspot-dot"></span>
+        <span class="hotspot-label">{h.name}</span>
+      </button>
+    ))}
+  </div>
+
+  <!-- Hotspot Detail Card -->
+  <div id="hotspotCard" class="hotspot-modal" hidden>
+    <div class="hotspot-modal-inner">
+      <button id="btnCloseHotspot" class="modal-close" aria-label="Close card">&times;</button>
+      <div class="hotspot-modal-media">
+        <img id="hotspotModalImg" src="" alt="" loading="lazy" />
       </div>
+      <div class="hotspot-modal-body">
+        <span class="hotspot-modal-tag">ARCHITECTURAL IMPRESSION</span>
+        <h3 id="hotspotModalTitle" class="hotspot-modal-title"></h3>
+        <p id="hotspotModalDesc" class="hotspot-modal-desc"></p>
+      </div>
+    </div>
+  </div>
 
-      <!-- Mobile Tap-to-Interact Overlay -->
-      <div id="studioTouchOverlay" class="studio-touch-overlay">
-        <button id="btnTouchInteract" class="touch-interact-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          TAP TO EXPLORE 3D MODEL
+  <!-- Studio Floating Control Dock (Bottom Center) -->
+  <div class="studio-controls-dock">
+    <!-- Curated Modes -->
+    <div class="dock-modes-group">
+      {storyModes.map((mode, idx) => (
+        <button class={`dock-btn ${idx === 0 ? 'active' : ''}`} data-mode={mode.id} title={`${mode.label} (Key ${mode.key})`}>
+          <span class="btn-num">{mode.key}</span>
+          <span class="btn-label">{mode.label}</span>
         </button>
-      </div>
+      ))}
+    </div>
 
-      <!-- Hotspot Overlay Pins (projected from 3D) -->
-      <div id="studioHotspotsContainer" class="studio-hotspots">
-        {hotspots.map((h) => (
-          <button class="hotspot-pin" data-id={h.id} data-slug={h.slug} aria-label={`Inspect ${h.name}`}>
-            <span class="hotspot-pulse"></span>
-            <span class="hotspot-dot"></span>
-            <span class="hotspot-label">{h.name}</span>
-          </button>
-        ))}
-      </div>
+    <!-- Turntable & Reset Controls -->
+    <div class="dock-actions-group">
+      <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        <span class="action-label">TURNTABLE</span>
+      </button>
 
-      <!-- Hotspot Detail Card -->
-      <div id="hotspotCard" class="hotspot-modal" hidden>
-        <div class="hotspot-modal-inner">
-          <button id="btnCloseHotspot" class="modal-close" aria-label="Close card">&times;</button>
-          <div class="hotspot-modal-media">
-            <img id="hotspotModalImg" src="" alt="" loading="lazy" />
-          </div>
-          <div class="hotspot-modal-body">
-            <span class="hotspot-modal-tag">ARCHITECTURAL IMPRESSION</span>
-            <h3 id="hotspotModalTitle" class="hotspot-modal-title"></h3>
-            <p id="hotspotModalDesc" class="hotspot-modal-desc"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mode Story Description Badge (Top Right) -->
-      <div class="studio-mode-badge" id="studioModeBadge">
-        <span class="badge-tag">PERSPECTIVE:</span>
-        <span class="badge-title" id="modeBadgeTitle">Overview</span>
-        <span class="badge-desc" id="modeBadgeDesc">Front 3/4 perspective of the complete timber & zinc retreat.</span>
-      </div>
-
-      <!-- Studio Floating Control Dock -->
-      <div class="studio-controls-dock">
-        <!-- Curated Modes -->
-        <div class="dock-modes-group">
-          {storyModes.map((mode, idx) => (
-            <button class={`dock-btn ${idx === 0 ? 'active' : ''}`} data-mode={mode.id} title={`${mode.label} (Key ${mode.key})`}>
-              <span class="btn-num">{mode.key}</span>
-              <span class="btn-label">{mode.label}</span>
-            </button>
-          ))}
-        </div>
-
-        <!-- Turntable & Reset Controls -->
-        <div class="dock-actions-group">
-          <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-            </svg>
-            <span class="action-label">TURNTABLE</span>
-          </button>
-
-          <button id="btnResetCamera" class="dock-action-btn" title="Reset Camera View">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <span class="action-label">RESET</span>
-          </button>
-        </div>
-      </div>
+      <button id="btnResetCamera" class="dock-action-btn" title="Reset Camera View">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="action-label">RESET</span>
+      </button>
     </div>
   </div>
 </section>
@@ -125,29 +123,55 @@ const hotspots = [
   .studio-section {
     position: relative;
     width: 100%;
-    min-height: 100vh;
-    background: #0c0e12;
+    height: 100vh;
+    min-height: 720px;
+    background: radial-gradient(circle at 50% 50%, #171b24 0%, #080a0d 100%);
     color: #ffffff;
-    padding: 6rem 0 6rem;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
   }
 
-  .studio-container {
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 0 2rem;
+  /* Full-bleed Canvas */
+  .studio-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    z-index: 1;
   }
 
-  /* Header */
-  .studio-header {
+  .studio-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* HUD Editorial Header Overlay */
+  .studio-hud-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 3.5rem 4rem 2rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 3rem;
-    margin-bottom: 2.5rem;
+    pointer-events: none;
+    z-index: 10;
+    background: linear-gradient(180deg, rgba(8, 10, 13, 0.88) 0%, rgba(8, 10, 13, 0.45) 60%, transparent 100%);
   }
 
   .studio-header-left {
-    max-width: 640px;
+    max-width: 620px;
+    pointer-events: auto;
+  }
+
+  .studio-header-right {
+    max-width: 480px;
+    text-align: right;
+    pointer-events: auto;
   }
 
   .studio-eyebrow {
@@ -160,44 +184,20 @@ const hotspots = [
 
   .studio-title {
     font-family: var(--font-serif, Georgia, serif);
-    font-size: clamp(2rem, 3.2vw, 3rem);
+    font-size: clamp(2rem, 3.4vw, 3.2rem);
     font-weight: 400;
     letter-spacing: -0.02em;
     margin: 0.4rem 0 0;
     color: #ffffff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
   }
 
   .studio-desc {
-    max-width: 440px;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.75);
     margin: 0;
-  }
-
-  /* Viewport */
-  .studio-viewport-wrap {
-    position: relative;
-    width: 100%;
-    height: 76vh;
-    min-height: 560px;
-    max-height: 840px;
-    border-radius: 28px;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 45%, #15181f 0%, #090a0d 100%);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .studio-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-    cursor: grab;
-  }
-
-  .studio-canvas:active {
-    cursor: grabbing;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
   }
 
   /* Poster */
@@ -209,7 +209,7 @@ const hotspots = [
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 15;
     transition: opacity 0.5s ease;
   }
 
@@ -221,6 +221,7 @@ const hotspots = [
   .studio-loader-card {
     background: rgba(14, 16, 20, 0.85);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 1.5rem 2rem;
@@ -254,10 +255,11 @@ const hotspots = [
     inset: 0;
     background: rgba(10, 12, 16, 0.6);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 15;
+    z-index: 25;
   }
 
   @media (pointer: coarse) {
@@ -289,7 +291,7 @@ const hotspots = [
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 5;
+    z-index: 12;
   }
 
   .hotspot-pin {
@@ -336,6 +338,7 @@ const hotspots = [
     color: #ffffff;
     background: rgba(14, 16, 20, 0.85);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     padding: 0.3rem 0.65rem;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -353,8 +356,8 @@ const hotspots = [
   /* Hotspot Detail Card */
   .hotspot-modal {
     position: absolute;
-    bottom: 5.5rem;
-    right: 2rem;
+    bottom: 6.5rem;
+    right: 3.5rem;
     width: 330px;
     z-index: 30;
     animation: fadeIn 0.3s ease;
@@ -368,6 +371,7 @@ const hotspots = [
   .hotspot-modal-inner {
     background: rgba(16, 18, 24, 0.92);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
     overflow: hidden;
@@ -423,18 +427,19 @@ const hotspots = [
     margin: 0;
   }
 
-  /* Mode Story Badge (Top Right) */
+  /* Mode Story Badge (Floating in upper-right) */
   .studio-mode-badge {
     position: absolute;
-    top: 1.75rem;
-    right: 2rem;
+    top: 10rem;
+    right: 4rem;
     z-index: 10;
-    background: rgba(14, 16, 20, 0.75);
+    background: rgba(14, 16, 20, 0.82);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 0.9rem 1.4rem;
-    max-width: 320px;
+    padding: 0.9rem 1.35rem;
+    max-width: 310px;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -463,22 +468,23 @@ const hotspots = [
     color: rgba(255, 255, 255, 0.65);
   }
 
-  /* Floating Control Dock (Bottom) */
+  /* Floating Control Dock (Bottom Center) */
   .studio-controls-dock {
     position: absolute;
-    bottom: 1.75rem;
+    bottom: 2.75rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    background: rgba(14, 16, 20, 0.78);
+    background: rgba(14, 16, 20, 0.82);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     padding: 0.5rem 0.75rem 0.5rem 1.25rem;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     white-space: nowrap;
   }
 
@@ -566,15 +572,21 @@ const hotspots = [
   }
 
   @media (max-width: 992px) {
-    .studio-header {
+    .studio-hud-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 1rem;
+      padding: 2rem 1.5rem 1rem;
+      gap: 0.75rem;
+    }
+    .studio-header-right {
+      text-align: left;
+      max-width: 100%;
     }
     .studio-mode-badge {
       display: none;
     }
     .studio-controls-dock {
+      bottom: 1.5rem;
       width: 92%;
       overflow-x: auto;
       justify-content: flex-start;
@@ -646,19 +658,19 @@ const hotspots = [
     const scene = new THREE.Scene();
 
     // Camera & Constrained Orbit Controls (Zero underbelly viewing!)
-    const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
-    camera.position.set(1.15, 0.65, 1.25);
+    const camera = new THREE.PerspectiveCamera(38, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
+    camera.position.set(1.35, 0.82, 1.45);
 
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
     controls.maxPolarAngle = Math.PI / 2 - 0.08; // 85 max angle: prevents camera flipping underneath!
     controls.minPolarAngle = Math.PI / 6;         // 30 min angle
-    controls.minDistance = 0.8;
-    controls.maxDistance = 2.8;
+    controls.minDistance = 0.9;
+    controls.maxDistance = 3.4;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
-    controls.target.set(0, -0.05, 0);
+    controls.target.set(0, 0.04, 0);
 
     // Nordic Studio Key & Rim Lighting (Soft, tactile architectural gallery illumination)
     const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x2e343e, 2.4);
@@ -676,19 +688,19 @@ const hotspots = [
     groundBounce.position.set(0, -3, 0);
     scene.add(groundBounce);
 
-    // Architectural Gallery Slate Pedestal
-    const pedestalGeo = new THREE.CylinderGeometry(1.4, 1.45, 0.04, 64);
+    // Architectural Gallery Slate Pedestal (Expanded for full-bleed section)
+    const pedestalGeo = new THREE.CylinderGeometry(1.85, 1.92, 0.04, 64);
     const pedestalMat = new THREE.MeshStandardMaterial({
       color: 0x14161a,
       roughness: 0.85,
       metalness: 0.15
     });
     const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-    pedestal.position.y = -0.32;
+    pedestal.position.y = -0.36;
     scene.add(pedestal);
 
     // Subtle Gold Hairline Perimeter Ring
-    const ringGeo = new THREE.RingGeometry(1.36, 1.38, 64);
+    const ringGeo = new THREE.RingGeometry(1.80, 1.83, 64);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0xe5a970,
       transparent: true,
@@ -697,11 +709,11 @@ const hotspots = [
     });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = -Math.PI / 2;
-    ring.position.y = -0.299;
+    ring.position.y = -0.339;
     scene.add(ring);
 
     // Contact Shadow Plane
-    const shadowGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    const shadowGeo = new THREE.PlaneGeometry(3.2, 3.2);
     const shadowMat = new THREE.MeshBasicMaterial({
       color: 0x050608,
       transparent: true,
@@ -710,7 +722,7 @@ const hotspots = [
     });
     const shadow = new THREE.Mesh(shadowGeo, shadowMat);
     shadow.rotation.x = -Math.PI / 2;
-    shadow.position.y = -0.298;
+    shadow.position.y = -0.338;
     scene.add(shadow);
 
     // Load Pure Architectural Dollhouse in Warm Alabaster Plaster
@@ -745,11 +757,12 @@ const hotspots = [
       const size = box.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z);
 
-      const targetScale = 1.25 / maxDim;
+      // Generously fills the full-bleed section
+      const targetScale = 1.68 / maxDim;
       model.scale.setScalar(targetScale);
       model.position.sub(center.multiplyScalar(targetScale));
       // Ground exactly on top of pedestal
-      model.position.y += (size.y * targetScale) / 2 - 0.28;
+      model.position.y += (size.y * targetScale) / 2 - 0.32;
 
       // Tactile Warm Alabaster Architectural Plaster Material
       const architecturalMat = new THREE.MeshStandardMaterial({
@@ -775,26 +788,26 @@ const hotspots = [
     // Storytelling Camera Presets
     const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string } } = {
       overview: {
-        pos: [1.15, 0.65, 1.25],
-        target: [0, -0.05, 0],
+        pos: [1.35, 0.82, 1.45],
+        target: [0, 0.04, 0],
         title: 'Overview',
         desc: 'Front 3/4 perspective of the complete architectural dollhouse.'
       },
       dollhouse: {
-        pos: [-0.05, 1.35, 0.65],
-        target: [-0.05, -0.1, 0.0],
+        pos: [-0.05, 1.75, 0.75],
+        target: [-0.05, 0.0, 0.0],
         title: 'Dollhouse Interior',
         desc: 'Elevated view down into the furnished quarters & slate hearth.'
       },
       terrace: {
-        pos: [1.15, 0.28, -0.25],
-        target: [0.25, -0.1, 0.0],
+        pos: [1.38, 0.36, -0.28],
+        target: [0.28, 0.0, 0.0],
         title: 'Lakeside Terrace',
         desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.'
       },
       elevation: {
-        pos: [0.0, 0.22, 1.6],
-        target: [0, -0.05, 0],
+        pos: [0.0, 0.30, 1.95],
+        target: [0, 0.04, 0],
         title: 'Front Elevation',
         desc: 'Front elevation view showcasing post-and-beam architecture.'
       }
@@ -913,11 +926,12 @@ const hotspots = [
 
     // Project Hotspot Pins
     const tempVec = new THREE.Vector3();
+    const sFactor = 1.68 / 1.25;
     const hotspotCoords: { [key: string]: [number, number, number] } = {
-      living: [-0.05, -0.02, 0.05],
-      kitchen: [-0.05, -0.02, -0.05],
-      bedroom: [-0.15, -0.02, -0.10],
-      terrace: [0.22, -0.12, 0.0]
+      living: [-0.05 * sFactor, -0.02 * sFactor - 0.04, 0.05 * sFactor],
+      kitchen: [-0.05 * sFactor, -0.02 * sFactor - 0.04, -0.05 * sFactor],
+      bedroom: [-0.15 * sFactor, -0.02 * sFactor - 0.04, -0.10 * sFactor],
+      terrace: [0.22 * sFactor, -0.12 * sFactor - 0.04, 0.0 * sFactor]
     };
 
     function updateHotspots() {
