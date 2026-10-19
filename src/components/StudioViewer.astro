@@ -98,8 +98,16 @@ const hotspots = [
       ))}
     </div>
 
-    <!-- Turntable & Reset Controls -->
+    <!-- Turntable, Roof Lift & Reset Controls -->
     <div class="dock-actions-group">
+      <button id="btnToggleRoof" class="dock-action-btn" title="Toggle Roof Lift">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10z"></path>
+          <path d="M12 3v18"></path>
+        </svg>
+        <span id="lblRoofAction" class="action-label">ROOF LIFT</span>
+      </button>
+
       <button id="btnAutoRotate" class="dock-action-btn active" title="Toggle Turntable Rotation">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -627,6 +635,8 @@ const hotspots = [
     const poster = document.getElementById('studioPoster');
     const touchOverlay = document.getElementById('studioTouchOverlay');
     const btnTouch = document.getElementById('btnTouchInteract');
+    const btnToggleRoof = document.getElementById('btnToggleRoof');
+    const lblRoofAction = document.getElementById('lblRoofAction');
     const btnAutoRotate = document.getElementById('btnAutoRotate');
     const btnResetCamera = document.getElementById('btnResetCamera');
     const dockButtons = document.querySelectorAll<HTMLButtonElement>('.dock-btn');
@@ -659,13 +669,13 @@ const hotspots = [
 
     // Camera & Constrained Orbit Controls (Zero underbelly viewing!)
     const camera = new THREE.PerspectiveCamera(38, canvas.clientWidth / canvas.clientHeight, 0.05, 50);
-    camera.position.set(1.35, 0.82, 1.45);
+    camera.position.set(1.42, 0.88, 1.52);
 
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
-    controls.maxPolarAngle = Math.PI / 2 - 0.08; // 85 max angle: prevents camera flipping underneath!
-    controls.minPolarAngle = Math.PI / 6;         // 30 min angle
+    controls.maxPolarAngle = Math.PI / 2 - 0.08; // 85° max angle: prevents camera flipping underneath!
+    controls.minPolarAngle = Math.PI / 6;         // 30° min angle
     controls.minDistance = 0.9;
     controls.maxDistance = 3.4;
     controls.autoRotate = true;
@@ -725,13 +735,20 @@ const hotspots = [
     shadow.position.y = -0.338;
     scene.add(shadow);
 
-    // Load Pure Architectural Dollhouse in Warm Alabaster Plaster
+    // Load Whole Architectural Cottage Model in Warm Alabaster Plaster
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: any = null;
+    let truss: any = null;
+    let roof: any = null;
+    let isRoofLifted = false;
     let isRenderDemandActive = true;
     let renderDemandTimer = 0;
+
+    // Calibrated natural architectural resting heights (strictly zero submerging into floor)
+    const trussRestY = -0.048;
+    const roofRestY = -0.070;
 
     function requestRender(durationMs = 1500) {
       isRenderDemandActive = true;
@@ -741,15 +758,46 @@ const hotspots = [
       }, durationMs);
     }
 
+    function setRoofLift(lifted: boolean) {
+      isRoofLifted = lifted;
+      btnToggleRoof?.classList.toggle('active', lifted);
+      if (lblRoofAction) {
+        lblRoofAction.textContent = lifted ? 'ROOF LOWER' : 'ROOF LIFT';
+      }
+
+      if (roof) {
+        gsap.to(roof.position, {
+          y: lifted ? roofRestY + 0.26 : roofRestY,
+          duration: 1.1,
+          ease: 'power2.inOut',
+          onUpdate: () => requestRender(200)
+        });
+      }
+      if (truss) {
+        gsap.to(truss.position, {
+          y: lifted ? trussRestY + 0.15 : trussRestY,
+          duration: 1.1,
+          ease: 'power2.inOut',
+          onUpdate: () => requestRender(200)
+        });
+      }
+    }
+
     try {
       const gltf = await loader.loadAsync(`${baseUrl}/models/cottage-assembled.glb`);
       model = gltf.scene;
 
-      // Pure architectural dollhouse: permanently remove submerging partial roof and truss
-      const truss = model.getObjectByName('cottage_truss');
-      const roof = model.getObjectByName('cottage_roof');
-      if (truss) truss.visible = false;
-      if (roof) roof.visible = false;
+      // Use the whole model as it is (complete body, structural truss, and gabled roof)
+      truss = model.getObjectByName('cottage_truss');
+      roof = model.getObjectByName('cottage_roof');
+      if (truss) {
+        truss.visible = true;
+        truss.position.y += trussRestY;
+      }
+      if (roof) {
+        roof.visible = true;
+        roof.position.y += roofRestY;
+      }
 
       // Center model
       const box = new THREE.Box3().setFromObject(model);
@@ -757,12 +805,12 @@ const hotspots = [
       const size = box.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z);
 
-      // Generously fills the full-bleed section
-      const targetScale = 1.68 / maxDim;
+      // Scale and center the complete whole cottage model
+      const targetScale = 1.62 / maxDim;
       model.scale.setScalar(targetScale);
       model.position.sub(center.multiplyScalar(targetScale));
       // Ground exactly on top of pedestal
-      model.position.y += (size.y * targetScale) / 2 - 0.32;
+      model.position.y += (size.y * targetScale) / 2 - 0.34;
 
       // Tactile Warm Alabaster Architectural Plaster Material
       const architecturalMat = new THREE.MeshStandardMaterial({
@@ -786,30 +834,34 @@ const hotspots = [
     }
 
     // Storytelling Camera Presets
-    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string } } = {
+    const presets: { [key: string]: { pos: [number, number, number]; target: [number, number, number]; title: string; desc: string; liftRoof?: boolean } } = {
       overview: {
-        pos: [1.35, 0.82, 1.45],
+        pos: [1.42, 0.88, 1.52],
         target: [0, 0.04, 0],
         title: 'Overview',
-        desc: 'Front 3/4 perspective of the complete architectural dollhouse.'
+        desc: 'Front 3/4 perspective of the complete architectural scale model.',
+        liftRoof: false
       },
       dollhouse: {
-        pos: [-0.05, 1.75, 0.75],
+        pos: [-0.05, 1.82, 0.75],
         target: [-0.05, 0.0, 0.0],
         title: 'Dollhouse Interior',
-        desc: 'Elevated view down into the furnished quarters & slate hearth.'
+        desc: 'Elevated view down into the furnished quarters & slate hearth.',
+        liftRoof: true
       },
       terrace: {
-        pos: [1.38, 0.36, -0.28],
+        pos: [1.42, 0.36, -0.28],
         target: [0.28, 0.0, 0.0],
         title: 'Lakeside Terrace',
-        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.'
+        desc: 'Eye-level on the cantilevered cedar deck & lakeside firepit.',
+        liftRoof: false
       },
       elevation: {
-        pos: [0.0, 0.30, 1.95],
+        pos: [0.0, 0.32, 2.05],
         target: [0, 0.04, 0],
         title: 'Front Elevation',
-        desc: 'Front elevation view showcasing post-and-beam architecture.'
+        desc: 'Front elevation view showcasing post-and-beam architecture.',
+        liftRoof: false
       }
     };
 
@@ -851,8 +903,14 @@ const hotspots = [
         if (modeTitle) modeTitle.textContent = p.title;
         if (modeDesc) modeDesc.textContent = p.desc;
 
+        setRoofLift(!!p.liftRoof);
         tweenCamera(p.pos, p.target);
       });
+    });
+
+    // Roof Lift Toggle Button
+    btnToggleRoof?.addEventListener('click', () => {
+      setRoofLift(!isRoofLifted);
     });
 
     // Auto-Rotate Turntable Toggle
@@ -868,6 +926,7 @@ const hotspots = [
       const p = presets.overview;
       if (modeTitle) modeTitle.textContent = p.title;
       if (modeDesc) modeDesc.textContent = p.desc;
+      setRoofLift(false);
       tweenCamera(p.pos, p.target);
       controls.autoRotate = true;
       btnAutoRotate?.classList.add('active');
